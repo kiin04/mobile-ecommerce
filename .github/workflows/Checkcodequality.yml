@@ -1,0 +1,79 @@
+name: Build and check code quality
+
+on:
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  build-react-vite:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2.0.1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies for admin
+        working-directory: ./admin
+        run: bun install
+
+      - name: Run ESLint for admin
+        working-directory: ./admin
+        run: |
+          echo "Running ESLint in normal mode"
+          bunx eslint .
+          echo "Running ESLint in debug mode"
+          bunx eslint . --debug
+          echo "Running ESLint with auto-fix"
+          bunx eslint . --fix
+
+      - name: Build React app
+        working-directory: ./admin
+        run: bun run build
+
+      - name: Install dependencies for user
+        working-directory: ./user
+        run: bun install
+
+      - name: Run ESLint for user
+        working-directory: ./user
+        run: |
+          echo "Running ESLint in normal mode"
+          bunx eslint .
+          echo "Running ESLint in debug mode"
+          bunx eslint . --debug
+          echo "Running ESLint with auto-fix"
+          bunx eslint . --fix
+
+      - name: Build React user
+        working-directory: ./user
+        run: bun run build
+
+  test-nodejs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2.0.1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies for server
+        working-directory: ./server
+        run: bun install
+
+      - name: Run ESLint for server
+        working-directory: ./server
+        run: |
+          echo "Running ESLint in normal mode"
+          bunx eslint .
+          echo "Running ESLint in debug mode"
+          bunx eslint . --debug
+          echo "Running ESLint with auto-fix"
+          bunx eslint . --fix
+
