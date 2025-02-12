@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Box, TextField, Button, Typography, Grid, CircularProgress, MenuItem, Autocomplete } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
-import { BASE_URL } from '../../config.js';
-
+import { BASE_URL, API_URL } from '../../config.js';
+import { Card, CardContent } from '@mui/material';
 const EditProduct = () => {
   const { productId } = useParams();
   const navigate = useNavigate();
@@ -10,7 +10,9 @@ const EditProduct = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [imagePreview, setImagePreview] = useState(null); // Thêm state cho hình ảnh mới
+  const [productImage, setProductImage] = useState( `data:image/jpeg;base64,${product?.image}`|| "");
   const [errors, setErrors] = useState({});
+  const [colorSize, setColorSize] = useState([]);
 
   // Bản đồ key sang nhãn có dấu
   const cauHinhLabels = {
@@ -38,18 +40,20 @@ const EditProduct = () => {
   const nfcOptions = ['Có', 'Không'];
   const simOptions = ['1 SIM', '2 SIM', 'eSIM'];
   const chargingPortOptions = ['Lightning', 'Type-C', 'Micro USB'];
+ 
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const response = await fetch(`${BASE_URL}/api/products/${productId}`);
+        const response = await fetch(`${API_URL}/api/Product/${productId}`);
         if (response.ok) {
           const data = await response.json();
           console.log('Product data:', data); // Ghi log dữ liệu sản phẩm
-          const productData = data.product; // Lấy sản phẩm từ data.product
-          const cauhinh = typeof productData.cauhinh === 'string' ? JSON.parse(productData.cauhinh) : productData.cauhinh;
-          setProduct({ ...productData, cauhinh }); // Đặt lại product với cauhinh đã được parse
-          setImagePreview(`${BASE_URL}/${productData.image}`); // Đặt preview cho hình ảnh hiện tại
+         // const cauhinh = typeof productData.cauhinh === 'string' ? JSON.parse(productData.cauhinh) : productData.cauhinh;
+          //setProduct({ ...data, cauhinh }); // Đặt lại product với cauhinh đã được parse
+          setProduct({ ...data }); 
+          //setImagePreview(`${BASE_URL}/${productData.image}`); // Đặt preview cho hình ảnh hiện tại
+          setProductImage(`data:image/jpeg;base64,${data?.image}` || "");
         } else {
           throw new Error('Failed to fetch product');
         }
@@ -60,10 +64,28 @@ const EditProduct = () => {
         setLoading(false);
       }
     };
-
+    const fetchColorSize = async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/ColorSizes/ProductColorSize/${productId}`);
+        console.log('Colorzise response:', response); 
+        if (response.ok) {
+          const data = await response.json();
+          console.log('Colorzise data:', data); // Ghi log dữ liệu sản phẩm
+          setColorSize( data ); 
+        } else {
+          throw new Error('Failed to fetch ColorSize');
+        }
+      } catch (error) {
+        console.error('Error fetching ColorSize:', error);
+        setError('Failed to load ColorSize data. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchProduct();
+    fetchColorSize();
   }, [productId]);
-
+ 
   const handleChange = (e) => {
     const { name, value } = e.target;
     
@@ -80,53 +102,54 @@ const EditProduct = () => {
         }));
     }
 
-    if (name === 'quantity' && Number(value) <= 0) {
-        setErrors(prev => ({
-            ...prev,
-            quantity: 'Số lượng phải lớn hơn 0'
-        }));
-    }
-
-    if (name.startsWith("cauhinh.")) {
-        const key = name.split(".")[1];
-        setProduct({ ...product, cauhinh: { ...product.cauhinh, [key]: value } });
-    } else {
-        setProduct({ ...product, [name]: value });
-    }
+    // if (name.startsWith("cauhinh.")) {
+    //     const key = name.split(".")[1];
+    //     setProduct({ ...product, cauhinh: { ...product.cauhinh, [key]: value } });
+    // } else {
+    //     setProduct({ ...product, [name]: value });
+    // }
+    setProduct({ ...product, [name]: value });
+    
   };
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     setProduct({ ...product, image: file });
-    setImagePreview(URL.createObjectURL(file)); // Tạo preview cho hình ảnh mới
+    setImagePreview(URL.createObjectURL(file)); 
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!validateForm()) {
-        return;
-    }
+  
+    // if (!validateForm()) {
+    //     return;
+    // }
 
     const formData = new FormData();
 
     // Lặp qua các trường của product và thêm vào formData
     Object.keys(product).forEach((key) => {
-      if (key === 'cauhinh') {
-        formData.append(key, JSON.stringify(product[key])); // Chuyển cauhinh thành JSON string
-      } else if (key === 'image' && product[key] instanceof File) {
-        formData.append(key, product[key]); // Nếu là hình ảnh mới, thêm vào formData
+      // if (key === 'cauhinh') {
+      //   formData.append(key, JSON.stringify(product[key])); // Chuyển cauhinh thành JSON string
+      // } else 
+      if (key === 'image' && product.image instanceof File) {
+        formData.append(key, product.image); // Chỉ thêm hình ảnh nếu là file
       } else {
-        formData.append(key, product[key]); // Các trường khác
+        formData.append(key, product[key]);
       }
+      formData.append('createdAt', product.createdAt)
+      
     });
-
+    console.log("📝 FormData nội dung:");
+    for (let [key, value] of formData.entries()) {
+        console.log(key, value);
+    }
     try {
-      const response = await fetch(`${BASE_URL}/api/products/${productId}`, {
+      const response = await fetch(`${API_URL}/api/Product/${productId}`, {
         method: 'PUT',
-        body: formData,
+        body: formData
       });
-
+      console.log("update response", response);
       if (response.ok) {
         alert('Sản phẩm đã được cập nhật thành công');
         navigate('/product-management');
@@ -152,12 +175,6 @@ const EditProduct = () => {
     if (!product?.name || !product.name.trim()) {
         newErrors.name = 'Vui lòng nhập tên sản phẩm';
     }
-
-    // Validate màu sắc
-    if (!product?.color) {
-        newErrors.color = 'Vui lòng chọn màu sắc';
-    }
-
     // Validate số lượng
     if (!product?.quantity || product.quantity <= 0) {
         newErrors.quantity = 'Số lượng phải lớn hơn 0';
@@ -243,7 +260,7 @@ const EditProduct = () => {
   if (loading) return <CircularProgress />;
   if (error) return <Typography color="error">{error}</Typography>;
   if (!product) return <Typography>Không tìm thấy sản phẩm</Typography>;
-
+  
   return (
     <Box padding={3}>
       <Typography variant="h4" gutterBottom>Chỉnh sửa sản phẩm</Typography>
@@ -261,7 +278,7 @@ const EditProduct = () => {
             />
           </Grid>
 
-          <Grid item xs={12} sm={6}>
+          {/* <Grid item xs={12} sm={6}>
             <TextField
               select
               label="Màu sắc"
@@ -292,7 +309,7 @@ const EditProduct = () => {
               margin="normal"
               inputProps={{ min: 0 }}
             />
-          </Grid>
+          </Grid> */}
 
           <Grid item xs={12} sm={6}>
             <TextField
@@ -308,7 +325,7 @@ const EditProduct = () => {
             />
           </Grid>
 
-          <Grid item xs={12} sm={6}>
+          {/* <Grid item xs={12} sm={6}>
             <TextField
               select
               label="Hệ điều hành"
@@ -344,9 +361,9 @@ const EditProduct = () => {
                 </MenuItem>
               ))}
             </TextField>
-          </Grid>
+          </Grid> */}
 
-          <Grid item xs={12}>
+          <Grid item xs={12} >
             <TextField
               label="Mô tả"
               name="description"
@@ -360,7 +377,7 @@ const EditProduct = () => {
             />
           </Grid>
 
-          <Grid item xs={12}>
+          <Grid item xs={12} sm={4} >
             <input
               accept="image/*"
               type="file"
@@ -373,19 +390,40 @@ const EditProduct = () => {
                 Chọn hình ảnh
               </Button>
             </label>
-            {imagePreview && (
+            {imagePreview ? (
               <Box mt={2}>
                 <img src={imagePreview} alt="Preview" style={{ maxWidth: '200px' }} />
-              </Box>
-            )}
+              </Box>) : 
+              productImage &&(
+                <Box mt={2}>
+                  <img src={productImage} alt="Preview" style={{ maxWidth: '200px' }} />
+                </Box>) }
+            
           </Grid>
-
+          <Grid item xs={12} sm={8}>
+            <Typography variant="h6" sx={{ mt: 3, mb: 2 }}>
+             Màu và phiên bản
+            </Typography>
+            {colorSize && colorSize.map((item) => (
+              <Grid item xs={12} sm={12} key={item.id}>
+                <Card variant="outlined" sx={{ backgroundColor: "#f9f9f9"}} style={{maxHeight:"130px", margin:"10px 0", padding:"8px"}}>
+                  <CardContent>
+                    <Typography variant="subtitle1" fontWeight="bold">
+                      Màu: {item.color}
+                    </Typography>
+                    <Typography variant="subtitle2">Phiên bản: {item.size}</Typography>
+                    <Typography variant="body2">Số lượng: {item.quantity}</Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
           <Grid item xs={12}>
             <Typography variant="h6" sx={{ mt: 3, mb: 2 }}>
               Cấu hình sản phẩm
             </Typography>
           </Grid>
-          {product.cauhinh ? (
+          {/* {product.cauhinh ? (
             Object.entries(product.cauhinh).map(([key, value]) => (
               <Grid item xs={12} sm={6} key={key}>
                 <TextField
@@ -402,7 +440,7 @@ const EditProduct = () => {
             ))
           ) : (
             <Typography>Không có thông tin cấu hình sản phẩm</Typography> // Thông báo nếu không có cấu hình
-          )}
+          )} */}
         </Grid>
 
         <Box mt={3}>

@@ -3,7 +3,7 @@ import { Box, TextField, Button, Table, TableBody, TableCell, TableContainer, Ta
 import { Edit, Delete, Visibility } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { BASE_URL } from '../../config.js';
+import { BASE_URL,API_URL } from '../../config.js';
 
 const ProductManagement = () => {
   const navigate = useNavigate();
@@ -16,7 +16,7 @@ const ProductManagement = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get(`${BASE_URL}/api/products`);
+        const response = await axios.get(`${API_URL}/api/Product`);
         if (response.status === 200) {
           const data = response.data;
           console.log('Fetched products:', data); // Log the products
@@ -184,7 +184,7 @@ const ProductManagement = () => {
             <Box display="flex" gap={3}>
               <Box flex={1}>
                 <img
-                  src={`${BASE_URL}/${selectedProduct.image.replace(/\\/g, '/')}`}
+                  src={`data:image/jpeg;base64,${selectedProduct?.image}`|| ""}
                   alt={selectedProduct.name}
                   style={{ 
                     width: '100%',
