@@ -1,0 +1,54 @@
+﻿using Microsoft.AspNetCore.Http.Features;
+using Microsoft.EntityFrameworkCore;
+using WebAPI.Models;
+using WebAPI.Services;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+
+builder.Services.AddControllers();
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+IConfigurationRoot cf = new ConfigurationBuilder().SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+                                                   .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true).Build();
+builder.Services.AddDbContext<CSDLBanHang>(otp => otp.UseSqlServer(cf.GetConnectionString("DefaultConnection")));
+
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = 20 * 1024 * 1024; // Cho phép file tối đa 10MB
+});
+//dung singleton
+//var connectionString = DatabaseManager.Instance.ConnectionString;
+//builder.Services.AddDbContext<CSDLBanHang>(otp => otp.UseSqlServer(connectionString));
+
+builder.Services.AddScoped<ColorSizesService>(); 
+builder.Services.AddScoped<ProductService>();
+builder.Services.AddScoped<CategoriesService>();
+builder.Services.AddScoped<OrderService>();
+builder.Services.AddScoped<UserService>();
+
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.UseHttpsRedirection();
+
+app.UseAuthorization();
+
+app.UseCors(builder => builder
+   .AllowAnyOrigin()
+   .AllowAnyMethod()
+   .AllowAnyHeader());
+
+app.MapControllers();
+
+app.Run();
