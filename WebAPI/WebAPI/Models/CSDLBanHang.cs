@@ -17,6 +17,8 @@ public partial class CSDLBanHang : DbContext
 
     public virtual DbSet<Account> Accounts { get; set; }
 
+    public virtual DbSet<Cart> Carts { get; set; }
+
     public virtual DbSet<Category> Categories { get; set; }
 
     public virtual DbSet<ColorSize> ColorSizes { get; set; }
@@ -62,6 +64,31 @@ public partial class CSDLBanHang : DbContext
             entity.Property(e => e.UserId).HasColumnName("user_id");
         });
 
+        modelBuilder.Entity<Cart>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Cart__3213E83F0A2B179A");
+
+            entity.ToTable("Cart");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime")
+                .HasColumnName("created_at");
+            entity.Property(e => e.Price)
+                .HasColumnType("decimal(18, 2)")
+                .HasColumnName("price");
+            entity.Property(e => e.ProductId).HasColumnName("product_id");
+            entity.Property(e => e.Quantity).HasColumnName("quantity");
+            entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime")
+                .HasColumnName("updated_at");
+            entity.Property(e => e.UserId).HasColumnName("user_id");
+
+             
+        });
+
         modelBuilder.Entity<Category>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__Categori__3213E83F1C574325");
@@ -92,6 +119,9 @@ public partial class CSDLBanHang : DbContext
             entity.Property(e => e.Color)
                 .HasMaxLength(50)
                 .HasColumnName("color");
+            entity.Property(e => e.Price)
+              .HasColumnType("decimal(18, 2)")
+              .HasColumnName("price");
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime")
@@ -106,7 +136,7 @@ public partial class CSDLBanHang : DbContext
                 .HasColumnType("datetime")
                 .HasColumnName("updated_at");
 
-           
+             
         });
 
         modelBuilder.Entity<Detail>(entity =>
@@ -142,7 +172,7 @@ public partial class CSDLBanHang : DbContext
                 .HasColumnType("datetime")
                 .HasColumnName("updated_at");
 
-            
+           
         });
 
         modelBuilder.Entity<Order>(entity =>
@@ -150,10 +180,16 @@ public partial class CSDLBanHang : DbContext
             entity.HasKey(e => e.Id).HasName("PK__Orders__3213E83FB707A7B4");
 
             entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Address)
+                .HasMaxLength(255)
+                .HasColumnName("address");
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime")
                 .HasColumnName("created_at");
+            entity.Property(e => e.Phone)
+                .HasMaxLength(15)
+                .HasColumnName("phone");
             entity.Property(e => e.Status)
                 .HasMaxLength(50)
                 .HasDefaultValue("Ch? xác nh?n")
@@ -190,6 +226,7 @@ public partial class CSDLBanHang : DbContext
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime")
                 .HasColumnName("updated_at");
+
            
         });
 
@@ -225,6 +262,7 @@ public partial class CSDLBanHang : DbContext
                 .HasColumnType("datetime")
                 .HasColumnName("updated_at");
 
+           
         });
 
         modelBuilder.Entity<Promotion>(entity =>

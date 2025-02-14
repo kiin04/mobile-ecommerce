@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Box, TextField, Button, Typography, Grid, CircularProgress, MenuItem, Autocomplete } from '@mui/material';
+import { Box, TextField, Button, Typography, Grid, CircularProgress, Dialog, DialogTitle, DialogContent, IconButton, Pagination } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
 import { BASE_URL, API_URL } from '../../config.js';
 import { Card, CardContent } from '@mui/material';
+import ColorSize from '../../components/ColorSize.jsx';
 const EditProduct = () => {
   const { productId } = useParams();
   const navigate = useNavigate();
@@ -12,8 +13,8 @@ const EditProduct = () => {
   const [imagePreview, setImagePreview] = useState(null); // Thêm state cho hình ảnh mới
   const [productImage, setProductImage] = useState( `data:image/jpeg;base64,${product?.image}`|| "");
   const [errors, setErrors] = useState({});
-  const [colorSize, setColorSize] = useState([]);
 
+ 
   // Bản đồ key sang nhãn có dấu
   const cauHinhLabels = {
     kichThuocManHinh: "Kích thước màn hình",
@@ -50,9 +51,7 @@ const EditProduct = () => {
           const data = await response.json();
           console.log('Product data:', data); // Ghi log dữ liệu sản phẩm
          // const cauhinh = typeof productData.cauhinh === 'string' ? JSON.parse(productData.cauhinh) : productData.cauhinh;
-          //setProduct({ ...data, cauhinh }); // Đặt lại product với cauhinh đã được parse
           setProduct({ ...data }); 
-          //setImagePreview(`${BASE_URL}/${productData.image}`); // Đặt preview cho hình ảnh hiện tại
           setProductImage(`data:image/jpeg;base64,${data?.image}` || "");
         } else {
           throw new Error('Failed to fetch product');
@@ -64,26 +63,7 @@ const EditProduct = () => {
         setLoading(false);
       }
     };
-    const fetchColorSize = async () => {
-      try {
-        const response = await fetch(`${API_URL}/api/ColorSizes/ProductColorSize/${productId}`);
-        console.log('Colorzise response:', response); 
-        if (response.ok) {
-          const data = await response.json();
-          console.log('Colorzise data:', data); // Ghi log dữ liệu sản phẩm
-          setColorSize( data ); 
-        } else {
-          throw new Error('Failed to fetch ColorSize');
-        }
-      } catch (error) {
-        console.error('Error fetching ColorSize:', error);
-        setError('Failed to load ColorSize data. Please try again.');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchProduct();
-    fetchColorSize();
+    fetchProduct(); 
   }, [productId]);
  
   const handleChange = (e) => {
@@ -127,13 +107,13 @@ const EditProduct = () => {
 
     const formData = new FormData();
 
-    // Lặp qua các trường của product và thêm vào formData
+  
     Object.keys(product).forEach((key) => {
-      // if (key === 'cauhinh') {
-      //   formData.append(key, JSON.stringify(product[key])); // Chuyển cauhinh thành JSON string
-      // } else 
-      if (key === 'image' && product.image instanceof File) {
-        formData.append(key, product.image); // Chỉ thêm hình ảnh nếu là file
+      if (key === 'image') {
+        // Nếu có ảnh mới, thêm vào formData, nếu không giữ nguyên ảnh cũ
+        if (imagePreview && product.image instanceof File) {
+          formData.append('image', product.image);
+        }
       } else {
         formData.append(key, product[key]);
       }
@@ -166,7 +146,7 @@ const EditProduct = () => {
   const handleCancel = () => {
     navigate('/product-management'); // Quay lại trang quản lý sản phẩm
   };
-
+ 
   // Thêm hàm validate
   const validateForm = () => {
     const newErrors = {};
@@ -278,39 +258,6 @@ const EditProduct = () => {
             />
           </Grid>
 
-          {/* <Grid item xs={12} sm={6}>
-            <TextField
-              select
-              label="Màu sắc"
-              name="color"
-              value={product?.color || ''}
-              onChange={handleChange}
-              fullWidth
-              required
-              margin="normal"
-            >
-              {colorOptions.map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-            </TextField>
-          </Grid>
-
-          <Grid item xs={12} sm={6}>
-            <TextField
-              label="Số lượng"
-              name="quantity"
-              type="number"
-              value={product?.quantity || ''}
-              onChange={handleChange}
-              fullWidth
-              required
-              margin="normal"
-              inputProps={{ min: 0 }}
-            />
-          </Grid> */}
-
           <Grid item xs={12} sm={6}>
             <TextField
               label="Giá"
@@ -363,19 +310,7 @@ const EditProduct = () => {
             </TextField>
           </Grid> */}
 
-          <Grid item xs={12} >
-            <TextField
-              label="Mô tả"
-              name="description"
-              value={product?.description || ''}
-              onChange={handleChange}
-              fullWidth
-              required
-              margin="normal"
-              multiline
-              rows={4}
-            />
-          </Grid>
+       
 
           <Grid item xs={12} sm={4} >
             <input
@@ -400,23 +335,19 @@ const EditProduct = () => {
                 </Box>) }
             
           </Grid>
-          <Grid item xs={12} sm={8}>
-            <Typography variant="h6" sx={{ mt: 3, mb: 2 }}>
-             Màu và phiên bản
-            </Typography>
-            {colorSize && colorSize.map((item) => (
-              <Grid item xs={12} sm={12} key={item.id}>
-                <Card variant="outlined" sx={{ backgroundColor: "#f9f9f9"}} style={{maxHeight:"130px", margin:"10px 0", padding:"8px"}}>
-                  <CardContent>
-                    <Typography variant="subtitle1" fontWeight="bold">
-                      Màu: {item.color}
-                    </Typography>
-                    <Typography variant="subtitle2">Phiên bản: {item.size}</Typography>
-                    <Typography variant="body2">Số lượng: {item.quantity}</Typography>
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))}
+          <ColorSize  productId={product.id}></ColorSize>
+          <Grid item xs={12} >
+            <TextField
+              label="Mô tả"
+              name="description"
+              value={product?.description || ''}
+              onChange={handleChange}
+              fullWidth
+              required
+              margin="normal"
+              multiline
+              rows={4}
+            />
           </Grid>
           <Grid item xs={12}>
             <Typography variant="h6" sx={{ mt: 3, mb: 2 }}>
@@ -452,6 +383,7 @@ const EditProduct = () => {
           </Button>
         </Box>
       </form>
+     
     </Box>
   );
 };

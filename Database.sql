@@ -38,6 +38,7 @@ CREATE TABLE ColorSize (
     color NVARCHAR(50) NOT NULL,
     size NVARCHAR(10) NOT NULL,
     quantity INT NOT NULL,
+	price DECIMAL(18, 2) ,
     FOREIGN KEY (product_id) REFERENCES Products(id),
 	created_at DATETIME DEFAULT GETDATE(),
     updated_at DATETIME DEFAULT GETDATE()
@@ -80,7 +81,6 @@ CREATE TABLE Accounts (
     updated_at DATETIME DEFAULT GETDATE(),
 );
 
-
 -- Bảng Orders
 CREATE TABLE Orders (
     id INT PRIMARY KEY IDENTITY(1,1),
@@ -89,6 +89,8 @@ CREATE TABLE Orders (
     status NVARCHAR(50) DEFAULT 'Chờ xác nhận',
 	created_at DATETIME DEFAULT GETDATE(),
     updated_at DATETIME DEFAULT GETDATE(),
+	phone NVARCHAR(15),
+    address NVARCHAR(255),
     FOREIGN KEY (user_id) REFERENCES Users(id)
 );
 GO
@@ -105,9 +107,21 @@ CREATE TABLE OrderDetails (
 	productId INT,
 	created_at DATETIME DEFAULT GETDATE(),
     updated_at DATETIME DEFAULT GETDATE()
-
 );
 GO
+CREATE TABLE Cart (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    product_id INT NOT NULL,
+    quantity INT NOT NULL,
+    user_id INT ,
+    price DECIMAL(18, 2) NOT NULL,
+    FOREIGN KEY (product_id) REFERENCES Products(id),
+    FOREIGN KEY (user_id) REFERENCES Users(id),
+	created_at DATETIME DEFAULT GETDATE(),
+    updated_at DATETIME DEFAULT GETDATE()
+);
+GO
+--Bang Details
 CREATE TABLE Details (
     id INT IDENTITY(1,1) PRIMARY KEY, 
     ScreenSize NVARCHAR(50) NULL, -- Screen size
