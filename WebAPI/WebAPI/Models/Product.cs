@@ -4,9 +4,9 @@ using WebAPI.Controllers;
 
 namespace WebAPI.Models;
 
-public partial class Product : BaseEntity
+public partial class Product : BaseEntity,IHasImage
 {
-    
+  
     public string Name { get; set; } = null!;
 
     public string? Description { get; set; }
@@ -17,9 +17,7 @@ public partial class Product : BaseEntity
 
     public int CategoryId { get; set; }
 
-    public DateTime? CreatedAt { get; set; }
-
-    public DateTime? UpdatedAt { get; set; }
+   
 
     public byte[]? Image { get; set; }
 
@@ -27,5 +25,5 @@ public partial class Product : BaseEntity
 
     public int? Rate { get; set; }
 
-     
+    
 }

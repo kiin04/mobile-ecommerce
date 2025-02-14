@@ -6,7 +6,7 @@ namespace WebAPI.Models;
 
 public partial class Detail : BaseEntity
 {
-    
+   
     public string? ScreenSize { get; set; }
 
     public string? ScreenTechnology { get; set; }
@@ -34,5 +34,4 @@ public partial class Detail : BaseEntity
     public string? ChargingTechnology { get; set; }
 
     public int? ProductId { get; set; }
-
 }

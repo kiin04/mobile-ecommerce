@@ -4,7 +4,7 @@ using WebAPI.Controllers;
 
 namespace WebAPI.Models;
 
-public partial class User : BaseEntity
+public partial class User : BaseEntity, IHasImage
 {
    
 
@@ -24,5 +24,5 @@ public partial class User : BaseEntity
 
     public int? Account { get; set; }
 
-     
+    
 }

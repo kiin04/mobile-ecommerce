@@ -59,14 +59,22 @@ namespace WebAPI.Factory
             var originalCreatedAt = existingEntity.CreatedAt;
             try
             {
-               
-                if (entity is IHasImage entityWithImage && image != null)
+
+                if (entity is IHasImage entityWithImage)
                 {
-                    using var memoryStream = new MemoryStream();
-                    await image.CopyToAsync(memoryStream);
-                    entityWithImage.Image = memoryStream.ToArray();
+                    if (image != null)
+                    {
+                        using var memoryStream = new MemoryStream();
+                        await image.CopyToAsync(memoryStream);
+                        entityWithImage.Image = memoryStream.ToArray();
+                    }
+                    else
+                    {
+                        // Giữ nguyên ảnh cũ trước khi cập nhật
+                        entityWithImage.Image = ((IHasImage)existingEntity).Image;
+                    }
                 }
-             
+
                 TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
                 entity.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);
 

@@ -4,15 +4,15 @@ using WebAPI.Controllers;
 
 namespace WebAPI.Models;
 
-public partial class Category : BaseEntity
+public partial class Category : BaseEntity, IHasImage
 {
+   
 
     public string Name { get; set; } = null!;
 
     public string? Description { get; set; }
 
-    
-
     public byte[]? Image { get; set; }
-   
+
+    
 }

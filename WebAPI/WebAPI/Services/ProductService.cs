@@ -15,42 +15,6 @@ namespace WebAPI.Services
             _context = context;
             _colorSizesService = colorSizesService;
         }
-
-
-        public async Task<IActionResult> AddProduct([FromForm] Product productDto, IFormFile? image)
-        {
-            try
-            {
-                byte[]? imageData = null;
-
-                // Kiểm tra nếu có tệp ảnh được tải lên
-                if (image != null && image.Length > 0)
-                {
-                    using var memoryStream = new MemoryStream();
-                    await image.CopyToAsync(memoryStream);
-                    imageData = memoryStream.ToArray();
-                }
-
-                var product = new Product
-                {
-                    Name = productDto.Name,
-                    Price = productDto.Price,
-                    Unit = productDto.Unit,
-                    Image = imageData, // Lưu ảnh dưới dạng byte[]
-                   
-                };
-
-                _context.Products.Add(product);
-                await _context.SaveChangesAsync();
-
-                return new OkObjectResult(new { message = "Sản phẩm đã được thêm thành công!", product });
-            }
-            catch (Exception ex)
-            {
-                return new BadRequestObjectResult(new { message = "Lỗi khi thêm sản phẩm", error = ex.Message });
-            }
-        }
-
         public async Task DeleteDependencieAsync(int productId)
         {
             var product = await _context.Products.FindAsync(productId);
@@ -65,7 +29,10 @@ namespace WebAPI.Services
             {
                 await Task.WhenAll(colorSizeIds.Select(colorSizeId => _colorSizesService.DeleteDependencieAsync(colorSizeId)));
             }
-
+          
+            await _context.Details
+                .Where(dt => dt.ProductId == productId)
+                .ExecuteDeleteAsync();
             _context.Products.Remove(product);
             await _context.SaveChangesAsync();
         }

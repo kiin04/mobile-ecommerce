@@ -65,7 +65,10 @@ namespace WebAPI.Controllers
                 {
                     return BadRequest(new { message = "CreatedAt không được để trống." });
                 }
-                await _ProductRepository.UpdateAsync(product, image);
+                if(image != null)
+                    await _ProductRepository.UpdateAsync(product, image);
+                else
+                    await _ProductRepository.UpdateAsync(product);
                 return NoContent();
             }
             catch (DbUpdateConcurrencyException ex)

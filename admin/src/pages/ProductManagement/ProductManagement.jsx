@@ -4,6 +4,7 @@ import { Edit, Delete, Visibility } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { BASE_URL,API_URL } from '../../config.js';
+import { useQuery } from "@tanstack/react-query";
 
 const ProductManagement = () => {
   const navigate = useNavigate();
@@ -19,7 +20,7 @@ const ProductManagement = () => {
         const response = await axios.get(`${API_URL}/api/Product`);
         if (response.status === 200) {
           const data = response.data;
-          console.log('Fetched products:', data); // Log the products
+          //console.log('Fetched products:', data); // Log the products
           setProducts(data);
         } else {
           console.error(`Failed to fetch users: ${response.status} ${response.statusText}`);
@@ -30,6 +31,30 @@ const ProductManagement = () => {
     };
     fetchProducts();
   }, []);
+  const fetchApiColorSizes = async () => {
+    try {
+          const res = await axios.get(`${API_URL}/api/ColorSizes`);
+         // console.log('Fetched colors:', res.data);
+          return res.data; // Đảm bảo đây là một mảng
+      } catch (error) {
+          console.error('Error fetching data:', error);
+          throw error;
+      }
+  };
+
+const queryColorSizes = useQuery({ queryKey: ['colorsizes'], queryFn: fetchApiColorSizes });
+const listColorSizes = queryColorSizes.data || [];
+//console.log('listColorSizes: ',listColorSizes)
+const getStock =  (id) => {
+  let stock = 0;
+  if (Array.isArray(listColorSizes)) {
+      stock = listColorSizes
+          .filter(item => item.productId === id) 
+          .reduce((total, item) => total + (item.quantity || 0), 0); 
+  }
+
+  return stock;
+};
 
   const handleViewDetails = (product) => {
     setSelectedProduct(product);
@@ -125,7 +150,7 @@ const ProductManagement = () => {
             <TableRow>
               <TableCell>Mã SP</TableCell>
               <TableCell>Tên sản phẩm</TableCell>
-              <TableCell>Màu</TableCell>
+              <TableCell>Đã bán</TableCell>
               <TableCell>Số lượng</TableCell>
               <TableCell>Giá (VNĐ)</TableCell>
               <TableCell>Hành động</TableCell>
@@ -136,8 +161,8 @@ const ProductManagement = () => {
               <TableRow key={product.id}>
                 <TableCell>{product.id}</TableCell>
                 <TableCell>{product.name}</TableCell>
-                <TableCell>{product.color}</TableCell>
-                <TableCell>{product.quantity}</TableCell>
+                <TableCell>{product.sold}</TableCell>
+                <TableCell>{getStock(product.id) > 0 ? getStock(product.id) : (<p style={{color:"red"}}>Hết hàng</p>) }</TableCell>
                 <TableCell>{formatPrice(product.price)}</TableCell>
                 <TableCell>
                   <IconButton onClick={() => handleViewDetails(product)} color="primary">
@@ -213,10 +238,12 @@ const ProductManagement = () => {
                     <strong>Mã sản phẩm:</strong> {selectedProduct.id}
                   </Typography>
                   <Typography>
-                    <strong>Màu sắc:</strong> {selectedProduct.color}
+                    <strong>Đá bán:</strong> {selectedProduct.sold}
                   </Typography>
                   <Typography>
-                    <strong>Số lượng:</strong> {selectedProduct.quantity}
+                    <strong>Số lượng:</strong> {getStock(selectedProduct.id) > 0 ? 
+                    getStock(selectedProduct.id) 
+                    : (<p style={{color:"red"}}>Hết hàng</p>) }
                   </Typography>
                   <Typography>
                     <strong>Đơn giá:</strong> {formatPrice(selectedProduct.price)}

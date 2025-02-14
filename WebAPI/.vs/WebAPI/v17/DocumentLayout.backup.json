@@ -1,114 +1,46 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "D:\\Web_API\\WebAPI\\",
+  "WorkspaceRootPath": "D:\\MobileEcommerce\\WebAPI\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|d:\\web_api\\webapi\\webapi\\controllers\\detailscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|solutionrelative:webapi\\controllers\\detailscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|d:\\web_api\\webapi\\webapi\\controllers\\orderdetailscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|solutionrelative:webapi\\controllers\\orderdetailscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|d:\\web_api\\webapi\\webapi\\models\\csdlbanhang.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|solutionrelative:webapi\\models\\csdlbanhang.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|d:\\web_api\\webapi\\webapi\\models\\role.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|solutionrelative:webapi\\models\\role.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|d:\\web_api\\webapi\\webapi\\models\\databasemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|solutionrelative:webapi\\models\\databasemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|d:\\web_api\\webapi\\webapi\\models\\account.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|solutionrelative:webapi\\models\\account.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|d:\\web_api\\webapi\\webapi\\models\\category.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|solutionrelative:webapi\\models\\category.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|d:\\web_api\\webapi\\webapi\\models\\colorsize.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|d:\\mobileecommerce\\webapi\\webapi\\models\\colorsize.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|solutionrelative:webapi\\models\\colorsize.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|d:\\web_api\\webapi\\webapi\\models\\detail.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|solutionrelative:webapi\\models\\detail.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|d:\\mobileecommerce\\webapi\\webapi\\models\\csdlbanhang.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|solutionrelative:webapi\\models\\csdlbanhang.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|d:\\web_api\\webapi\\webapi\\models\\ihasimage.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|solutionrelative:webapi\\models\\ihasimage.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|d:\\web_api\\webapi\\webapi\\models\\order.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|solutionrelative:webapi\\models\\order.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|d:\\web_api\\webapi\\webapi\\models\\orderdetail.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|solutionrelative:webapi\\models\\orderdetail.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|d:\\web_api\\webapi\\webapi\\models\\promotion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|solutionrelative:webapi\\models\\promotion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|d:\\web_api\\webapi\\webapi\\models\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|solutionrelative:webapi\\models\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|d:\\web_api\\webapi\\webapi\\models\\product.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|d:\\mobileecommerce\\webapi\\webapi\\models\\product.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|solutionrelative:webapi\\models\\product.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|d:\\web_api\\webapi\\webapi\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|solutionrelative:webapi\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|d:\\web_api\\webapi\\webapi\\dto\\productdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|solutionrelative:webapi\\dto\\productdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|d:\\web_api\\webapi\\webapi\\controllers\\colorsizescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|d:\\mobileecommerce\\webapi\\webapi\\controllers\\colorsizescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|solutionrelative:webapi\\controllers\\colorsizescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|d:\\web_api\\webapi\\webapi\\services\\colorsizesservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|solutionrelative:webapi\\services\\colorsizesservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|d:\\web_api\\webapi\\webapi\\factory\\repository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|d:\\mobileecommerce\\webapi\\webapi\\factory\\repository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|solutionrelative:webapi\\factory\\repository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|d:\\web_api\\webapi\\webapi\\controllers\\productcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|d:\\mobileecommerce\\webapi\\webapi\\controllers\\productcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|solutionrelative:webapi\\controllers\\productcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|d:\\web_api\\webapi\\webapi\\dto\\categorydto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|solutionrelative:webapi\\dto\\categorydto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|d:\\mobileecommerce\\webapi\\webapi\\services\\productservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|solutionrelative:webapi\\services\\productservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|d:\\web_api\\webapi\\webapi\\factory\\irepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|solutionrelative:webapi\\factory\\irepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|d:\\mobileecommerce\\webapi\\webapi\\controllers\\detailscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|solutionrelative:webapi\\controllers\\detailscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|d:\\web_api\\webapi\\webapi\\controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|solutionrelative:webapi\\controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|d:\\mobileecommerce\\webapi\\webapi\\controllers\\cartcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|solutionrelative:webapi\\controllers\\cartcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|d:\\web_api\\webapi\\webapi\\controllers\\orderscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|d:\\mobileecommerce\\webapi\\webapi\\controllers\\orderscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|solutionrelative:webapi\\controllers\\orderscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|d:\\web_api\\webapi\\webapi\\controllers\\categoriescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|solutionrelative:webapi\\controllers\\categoriescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|d:\\web_api\\webapi\\webapi\\services\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|solutionrelative:webapi\\services\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -118,348 +50,137 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 2,
           "Children": [
             {
               "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "CSDLBanHang.cs",
+              "DocumentMoniker": "D:\\MobileEcommerce\\WebAPI\\WebAPI\\Models\\CSDLBanHang.cs",
+              "RelativeDocumentMoniker": "WebAPI\\Models\\CSDLBanHang.cs",
+              "ToolTip": "D:\\MobileEcommerce\\WebAPI\\WebAPI\\Models\\CSDLBanHang.cs",
+              "RelativeToolTip": "WebAPI\\Models\\CSDLBanHang.cs",
+              "ViewState": "AgIAAHAAAAAAAAAAAAAqwHkAAAAoAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-14T11:01:08.756Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Product.cs",
+              "DocumentMoniker": "D:\\MobileEcommerce\\WebAPI\\WebAPI\\Models\\Product.cs",
+              "RelativeDocumentMoniker": "WebAPI\\Models\\Product.cs",
+              "ToolTip": "D:\\MobileEcommerce\\WebAPI\\WebAPI\\Models\\Product.cs",
+              "RelativeToolTip": "WebAPI\\Models\\Product.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAASAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-14T11:00:54.188Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "DetailsController.cs",
-              "DocumentMoniker": "D:\\Web_API\\WebAPI\\WebAPI\\Controllers\\DetailsController.cs",
-              "RelativeDocumentMoniker": "WebAPI\\Controllers\\DetailsController.cs",
-              "ToolTip": "D:\\Web_API\\WebAPI\\WebAPI\\Controllers\\DetailsController.cs",
-              "RelativeToolTip": "WebAPI\\Controllers\\DetailsController.cs",
-              "ViewState": "AgIAAD0AAAAAAAAAAAAkwAsAAAArAAAAAAAAAA==",
+              "Title": "ColorSize.cs",
+              "DocumentMoniker": "D:\\MobileEcommerce\\WebAPI\\WebAPI\\Models\\ColorSize.cs",
+              "RelativeDocumentMoniker": "WebAPI\\Models\\ColorSize.cs",
+              "ToolTip": "D:\\MobileEcommerce\\WebAPI\\WebAPI\\Models\\ColorSize.cs",
+              "RelativeToolTip": "WebAPI\\Models\\ColorSize.cs",
+              "ViewState": "AgIAAAkAAAAAAAAAAAAmwBIAAAATAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-12T05:45:19.944Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "DatabaseManager.cs",
-              "DocumentMoniker": "D:\\Web_API\\WebAPI\\WebAPI\\Models\\DatabaseManager.cs",
-              "RelativeDocumentMoniker": "WebAPI\\Models\\DatabaseManager.cs",
-              "ToolTip": "D:\\Web_API\\WebAPI\\WebAPI\\Models\\DatabaseManager.cs",
-              "RelativeToolTip": "WebAPI\\Models\\DatabaseManager.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-12T05:42:56.001Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 12,
-              "Title": "Promotion.cs",
-              "DocumentMoniker": "D:\\Web_API\\WebAPI\\WebAPI\\Models\\Promotion.cs",
-              "RelativeDocumentMoniker": "WebAPI\\Models\\Promotion.cs",
-              "ToolTip": "D:\\Web_API\\WebAPI\\WebAPI\\Models\\Promotion.cs",
-              "RelativeToolTip": "WebAPI\\Models\\Promotion.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAGAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-12T05:42:08.343Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 11,
-              "Title": "OrderDetail.cs",
-              "DocumentMoniker": "D:\\Web_API\\WebAPI\\WebAPI\\Models\\OrderDetail.cs",
-              "RelativeDocumentMoniker": "WebAPI\\Models\\OrderDetail.cs",
-              "ToolTip": "D:\\Web_API\\WebAPI\\WebAPI\\Models\\OrderDetail.cs",
-              "RelativeToolTip": "WebAPI\\Models\\OrderDetail.cs",
-              "ViewState": "AgIAAAgAAAAAAAAAAAAAwBMAAAADAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-12T05:41:48.585Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 10,
-              "Title": "Order.cs",
-              "DocumentMoniker": "D:\\Web_API\\WebAPI\\WebAPI\\Models\\Order.cs",
-              "RelativeDocumentMoniker": "WebAPI\\Models\\Order.cs",
-              "ToolTip": "D:\\Web_API\\WebAPI\\WebAPI\\Models\\Order.cs",
-              "RelativeToolTip": "WebAPI\\Models\\Order.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAAEAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-12T05:41:24.942Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "IHasImage.cs",
-              "DocumentMoniker": "D:\\Web_API\\WebAPI\\WebAPI\\Models\\IHasImage.cs",
-              "RelativeDocumentMoniker": "WebAPI\\Models\\IHasImage.cs",
-              "ToolTip": "D:\\Web_API\\WebAPI\\WebAPI\\Models\\IHasImage.cs",
-              "RelativeToolTip": "WebAPI\\Models\\IHasImage.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-12T05:41:23.91Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "Detail.cs",
-              "DocumentMoniker": "D:\\Web_API\\WebAPI\\WebAPI\\Models\\Detail.cs",
-              "RelativeDocumentMoniker": "WebAPI\\Models\\Detail.cs",
-              "ToolTip": "D:\\Web_API\\WebAPI\\WebAPI\\Models\\Detail.cs",
-              "RelativeToolTip": "WebAPI\\Models\\Detail.cs",
-              "ViewState": "AgIAABIAAAAAAAAAAAAowAYAAAAcAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-12T05:40:57.79Z",
+              "WhenOpened": "2025-02-14T11:00:33.465Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 7,
-              "Title": "ColorSize.cs",
-              "DocumentMoniker": "D:\\Web_API\\WebAPI\\WebAPI\\Models\\ColorSize.cs",
-              "RelativeDocumentMoniker": "WebAPI\\Models\\ColorSize.cs",
-              "ToolTip": "D:\\Web_API\\WebAPI\\WebAPI\\Models\\ColorSize.cs",
-              "RelativeToolTip": "WebAPI\\Models\\ColorSize.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAABAAAAAAAAAA==",
+              "Title": "DetailsController.cs",
+              "DocumentMoniker": "D:\\MobileEcommerce\\WebAPI\\WebAPI\\Controllers\\DetailsController.cs",
+              "RelativeDocumentMoniker": "WebAPI\\Controllers\\DetailsController.cs",
+              "ToolTip": "D:\\MobileEcommerce\\WebAPI\\WebAPI\\Controllers\\DetailsController.cs",
+              "RelativeToolTip": "WebAPI\\Controllers\\DetailsController.cs",
+              "ViewState": "AgIAAEYAAAAAAAAAAAAkwAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-12T05:40:47.033Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "Category.cs",
-              "DocumentMoniker": "D:\\Web_API\\WebAPI\\WebAPI\\Models\\Category.cs",
-              "RelativeDocumentMoniker": "WebAPI\\Models\\Category.cs",
-              "ToolTip": "D:\\Web_API\\WebAPI\\WebAPI\\Models\\Category.cs",
-              "RelativeToolTip": "WebAPI\\Models\\Category.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAEAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-12T05:40:05.083Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 15,
-              "Title": "appsettings.json",
-              "DocumentMoniker": "D:\\Web_API\\WebAPI\\WebAPI\\appsettings.json",
-              "RelativeDocumentMoniker": "WebAPI\\appsettings.json",
-              "ToolTip": "D:\\Web_API\\WebAPI\\WebAPI\\appsettings.json",
-              "RelativeToolTip": "WebAPI\\appsettings.json",
-              "ViewState": "AgIAAAYAAAAAAAAAAAAAAA8AAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-02-12T05:39:25.173Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 18,
-              "Title": "ColorSizesService.cs",
-              "DocumentMoniker": "D:\\Web_API\\WebAPI\\WebAPI\\Services\\ColorSizesService.cs",
-              "RelativeDocumentMoniker": "WebAPI\\Services\\ColorSizesService.cs",
-              "ToolTip": "D:\\Web_API\\WebAPI\\WebAPI\\Services\\ColorSizesService.cs",
-              "RelativeToolTip": "WebAPI\\Services\\ColorSizesService.cs",
-              "ViewState": "AgIAABUAAAAAAAAAAAAvwBwAAAA8AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-11T18:33:50.685Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 21,
-              "Title": "CategoryDTO.cs",
-              "DocumentMoniker": "D:\\Web_API\\WebAPI\\WebAPI\\DTO\\CategoryDTO.cs",
-              "RelativeDocumentMoniker": "WebAPI\\DTO\\CategoryDTO.cs",
-              "ToolTip": "D:\\Web_API\\WebAPI\\WebAPI\\DTO\\CategoryDTO.cs",
-              "RelativeToolTip": "WebAPI\\DTO\\CategoryDTO.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAwAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-11T18:10:59.325Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 16,
-              "Title": "ProductDTO.cs",
-              "DocumentMoniker": "D:\\Web_API\\WebAPI\\WebAPI\\DTO\\ProductDTO.cs",
-              "RelativeDocumentMoniker": "WebAPI\\DTO\\ProductDTO.cs",
-              "ToolTip": "D:\\Web_API\\WebAPI\\WebAPI\\DTO\\ProductDTO.cs",
-              "RelativeToolTip": "WebAPI\\DTO\\ProductDTO.cs",
-              "ViewState": "AgIAAAIAAAAAAAAAAAAmwAwAAAAwAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-11T17:44:32.374Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 24,
-              "Title": "OrdersController.cs",
-              "DocumentMoniker": "D:\\Web_API\\WebAPI\\WebAPI\\Controllers\\OrdersController.cs",
-              "RelativeDocumentMoniker": "WebAPI\\Controllers\\OrdersController.cs",
-              "ToolTip": "D:\\Web_API\\WebAPI\\WebAPI\\Controllers\\OrdersController.cs",
-              "RelativeToolTip": "WebAPI\\Controllers\\OrdersController.cs",
-              "ViewState": "AgIAACoAAAAAAAAAAAAQwDQAAAAzAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-11T16:34:43.411Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "OrderDetailsController.cs",
-              "DocumentMoniker": "D:\\Web_API\\WebAPI\\WebAPI\\Controllers\\OrderDetailsController.cs",
-              "RelativeDocumentMoniker": "WebAPI\\Controllers\\OrderDetailsController.cs",
-              "ToolTip": "D:\\Web_API\\WebAPI\\WebAPI\\Controllers\\OrderDetailsController.cs",
-              "RelativeToolTip": "WebAPI\\Controllers\\OrderDetailsController.cs",
-              "ViewState": "AgIAACoAAAAAAAAAAAAzwDcAAAA5AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-11T16:34:38.682Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 17,
-              "Title": "ColorSizesController.cs",
-              "DocumentMoniker": "D:\\Web_API\\WebAPI\\WebAPI\\Controllers\\ColorSizesController.cs",
-              "RelativeDocumentMoniker": "WebAPI\\Controllers\\ColorSizesController.cs",
-              "ToolTip": "D:\\Web_API\\WebAPI\\WebAPI\\Controllers\\ColorSizesController.cs",
-              "RelativeToolTip": "WebAPI\\Controllers\\ColorSizesController.cs",
-              "ViewState": "AgIAACEAAAAAAAAAAAAvwC0AAAAPAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-11T16:33:16.932Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 22,
-              "Title": "IRepository.cs",
-              "DocumentMoniker": "D:\\Web_API\\WebAPI\\WebAPI\\Factory\\IRepository.cs",
-              "RelativeDocumentMoniker": "WebAPI\\Factory\\IRepository.cs",
-              "ToolTip": "D:\\Web_API\\WebAPI\\WebAPI\\Factory\\IRepository.cs",
-              "RelativeToolTip": "WebAPI\\Factory\\IRepository.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAZAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-11T16:14:08.362Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 19,
-              "Title": "Repository.cs",
-              "DocumentMoniker": "D:\\Web_API\\WebAPI\\WebAPI\\Factory\\Repository.cs",
-              "RelativeDocumentMoniker": "WebAPI\\Factory\\Repository.cs",
-              "ToolTip": "D:\\Web_API\\WebAPI\\WebAPI\\Factory\\Repository.cs",
-              "RelativeToolTip": "WebAPI\\Factory\\Repository.cs",
-              "ViewState": "AgIAAAwAAAAAAAAAAAAmwBYAAAAcAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-11T16:14:12.091Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 25,
-              "Title": "CategoriesController.cs",
-              "DocumentMoniker": "D:\\Web_API\\WebAPI\\WebAPI\\Controllers\\CategoriesController.cs",
-              "RelativeDocumentMoniker": "WebAPI\\Controllers\\CategoriesController.cs",
-              "ToolTip": "D:\\Web_API\\WebAPI\\WebAPI\\Controllers\\CategoriesController.cs",
-              "RelativeToolTip": "WebAPI\\Controllers\\CategoriesController.cs",
-              "ViewState": "AgIAACwAAAAAAAAAAAAgwDoAAAA2AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-11T16:14:01.203Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "CSDLBanHang.cs",
-              "DocumentMoniker": "D:\\Web_API\\WebAPI\\WebAPI\\Models\\CSDLBanHang.cs",
-              "RelativeDocumentMoniker": "WebAPI\\Models\\CSDLBanHang.cs",
-              "ToolTip": "D:\\Web_API\\WebAPI\\WebAPI\\Models\\CSDLBanHang.cs",
-              "RelativeToolTip": "WebAPI\\Models\\CSDLBanHang.cs",
-              "ViewState": "AgIAABUBAAAAAAAAAAAuwCQBAAAhAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-11T14:56:46.121Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 14,
-              "Title": "Product.cs",
-              "DocumentMoniker": "D:\\Web_API\\WebAPI\\WebAPI\\Models\\Product.cs",
-              "RelativeDocumentMoniker": "WebAPI\\Models\\Product.cs",
-              "ToolTip": "D:\\Web_API\\WebAPI\\WebAPI\\Models\\Product.cs",
-              "RelativeToolTip": "WebAPI\\Models\\Product.cs",
-              "ViewState": "AgIAAA4AAAAAAAAAAAAgwB0AAAAFAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-11T14:56:03.729Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "Account.cs",
-              "DocumentMoniker": "D:\\Web_API\\WebAPI\\WebAPI\\Models\\Account.cs",
-              "RelativeDocumentMoniker": "WebAPI\\Models\\Account.cs",
-              "ToolTip": "D:\\Web_API\\WebAPI\\WebAPI\\Models\\Account.cs",
-              "RelativeToolTip": "WebAPI\\Models\\Account.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAcAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-11T14:55:07.563Z",
+              "WhenOpened": "2025-02-14T09:04:39.536Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 3,
-              "Title": "Role.cs",
-              "DocumentMoniker": "D:\\Web_API\\WebAPI\\WebAPI\\Models\\Role.cs",
-              "RelativeDocumentMoniker": "WebAPI\\Models\\Role.cs",
-              "ToolTip": "D:\\Web_API\\WebAPI\\WebAPI\\Models\\Role.cs",
-              "RelativeToolTip": "WebAPI\\Models\\Role.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAZAAAAAAAAAA==",
+              "Title": "ColorSizesController.cs",
+              "DocumentMoniker": "D:\\MobileEcommerce\\WebAPI\\WebAPI\\Controllers\\ColorSizesController.cs",
+              "RelativeDocumentMoniker": "WebAPI\\Controllers\\ColorSizesController.cs",
+              "ToolTip": "D:\\MobileEcommerce\\WebAPI\\WebAPI\\Controllers\\ColorSizesController.cs",
+              "RelativeToolTip": "WebAPI\\Controllers\\ColorSizesController.cs",
+              "ViewState": "AgIAAEgAAAAAAAAAAAAowBEAAAAgAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-11T14:54:25.311Z",
+              "WhenOpened": "2025-02-14T08:59:55.777Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 23,
-              "Title": "UserController.cs",
-              "DocumentMoniker": "D:\\Web_API\\WebAPI\\WebAPI\\Controllers\\UserController.cs",
-              "RelativeDocumentMoniker": "WebAPI\\Controllers\\UserController.cs",
-              "ToolTip": "D:\\Web_API\\WebAPI\\WebAPI\\Controllers\\UserController.cs",
-              "RelativeToolTip": "WebAPI\\Controllers\\UserController.cs",
-              "ViewState": "AgIAACcAAAAAAAAAAAAQwDIAAAAyAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-11T14:50:51.605Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 20,
+              "DocumentIndex": 5,
               "Title": "ProductController.cs",
-              "DocumentMoniker": "D:\\Web_API\\WebAPI\\WebAPI\\Controllers\\ProductController.cs",
+              "DocumentMoniker": "D:\\MobileEcommerce\\WebAPI\\WebAPI\\Controllers\\ProductController.cs",
               "RelativeDocumentMoniker": "WebAPI\\Controllers\\ProductController.cs",
-              "ToolTip": "D:\\Web_API\\WebAPI\\WebAPI\\Controllers\\ProductController.cs",
+              "ToolTip": "D:\\MobileEcommerce\\WebAPI\\WebAPI\\Controllers\\ProductController.cs",
               "RelativeToolTip": "WebAPI\\Controllers\\ProductController.cs",
-              "ViewState": "AgIAADEAAAAAAAAAAAAiwEEAAAA+AAAAAAAAAA==",
+              "ViewState": "AgIAADwAAAAAAAAAAAAWwE8AAABFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-11T14:49:37Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 13,
-              "Title": "User.cs",
-              "DocumentMoniker": "D:\\Web_API\\WebAPI\\WebAPI\\Models\\User.cs",
-              "RelativeDocumentMoniker": "WebAPI\\Models\\User.cs",
-              "ToolTip": "D:\\Web_API\\WebAPI\\WebAPI\\Models\\User.cs",
-              "RelativeToolTip": "WebAPI\\Models\\User.cs",
-              "ViewState": "AgIAAAcAAAAAAAAAAAAjwBoAAAAFAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-11T13:53:54.404Z",
+              "WhenOpened": "2025-02-14T08:59:16.872Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 26,
-              "Title": "UserService.cs",
-              "DocumentMoniker": "D:\\Web_API\\WebAPI\\WebAPI\\Services\\UserService.cs",
-              "RelativeDocumentMoniker": "WebAPI\\Services\\UserService.cs",
-              "ToolTip": "D:\\Web_API\\WebAPI\\WebAPI\\Services\\UserService.cs",
-              "RelativeToolTip": "WebAPI\\Services\\UserService.cs",
-              "ViewState": "AgIAAAoAAAAAAAAAAAAzwAAAAAAAAAAAAAAAAA==",
+              "DocumentIndex": 4,
+              "Title": "Repository.cs",
+              "DocumentMoniker": "D:\\MobileEcommerce\\WebAPI\\WebAPI\\Factory\\Repository.cs",
+              "RelativeDocumentMoniker": "WebAPI\\Factory\\Repository.cs",
+              "ToolTip": "D:\\MobileEcommerce\\WebAPI\\WebAPI\\Factory\\Repository.cs",
+              "RelativeToolTip": "WebAPI\\Factory\\Repository.cs",
+              "ViewState": "AgIAAEIAAAAAAAAAAAAowEwAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-11T12:51:11.39Z"
+              "WhenOpened": "2025-02-14T08:58:49.993Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "ProductService.cs",
+              "DocumentMoniker": "D:\\MobileEcommerce\\WebAPI\\WebAPI\\Services\\ProductService.cs",
+              "RelativeDocumentMoniker": "WebAPI\\Services\\ProductService.cs",
+              "ToolTip": "D:\\MobileEcommerce\\WebAPI\\WebAPI\\Services\\ProductService.cs",
+              "RelativeToolTip": "WebAPI\\Services\\ProductService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-14T08:49:05.999Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "CartController.cs",
+              "DocumentMoniker": "D:\\MobileEcommerce\\WebAPI\\WebAPI\\Controllers\\CartController.cs",
+              "RelativeDocumentMoniker": "WebAPI\\Controllers\\CartController.cs",
+              "ToolTip": "D:\\MobileEcommerce\\WebAPI\\WebAPI\\Controllers\\CartController.cs",
+              "RelativeToolTip": "WebAPI\\Controllers\\CartController.cs",
+              "ViewState": "AgIAAEAAAAAAAAAAAAAkwFQAAAANAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-14T08:47:59.771Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "OrdersController.cs",
+              "DocumentMoniker": "D:\\MobileEcommerce\\WebAPI\\WebAPI\\Controllers\\OrdersController.cs",
+              "RelativeDocumentMoniker": "WebAPI\\Controllers\\OrdersController.cs",
+              "ToolTip": "D:\\MobileEcommerce\\WebAPI\\WebAPI\\Controllers\\OrdersController.cs",
+              "RelativeToolTip": "WebAPI\\Controllers\\OrdersController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAhAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-14T08:47:38.982Z",
+              "EditorCaption": ""
             }
           ]
         }
