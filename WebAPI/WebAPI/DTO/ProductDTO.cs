@@ -10,6 +10,7 @@
         public int CategoryId { get; set; }
         public int Rate { get; set; }
         public int Sold { get; set; }
+        public string Brand { get; set; }
         public DateTime? CreatedAt { get; set; }
     }
 }

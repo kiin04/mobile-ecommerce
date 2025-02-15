@@ -1,5 +1,4 @@
-﻿using WebAPI.Controllers;
-using WebAPI.Models;
+﻿using WebAPI.Models;
 
 namespace WebAPI.Factory
 {

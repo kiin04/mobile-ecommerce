@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using WebAPI.Controllers;
 using WebAPI.Models;
 
 namespace WebAPI.Factory

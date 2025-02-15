@@ -3,6 +3,10 @@ import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, 
 import { Edit, Delete, Visibility } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { BASE_URL } from '../../config.js';
+import apiConfigInstance from '../../../SingletonParttern.js';
+const API_URL = apiConfigInstance.getApiUrl();
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
 
 const OrderManagement = () => {
   const navigate = useNavigate();
@@ -15,9 +19,10 @@ const OrderManagement = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await fetch(`${BASE_URL}/api/orders`);
-        if (response.ok) {
-          const data = await response.json();
+        const response = await axios.get(`${API_URL}/api/Orders`);
+        console.log('res order', response);
+        if (response.status == 200) {
+          const data = response.data;
           setOrders(data);
         } else {
           console.error('Failed to fetch orders');
@@ -71,7 +76,7 @@ const OrderManagement = () => {
         return { color: 'blue' };
       case 'Đã xác nhận':
         return { color: 'green' };
-      case 'Đã giao':
+      case 'Đã giao hàng':
         return { color: 'green' };
       case 'Đã hủy':
         return { color: 'red' };
@@ -81,17 +86,23 @@ const OrderManagement = () => {
   };
 
   // Filter orders based on the search query
-  const filteredOrders = orders.filter(order =>
-    order.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    order.customerName.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // const filteredOrders = orders.filter(order =>
+  //   order.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  //   order.customerName.toLowerCase().includes(searchQuery.toLowerCase())
+  // );
 
   // Tính toán phân trang
-  const totalPages = Math.ceil(filteredOrders.length / rowsPerPage);
-  const paginatedOrders = filteredOrders.slice(
+  // const totalPages = Math.ceil(filteredOrders.length / rowsPerPage);
+  // const paginatedOrders = filteredOrders.slice(
+  //   (page - 1) * rowsPerPage,
+  //   page * rowsPerPage
+  // );
+  const totalPages = Math.ceil(orders.length / rowsPerPage);
+  const paginatedOrders = orders.slice(
     (page - 1) * rowsPerPage,
     page * rowsPerPage
   );
+
 
   const handlePageChange = (event, newPage) => {
     setPage(newPage);
@@ -221,11 +232,11 @@ const OrderManagement = () => {
                     borderRadius: 1
                   }}
                 >
-                  <Typography><strong>Tên khách hàng:</strong> {selectedOrder.customerName}</Typography>
-                  <Typography><strong>Địa chỉ:</strong> {selectedOrder.shippingAddress}</Typography>
-                  <Typography><strong>Ngày đặt:</strong> {new Date(selectedOrder.orderDate).toLocaleDateString('vi-VN')}</Typography>
-                  <Typography><strong>Phương thức thanh toán:</strong> {selectedOrder.paymentMethod}</Typography>
-                  <Typography><strong>Ghi chú:</strong> {selectedOrder.notes}</Typography>
+                  <Typography><strong>Tên khách hàng:</strong> {selectedOrder?.customerName}</Typography>
+                  <Typography><strong>Địa chỉ:</strong> {selectedOrder?.shippingAddress}</Typography>
+                  <Typography><strong>Ngày đặt:</strong> {new Date(selectedOrder?.orderDate).toLocaleDateString('vi-VN')}</Typography>
+                  <Typography><strong>Phương thức thanh toán:</strong> {selectedOrder?.paymentMethod}</Typography>
+                  <Typography><strong>Ghi chú:</strong> {selectedOrder?.notes}</Typography>
                 </Box>
               </Box>
 
@@ -243,7 +254,7 @@ const OrderManagement = () => {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {selectedOrder.items.map((item) => (
+                      {selectedOrder?.items.map((item) => (
                         <TableRow key={item.productId}>
                           <TableCell>{item.productId}</TableCell>
                           <TableCell>{item.quantity}</TableCell>

@@ -53,6 +53,35 @@ const ColorSize = ({ productId }) => {
       setNewColorSize({ color: '', size: '', quantity: '', price:'' }); // Reset form
     }
   });
+  // Mutation để cập nhật màu
+const updateMutation = useMutation({
+  mutationFn: updateColorSize,
+  onSuccess: () => {
+    queryClient.invalidateQueries(['colorsizes', productId]); // Refresh danh sách
+    setSelectedColor(null); // Đóng dialog sau khi cập nhật
+  },
+});
+
+// Mutation để xóa màu
+  const deleteMutation = useMutation({
+    mutationFn: deleteColorSize,
+    onSuccess: () => {
+      queryClient.invalidateQueries(['colorsizes', productId]); // Refresh danh sách
+      setSelectedColor(null); // Đóng dialog sau khi xóa
+    },
+  });
+  const handleUpdateColor = () => {
+    if (!selectedColor.color || !selectedColor.size || !selectedColor.quantity || !selectedColor.price) {
+      alert("Vui lòng nhập đầy đủ thông tin!");
+      return;
+    }
+    updateMutation.mutate(selectedColor);
+  };
+  const handleDeleteColor = () => {
+    if (window.confirm("Bạn có chắc muốn xóa phiên bản này?")) {
+      deleteMutation.mutate(selectedColor.id);
+    }
+  };
 
   const handleViewColor = (color) => {
     setSelectedColor(color);
@@ -97,7 +126,7 @@ const ColorSize = ({ productId }) => {
             >
               <CardContent>
                 <Typography variant="subtitle1" fontWeight="bold">
-                  Màu: {item.color} -{item.size}
+                  Màu: {item.color} - {item.size}
                 </Typography>
                 <Typography variant="body">Giá: {item.price}</Typography>
                 <Typography variant="body2">Số lượng: {item.quantity}</Typography>
@@ -113,25 +142,47 @@ const ColorSize = ({ productId }) => {
       )}
 
       {/* Dialog hiển thị chi tiết */}
-      <Dialog
-        open={Boolean(selectedColor)}
-        onClose={handleCloseDialog}
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogTitle>Chi tiết màu</DialogTitle>
-        <DialogContent>
-          <TextField label="Màu" value={selectedColor?.color || ''} fullWidth margin="normal" />
-          <TextField label="Phiên bản" value={selectedColor?.size || ''} fullWidth margin="normal" />
-          <TextField label="Số lượng" value={selectedColor?.quantity || ''} fullWidth margin="normal" />
-          <TextField label="Giá" value={selectedColor?.price || ''} fullWidth margin="normal" />
-          <Box display="flex" justifyContent="center" alignItems="center" gap={2} mt={2}>
-            <Button variant="contained">Cập nhật</Button>
-            <Button variant="contained" color="error">Xóa</Button>
-            <Button variant="outlined" color="secondary" onClick={handleCloseDialog}>Hủy</Button>
-          </Box>
-        </DialogContent>
-      </Dialog>
+      <Dialog open={Boolean(selectedColor)} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
+  <DialogTitle>Chi tiết màu</DialogTitle>
+  <DialogContent>
+    <TextField 
+      label="Màu" 
+      value={selectedColor?.color || ''} 
+      onChange={(e) => setSelectedColor({ ...selectedColor, color: e.target.value })}
+      fullWidth margin="normal" 
+    />
+    <TextField 
+      label="Phiên bản" 
+      value={selectedColor?.size || ''} 
+      onChange={(e) => setSelectedColor({ ...selectedColor, size: e.target.value })}
+      fullWidth margin="normal" 
+    />
+    <TextField 
+      label="Số lượng" 
+      type="number" 
+      value={selectedColor?.quantity || ''} 
+      onChange={(e) => setSelectedColor({ ...selectedColor, quantity: e.target.value })}
+      fullWidth margin="normal" 
+    />
+    <TextField 
+      label="Giá" 
+      type="number" 
+      value={selectedColor?.price || ''} 
+      onChange={(e) => setSelectedColor({ ...selectedColor, price: e.target.value })}
+      fullWidth margin="normal" 
+    />
+    <Box display="flex" justifyContent="center" alignItems="center" gap={2} mt={2}>
+      <Button variant="contained" onClick={handleUpdateColor} disabled={updateMutation.isLoading}>
+        {updateMutation.isLoading ? "Đang cập nhật..." : "Cập nhật"}
+      </Button>
+      <Button variant="contained" color="error" onClick={handleDeleteColor} disabled={deleteMutation.isLoading}>
+        {deleteMutation.isLoading ? "Đang xóa..." : "Xóa"}
+      </Button>
+      <Button variant="outlined" color="secondary" onClick={handleCloseDialog}>Hủy</Button>
+    </Box>
+  </DialogContent>
+</Dialog>
+
 
       {/* Dialog thêm màu mới */}
       <Dialog open={openAddDialog} onClose={() => setOpenAddDialog(false)} maxWidth="sm" fullWidth>

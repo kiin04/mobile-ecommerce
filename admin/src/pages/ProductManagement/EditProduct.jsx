@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Box, TextField, Button, Typography, Grid, CircularProgress, Dialog, DialogTitle, DialogContent, IconButton, Pagination } from '@mui/material';
+import { Box, TextField, Button, Typography, Grid, CircularProgress, MenuItem, DialogTitle, DialogContent, IconButton, Pagination } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
 import { BASE_URL, API_URL } from '../../config.js';
-import { Card, CardContent } from '@mui/material';
+import { useQuery } from "@tanstack/react-query";
 import ColorSize from '../../components/ColorSize.jsx';
+import Detail from '../../components/Detail.jsx';
+import axios from "axios";
 const EditProduct = () => {
   const { productId } = useParams();
   const navigate = useNavigate();
@@ -14,43 +16,30 @@ const EditProduct = () => {
   const [productImage, setProductImage] = useState( `data:image/jpeg;base64,${product?.image}`|| "");
   const [errors, setErrors] = useState({});
 
- 
-  // Bản đồ key sang nhãn có dấu
-  const cauHinhLabels = {
-    kichThuocManHinh: "Kích thước màn hình",
-    congNgheManHinh: "Công nghệ màn hình",
-    cameraSau: "Camera sau",
-    cameraTruoc: "Camera trước",
-    chipset: "Chipset",
-    gpu: "GPU",
-    congNgheNFC: "Công nghệ NFC",
-    dungLuongRAM: "Dung lượng RAM",
-    boNhoTrong: "Bộ nhớ trong",
-    pin: "Dung lượng pin",
-    theSIM: "Thẻ SIM",
-    doPhanGiaiManHinh: "Độ phân giải màn hình",
-    congSac: "Cổng sạc",
-    // Thêm các key khác nếu cần
+  const brandOptions = ['Apple', 'Samsung', 'Oppo', 'Xiaomi', 'Vivo', 'Realme', 'Huawei', 'Nokia', 'LG', 'Lenovo', 'Asus', 'Google', 'Microsoft', 'BlackBerry', 'HTC', 'Sony', 'Motorola', 'OnePlus', 'Razer', 'ZTE', 'Meizu', 'Nubia'];
+
+  // Fetch dữ liệu từ API
+  const fetchCategory = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/api/Categories`);
+      console.log("API Response:", response);
+      return response.data;
+    } catch (error) {
+      console.error("Lỗi khi gọi API:", error);
+      return []; // Trả về mảng rỗng nếu API lỗi
+    }
   };
 
-  // Thêm các options giống như AddProduct
-  const colorOptions = ['Đen', 'Trắng', 'Vàng', 'Xanh', 'Đỏ', 'Hồng', 'Tím', 'Xám'];
-  const osOptions = ['Android', 'IOS'];
-  const brandOptions = ['Apple', 'Samsung', 'Oppo', 'Xiaomi', 'Vivo', 'Realme', 'Huawei', 'Nokia', 'LG', 'Lenovo', 'Asus', 'Google', 'Microsoft', 'BlackBerry', 'HTC', 'Sony', 'Motorola', 'OnePlus', 'Razer', 'ZTE', 'Meizu', 'Nubia'];
-  const screenTechOptions = ['OLED', 'AMOLED', 'LCD', 'IPS LCD', 'Super AMOLED'];
-  const nfcOptions = ['Có', 'Không'];
-  const simOptions = ['1 SIM', '2 SIM', 'eSIM'];
-  const chargingPortOptions = ['Lightning', 'Type-C', 'Micro USB'];
- 
-
+    const { data: categories = [] } = useQuery({
+      queryKey: ["categories"],
+      queryFn: () => fetchCategory(),
+    });
   useEffect(() => {
     const fetchProduct = async () => {
       try {
         const response = await fetch(`${API_URL}/api/Product/${productId}`);
         if (response.ok) {
           const data = await response.json();
-          console.log('Product data:', data); // Ghi log dữ liệu sản phẩm
-         // const cauhinh = typeof productData.cauhinh === 'string' ? JSON.parse(productData.cauhinh) : productData.cauhinh;
           setProduct({ ...data }); 
           setProductImage(`data:image/jpeg;base64,${data?.image}` || "");
         } else {
@@ -65,6 +54,8 @@ const EditProduct = () => {
     };
     fetchProduct(); 
   }, [productId]);
+  
+ 
  
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -82,12 +73,6 @@ const EditProduct = () => {
         }));
     }
 
-    // if (name.startsWith("cauhinh.")) {
-    //     const key = name.split(".")[1];
-    //     setProduct({ ...product, cauhinh: { ...product.cauhinh, [key]: value } });
-    // } else {
-    //     setProduct({ ...product, [name]: value });
-    // }
     setProduct({ ...product, [name]: value });
     
   };
@@ -155,26 +140,17 @@ const EditProduct = () => {
     if (!product?.name || !product.name.trim()) {
         newErrors.name = 'Vui lòng nhập tên sản phẩm';
     }
-    // Validate số lượng
-    if (!product?.quantity || product.quantity <= 0) {
-        newErrors.quantity = 'Số lượng phải lớn hơn 0';
-    }
+    
 
     // Validate giá
     if (!product?.price || product.price <= 0) {
         newErrors.price = 'Giá phải lớn hơn 0';
     }
 
-    // Validate hệ điều hành
-    if (!product?.os) {
-        newErrors.os = 'Vui lòng chọn hệ điều hành';
-    }
-
     // Validate thương hiệu
     if (!product?.brand) {
         newErrors.brand = 'Vui lòng chọn thương hiệu';
     }
-
     // Validate cấu hình
     if (product?.cauhinh) {
         // Validate kích thước màn hình
@@ -272,25 +248,7 @@ const EditProduct = () => {
             />
           </Grid>
 
-          {/* <Grid item xs={12} sm={6}>
-            <TextField
-              select
-              label="Hệ điều hành"
-              name="os"
-              value={product?.os || ''}
-              onChange={handleChange}
-              fullWidth
-              required
-              margin="normal"
-            >
-              {osOptions.map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-            </TextField>
-          </Grid>
-
+        
           <Grid item xs={12} sm={6}>
             <TextField
               select
@@ -308,9 +266,28 @@ const EditProduct = () => {
                 </MenuItem>
               ))}
             </TextField>
-          </Grid> */}
+          </Grid>    
 
-       
+          <Grid item xs={12} sm={6}>
+            <TextField
+              select
+              label="Danh mục"
+              name='categoryId'
+              value={categories.length > 0 ? product?.categoryId || "" : ""}
+              onChange={handleChange}
+              fullWidth
+              required
+              margin="normal"
+            >
+            {categories.map((option) => (
+              <MenuItem key={option.id} value={option.id}>
+                {option.name}
+              </MenuItem>
+            ))}
+          </TextField>
+        </Grid>
+
+
 
           <Grid item xs={12} sm={4} >
             <input
@@ -326,12 +303,12 @@ const EditProduct = () => {
               </Button>
             </label>
             {imagePreview ? (
-              <Box mt={2}>
-                <img src={imagePreview} alt="Preview" style={{ maxWidth: '200px' }} />
+              <Box mt={4} >
+                <img src={imagePreview} alt="Preview" style={{ maxWidth: '400px' }} />
               </Box>) : 
               productImage &&(
-                <Box mt={2}>
-                  <img src={productImage} alt="Preview" style={{ maxWidth: '200px' }} />
+                <Box mt={4}>
+                  <img src={productImage} alt="Preview" style={{ maxWidth: '400px' }} />
                 </Box>) }
             
           </Grid>
@@ -349,29 +326,7 @@ const EditProduct = () => {
               rows={4}
             />
           </Grid>
-          <Grid item xs={12}>
-            <Typography variant="h6" sx={{ mt: 3, mb: 2 }}>
-              Cấu hình sản phẩm
-            </Typography>
-          </Grid>
-          {/* {product.cauhinh ? (
-            Object.entries(product.cauhinh).map(([key, value]) => (
-              <Grid item xs={12} sm={6} key={key}>
-                <TextField
-                  label={cauHinhLabels[key] || key} // Hiển thị label từ bản đồ, nếu không có thì dùng key
-                  name={`cauhinh.${key}`}
-                  value={value || ''} // Hiển thị chuỗi rỗng nếu không có giá trị
-                  onChange={handleChange}
-                  fullWidth
-                  margin="normal"
-                  error={!!errors[`cauhinh.${key}`]}
-                  helperText={errors[`cauhinh.${key}`]}
-                />
-              </Grid>
-            ))
-          ) : (
-            <Typography>Không có thông tin cấu hình sản phẩm</Typography> // Thông báo nếu không có cấu hình
-          )} */}
+         <Detail productId={product.id} ></Detail>
         </Grid>
 
         <Box mt={3}>

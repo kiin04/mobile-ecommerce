@@ -60,6 +60,7 @@ namespace WebAPI.Controllers
                     CategoryId = productDto.CategoryId,
                     Rate = productDto.Rate,
                     Sold = productDto.Sold,
+                    Brand = productDto.Brand,
                 };
                 if (productDto.CreatedAt == null)
                 {
@@ -96,6 +97,7 @@ namespace WebAPI.Controllers
                     CategoryId = productDto.CategoryId,
                     Rate = productDto.Rate,
                     Sold  = productDto.Sold,
+                    Brand = productDto.Brand,
                 };
 
                 await _ProductRepository.AddAsync(product, image);

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using WebAPI.Controllers;
 
 namespace WebAPI.Models;
 
@@ -19,7 +18,7 @@ public partial class Detail : BaseEntity
 
     public string? Gpu { get; set; }
 
-    public bool? Nfc { get; set; }
+    public string? Nfc { get; set; }
 
     public string? Ram { get; set; }
 

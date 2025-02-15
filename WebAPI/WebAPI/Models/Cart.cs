@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using WebAPI.Controllers;
 
 namespace WebAPI.Models;
 
@@ -16,5 +15,7 @@ public partial class Cart : BaseEntity
 
     public decimal Price { get; set; }
 
-    
+    public int ColorSizeId { get; set; }
+
+
 }

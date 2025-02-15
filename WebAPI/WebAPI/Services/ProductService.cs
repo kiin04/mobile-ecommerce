@@ -19,7 +19,8 @@ namespace WebAPI.Services
         {
             var product = await _context.Products.FindAsync(productId);
             if (product == null) return;
-            
+          
+
             var colorSizeIds = await _context.ColorSizes
                 .Where(cs => cs.ProductId == productId)
                 .Select(cs => cs.Id)

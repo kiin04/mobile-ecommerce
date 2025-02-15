@@ -19,21 +19,26 @@ import {
 import { Delete, Visibility } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { BASE_URL } from '../../config.js';
+import apiConfigInstance from '../../../SingletonParttern.js';
+const API_URL = apiConfigInstance.getApiUrl();
+import axios from "axios";
 
 const UserManagement = () => {
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedUser, setSelectedUser] = useState(null);
     const [users, setUsers] = useState([]);
+    const [roles, setRoles] = useState([]);
     const [page, setPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(10);
 
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-                const response = await fetch(`${BASE_URL}/api/users`);
-                if (response.ok) {
-                    const data = await response.json();
+                const response = await axios.get(`${API_URL}/api/User`);
+                console.log(response);
+                if (response.status === 200) {
+                    const data = response.data
                     setUsers(data);
                 } else {
                     console.error(`Failed to fetch users: ${response.status} ${response.statusText}`);
@@ -42,6 +47,21 @@ const UserManagement = () => {
                 console.error("Error fetching users:", error);
             }
         };
+        const fetchRole = async () => {
+            try {
+                const response = await axios.get(`${API_URL}/api/Role`);
+                console.log('role res',response);
+                if (response.status === 200) {
+                    const data = response.data
+                    setRoles(data);
+                } else {
+                    console.error(`Failed to fetch users: ${response.status} ${response.statusText}`);
+                }
+            } catch (error) {
+                console.error("Error fetching users:", error);
+            }
+        };
+        fetchRole();
         fetchUsers();
     }, []);
 
@@ -91,7 +111,10 @@ const UserManagement = () => {
     const handlePageChange = (event, newPage) => {
         setPage(newPage);
     };
-
+    const getRoleNameById = (id) => {
+        const role = roles.find((r) => r.id === id);
+        return role ? role.name : 'Unknown Role';
+      };
     return (
         <Box padding={3}>
             <Typography variant="h4" gutterBottom>
@@ -133,9 +156,9 @@ const UserManagement = () => {
                             <TableRow key={user.id}>
                                 <TableCell>{user.id}</TableCell>
                                 <TableCell>{user.name}</TableCell>
-                                <TableCell>{user.phoneNumber}</TableCell>
+                                <TableCell>{user.phone}</TableCell>
                                 <TableCell>{user.address}</TableCell>
-                                <TableCell>{user.role}</TableCell>
+                                <TableCell>{getRoleNameById(user.role)}</TableCell>
                                 <TableCell>
                                     <IconButton
                                         onClick={() => handleViewDetails(user)}
@@ -193,7 +216,7 @@ const UserManagement = () => {
                                 textTransform: 'uppercase'
                             }}
                         >
-                            {selectedUser.role}
+                            {getRoleNameById(selectedUser.role)}
                         </Typography>
                     </DialogTitle>
 
@@ -295,10 +318,7 @@ const UserManagement = () => {
                                         }
                                     }}
                                 >
-                                    <Box className="info-item">
-                                        <Typography className="label">MongoDB ID</Typography>
-                                        <Typography className="value">{selectedUser._id}</Typography>
-                                    </Box>
+                                  
 
                                     <Box className="info-item">
                                         <Typography className="label">Ngày sinh</Typography>
@@ -319,7 +339,7 @@ const UserManagement = () => {
 
                                     <Box className="info-item">
                                         <Typography className="label">Số điện thoại</Typography>
-                                        <Typography className="value">{selectedUser.phoneNumber}</Typography>
+                                        <Typography className="value">{selectedUser.phone}</Typography>
                                     </Box>
 
                                     <Box className="info-item">

@@ -21,6 +21,7 @@ CREATE TABLE Products (
     description NVARCHAR(MAX),
     price DECIMAL(18, 2) NOT NULL,
 	unit NVARCHAR(50),
+	brand NVARCHAR(50),
 	sold INT default  0,
 	rate INT default  0,
 	image VARBINARY(MAX),
@@ -84,14 +85,14 @@ CREATE TABLE Accounts (
 -- Bảng Orders
 CREATE TABLE Orders (
     id INT PRIMARY KEY IDENTITY(1,1),
-    user_id INT,
+    user_id INT NULL,
     total_price DECIMAL(18, 2) NOT NULL,
     status NVARCHAR(50) DEFAULT 'Chờ xác nhận',
 	created_at DATETIME DEFAULT GETDATE(),
     updated_at DATETIME DEFAULT GETDATE(),
-	phone NVARCHAR(15),
-    address NVARCHAR(255),
-    FOREIGN KEY (user_id) REFERENCES Users(id)
+	name NVARCHAR(255) NULL,
+	phone NVARCHAR(15) NULL,
+    address NVARCHAR(255) NULL,
 );
 GO
 
@@ -109,11 +110,13 @@ CREATE TABLE OrderDetails (
     updated_at DATETIME DEFAULT GETDATE()
 );
 GO
+
 CREATE TABLE Cart (
     id INT PRIMARY KEY IDENTITY(1,1),
     product_id INT NOT NULL,
     quantity INT NOT NULL,
     user_id INT ,
+	color_size_id INT,
     price DECIMAL(18, 2) NOT NULL,
     FOREIGN KEY (product_id) REFERENCES Products(id),
     FOREIGN KEY (user_id) REFERENCES Users(id),
@@ -121,6 +124,8 @@ CREATE TABLE Cart (
     updated_at DATETIME DEFAULT GETDATE()
 );
 GO
+
+alter column
 --Bang Details
 CREATE TABLE Details (
     id INT IDENTITY(1,1) PRIMARY KEY, 
@@ -130,7 +135,7 @@ CREATE TABLE Details (
     FrontCamera NVARCHAR(100) NULL, -- Front camera
     Chipset NVARCHAR(100) NULL, -- Chipset
     GPU NVARCHAR(100) NULL, -- GPU
-    NFC BIT NULL, -- NFC technology (0: No, 1: Yes)
+    NFC  NVARCHAR(10) NULL, -- NFC technology 
     RAM NVARCHAR(50) NULL, -- RAM capacity
     InternalStorage NVARCHAR(50) NULL, -- Internal storage
     Battery NVARCHAR(50) NULL, -- Battery capacity

@@ -3,7 +3,7 @@ import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { BASE_URL } from "../config";
+import { BASE_URL, API_URL } from "../config";
 import PathNames from "../PathNames.js";
 import Heading from "../shared/Heading";
 import { notification } from "antd";
@@ -36,7 +36,7 @@ const Shop = () => {
     useEffect(() => {
         const fetchAllProducts = async () => {
             try {
-                const response = await axios.get("http://localhost:5000/api/products/");
+                const response = await axios.get(`${API_URL}/api/Product`);
                 setProducts(response.data);
                 setFilteredProducts(response.data);
 
@@ -350,7 +350,7 @@ const Shop = () => {
                                     <div className="productcard-img relative">
                                         {item.image ? (
                                             <img
-                                                src={`${BASE_URL}/${item.image}`}
+                                                src={ `data:image/jpeg;base64,${item?.image}`|| ""}
                                                 alt={item.name}
                                                 className="h-[13em] w-[13em] lg:h-[18em] lg:w-[18em] sm:h-[13em] sm:w-[13em] md:h-[13.5em] md:w-[16em] object-cover rounded-xl mb-3"
                                             />
