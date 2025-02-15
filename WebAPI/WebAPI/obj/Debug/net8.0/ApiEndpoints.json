@@ -1,5 +1,114 @@
 [
   {
+    "ContainingType": "WebAPI.Controllers.AccountController",
+    "Method": "GetAccount",
+    "RelativePath": "api/Account",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[WebAPI.Models.Account, WebAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.AccountController",
+    "Method": "PostAccount",
+    "RelativePath": "api/Account",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "Account",
+        "Type": "WebAPI.Models.Account",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "WebAPI.Models.Account",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.AccountController",
+    "Method": "GetAccount",
+    "RelativePath": "api/Account/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "WebAPI.Models.Account",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.AccountController",
+    "Method": "PutAccount",
+    "RelativePath": "api/Account/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "Account",
+        "Type": "WebAPI.Models.Account",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.AccountController",
+    "Method": "DeleteAccount",
+    "RelativePath": "api/Account/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "WebAPI.Controllers.CartController",
     "Method": "GetCarts",
     "RelativePath": "api/Cart",
@@ -482,9 +591,35 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.OrderDetailsDetailsController",
+    "ContainingType": "WebAPI.Controllers.DetailsController",
+    "Method": "GetColorSizeByProduct",
+    "RelativePath": "api/Details/ProductDetail/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "WebAPI.Models.Detail",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.OrderDetailsController",
     "Method": "GetOrderDetails",
-    "RelativePath": "api/OrderDetailsDetails",
+    "RelativePath": "api/OrderDetails",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -502,9 +637,9 @@
     ]
   },
   {
-    "ContainingType": "WebAPI.Controllers.OrderDetailsDetailsController",
+    "ContainingType": "WebAPI.Controllers.OrderDetailsController",
     "Method": "PostOrderDetail",
-    "RelativePath": "api/OrderDetailsDetails",
+    "RelativePath": "api/OrderDetails",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
@@ -528,9 +663,9 @@
     ]
   },
   {
-    "ContainingType": "WebAPI.Controllers.OrderDetailsDetailsController",
+    "ContainingType": "WebAPI.Controllers.OrderDetailsController",
     "Method": "GetOrderDetail",
-    "RelativePath": "api/OrderDetailsDetails/{id}",
+    "RelativePath": "api/OrderDetails/{id}",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -554,9 +689,9 @@
     ]
   },
   {
-    "ContainingType": "WebAPI.Controllers.OrderDetailsDetailsController",
+    "ContainingType": "WebAPI.Controllers.OrderDetailsController",
     "Method": "PutOrderDetail",
-    "RelativePath": "api/OrderDetailsDetails/{id}",
+    "RelativePath": "api/OrderDetails/{id}",
     "HttpMethod": "PUT",
     "IsController": true,
     "Order": 0,
@@ -575,9 +710,9 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebAPI.Controllers.OrderDetailsDetailsController",
+    "ContainingType": "WebAPI.Controllers.OrderDetailsController",
     "Method": "DeleteOrderDetail",
-    "RelativePath": "api/OrderDetailsDetails/{id}",
+    "RelativePath": "api/OrderDetails/{id}",
     "HttpMethod": "DELETE",
     "IsController": true,
     "Order": 0,
@@ -763,6 +898,11 @@
         "IsRequired": false
       },
       {
+        "Name": "Brand",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
         "Name": "CreatedAt",
         "Type": "System.Nullable\u00601[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
         "IsRequired": false
@@ -860,6 +1000,11 @@
         "IsRequired": false
       },
       {
+        "Name": "Brand",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
         "Name": "CreatedAt",
         "Type": "System.Nullable\u00601[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
         "IsRequired": false
@@ -876,6 +1021,115 @@
     "ContainingType": "WebAPI.Controllers.ProductController",
     "Method": "DeleteProduct",
     "RelativePath": "api/Product/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.RoleController",
+    "Method": "GetRole",
+    "RelativePath": "api/Role",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[WebAPI.Models.Role, WebAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.RoleController",
+    "Method": "PostRole",
+    "RelativePath": "api/Role",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "Role",
+        "Type": "WebAPI.Models.Role",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "WebAPI.Models.Role",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.RoleController",
+    "Method": "GetRole",
+    "RelativePath": "api/Role/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "WebAPI.Models.Role",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.RoleController",
+    "Method": "PutRole",
+    "RelativePath": "api/Role/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "Role",
+        "Type": "WebAPI.Models.Role",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebAPI.Controllers.RoleController",
+    "Method": "DeleteRole",
+    "RelativePath": "api/Role/{id}",
     "HttpMethod": "DELETE",
     "IsController": true,
     "Order": 0,

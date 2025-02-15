@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using WebAPI.Factory;
 using WebAPI.Models;
+using WebAPI.Services;
 
 namespace WebAPI.Controllers
 {
@@ -10,10 +11,11 @@ namespace WebAPI.Controllers
     public class DetailsController : ControllerBase
     {
         private readonly IRepository<Detail> _DetailRepository;
-
+        private DetailService _detailService;
         public DetailsController(CSDLBanHang context)
         {
             _DetailRepository = RepositoryFactory.CreateRepository<Detail>(context);
+            _detailService = new DetailService(context);
         }
 
         // GET: api/Details
@@ -37,7 +39,19 @@ namespace WebAPI.Controllers
                 return NotFound(new { message = ex.Message });
             }
         }
-
+        [HttpGet("ProductDetail/{id}")]
+        public async Task<ActionResult<Detail>> GetColorSizeByProduct(int id)
+        {
+            try
+            {
+                var details = await _detailService.GetByProductAsync(id);
+                return Ok(details);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+        }
         // PUT: api/Details/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutDetail(int id, Detail Detail)

@@ -78,6 +78,7 @@ public partial class CSDLBanHang : DbContext
             entity.Property(e => e.Price)
                 .HasColumnType("decimal(18, 2)")
                 .HasColumnName("price");
+            entity.Property(e => e.ColorSizeId).HasColumnName("color_size_id");
             entity.Property(e => e.ProductId).HasColumnName("product_id");
             entity.Property(e => e.Quantity).HasColumnName("quantity");
             entity.Property(e => e.UpdatedAt)
@@ -183,6 +184,9 @@ public partial class CSDLBanHang : DbContext
             entity.Property(e => e.Address)
                 .HasMaxLength(255)
                 .HasColumnName("address");
+            entity.Property(e => e.Name)
+                .HasMaxLength(255)
+                .HasColumnName("name");
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime")
@@ -192,7 +196,7 @@ public partial class CSDLBanHang : DbContext
                 .HasColumnName("phone");
             entity.Property(e => e.Status)
                 .HasMaxLength(50)
-                .HasDefaultValue("Ch? xác nh?n")
+                .HasDefaultValue("Chưa xác nhận")
                 .HasColumnName("status");
             entity.Property(e => e.TotalPrice)
                 .HasColumnType("decimal(18, 2)")
@@ -245,6 +249,9 @@ public partial class CSDLBanHang : DbContext
             entity.Property(e => e.Name)
                 .HasMaxLength(255)
                 .HasColumnName("name");
+            entity.Property(e => e.Brand)
+               .HasMaxLength(50)
+               .HasColumnName("brand");
             entity.Property(e => e.Price)
                 .HasColumnType("decimal(18, 2)")
                 .HasColumnName("price");

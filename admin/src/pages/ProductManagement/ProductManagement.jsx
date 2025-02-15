@@ -3,8 +3,9 @@ import { Box, TextField, Button, Table, TableBody, TableCell, TableContainer, Ta
 import { Edit, Delete, Visibility } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { BASE_URL,API_URL } from '../../config.js';
 import { useQuery } from "@tanstack/react-query";
+import apiConfigInstance from '../../../SingletonParttern.js';
+const API_URL = apiConfigInstance.getApiUrl();
 
 const ProductManagement = () => {
   const navigate = useNavigate();
@@ -20,10 +21,9 @@ const ProductManagement = () => {
         const response = await axios.get(`${API_URL}/api/Product`);
         if (response.status === 200) {
           const data = response.data;
-          //console.log('Fetched products:', data); // Log the products
           setProducts(data);
         } else {
-          console.error(`Failed to fetch users: ${response.status} ${response.statusText}`);
+          console.error(`Failed to fetch products: ${response.status} ${response.statusText}`);
         }
       } catch (error) {
         console.error('Error fetching products:', error);
@@ -71,20 +71,20 @@ const getStock =  (id) => {
   const handleDeleteProduct = async (productId) => {
     try {
       // Kiểm tra sử dụng sản phẩm trước khi xóa
-      const checkResponse = await fetch(`${BASE_URL}/api/products/${productId}/check-usage`);
-      const checkData = await checkResponse.json();
+      // const checkResponse = await fetch(`${API_URL}/api/Product/${productId}/check-usage`);
+      // const checkData = await checkResponse.json();
 
-      if (checkData.isInUse) {
-        let message = 'Không thể xóa sản phẩm vì đang được sử dụng trong:';
-        if (checkData.inOrders) message += '\n- Đơn hàng';
-        if (checkData.inKho) message += '\n- Phiếu kho';
+      // if (checkData.isInUse) {
+      //   let message = 'Không thể xóa sản phẩm vì đang được sử dụng trong:';
+      //   if (checkData.inOrders) message += '\n- Đơn hàng';
+      //   if (checkData.inKho) message += '\n- Phiếu kho';
         
-        alert(message);
-        return;
-      }
+      //   alert(message);
+      //   return;
+      // }
 
       // Nếu sản phẩm không được sử dụng, tiến hành xóa
-      const response = await fetch(`${BASE_URL}/api/products/${productId}`, {
+      const response = await fetch(`${API_URL}/api/Product/${productId}`, {
         method: 'DELETE',
       });
 
@@ -236,6 +236,9 @@ const getStock =  (id) => {
                 }}>
                   <Typography>
                     <strong>Mã sản phẩm:</strong> {selectedProduct.id}
+                  </Typography>
+                  <Typography>
+                    <strong>Thương hiệu:</strong> {selectedProduct?.brand}
                   </Typography>
                   <Typography>
                     <strong>Đá bán:</strong> {selectedProduct.sold}

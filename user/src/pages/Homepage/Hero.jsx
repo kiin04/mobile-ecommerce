@@ -2,7 +2,7 @@ import { Carousel } from "antd";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { BASE_URL } from "../../config";
+import { BASE_URL,API_URL } from "../../config";
 import PathNames from "../../PathNames.js";
 import Button from "../../shared/Button.jsx";
 
@@ -30,9 +30,7 @@ const Hero = () => {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const response = await axios.get(
-                    "http://localhost:5000/api/products/"
-                );
+                const response = await axios.get( ` ${API_URL}/api/Product`  );
                 const productsData = response.data;
                 setProducts(productsData);
             } catch (error) {

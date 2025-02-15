@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using WebAPI.Controllers;
 
 namespace WebAPI.Models;
 
@@ -14,7 +13,7 @@ public partial class Order : BaseEntity
 
     public string? Status { get; set; }
 
-   
+    public string? Name { get; set; }
 
     public string? Phone { get; set; }
 

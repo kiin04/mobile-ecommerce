@@ -1,4 +1,4 @@
-﻿namespace WebAPI.Controllers
+﻿namespace WebAPI.Models
 {
     public abstract class BaseEntity
     {

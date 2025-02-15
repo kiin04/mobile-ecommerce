@@ -7,11 +7,11 @@ namespace WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class OrderDetailsDetailsController : ControllerBase
+    public class OrderDetailsController : ControllerBase
     {
         private readonly IRepository<OrderDetail> _OrderDetailRepository;
 
-        public OrderDetailsDetailsController(CSDLBanHang context)
+        public OrderDetailsController(CSDLBanHang context)
         {
             _OrderDetailRepository = RepositoryFactory.CreateRepository<OrderDetail>(context);
         }

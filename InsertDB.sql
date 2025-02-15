@@ -19,7 +19,8 @@ INSERT INTO Products (name, description, price, unit, category_id) VALUES
 (N'AirPods Pro 2', N'Tai nghe chống ồn chủ động', 5890000, N'Cái', 4),
 (N'Apple Watch Series 9', N'Màn hình Always-On, chip S9', 12990000, N'Cái', 5),
 (N'Cáp sạc MagSafe', N'Cáp sạc không dây cho iPhone', 1290000, N'Cái', 6);
-
+UPDATE Products 
+SET brand = 'Apple';
 -- Thêm dữ liệu vào bảng ColorSize
 INSERT INTO ColorSize (product_id, color, size, quantity) VALUES
 (1, N'Đen Titan', N'128GB', 50),
@@ -33,13 +34,14 @@ INSERT INTO ColorSize (product_id, color, size, quantity) VALUES
 (8, N'Trắng', N'None', 50),
 (9, N'Đỏ', N'45mm', 20);
 
+
 -- Thêm dữ liệu vào bảng Users
 INSERT INTO Users (name, account, phone, address, role) VALUES
-(N'Nguyễn Tùng Lâm', 1001, '0987654321', N'TP.HCM', 1),
-(N'Cao Xuân Quang', 1002, '0912345678', N'TP.HCM', 2),
-(N'Đoàn Hữu Nghĩa', 1003, '0905123456', N'Đà Nẵng', 2),
-(N'Nguyễn Ngọc Kim Sơn', 1004, '0922334455', N'Hải Phòng', 2),
-(N'Hoàng Anh', 1005, '0988997776', N'Cần Thơ', 2);
+(N'Nguyễn Tùng Lâm', 1001, '0987654321', N'TP.HCM', 2),
+(N'Cao Xuân Quang', 1002, '0912345678', N'TP.HCM', 4),
+(N'Đoàn Hữu Nghĩa', 1003, '0905123456', N'Đà Nẵng', 4),
+(N'Nguyễn Ngọc Kim Sơn', 1004, '0922334455', N'Hải Phòng', 4),
+(N'Huỳnh Minh Quân', 1005, '0988997776', N'Cần Thơ', 4);
 
 -- Thêm dữ liệu vào bảng Roles
 INSERT INTO Roles (name, promo) VALUES
