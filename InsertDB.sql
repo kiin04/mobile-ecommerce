@@ -45,8 +45,13 @@ INSERT INTO Users (name, account, phone, address, role) VALUES
 
 -- Thêm dữ liệu vào bảng Roles
 INSERT INTO Roles (name, promo) VALUES
-(N'Admin', 20),
-(N'User', 0);
+(N'Khách vãng lai', 0),
+(N'Admin', 0),
+(N'Nhân viên', 5),
+(N'Khách hàng thường', 0),
+(N'Khách hàng Bạc', 7),
+(N'Khách hàng Vàng', 10),
+(N'Khách hàng Kim Cương', 15);
 
 -- Thêm dữ liệu vào bảng Accounts
 INSERT INTO Accounts (user_id, email, password) VALUES
