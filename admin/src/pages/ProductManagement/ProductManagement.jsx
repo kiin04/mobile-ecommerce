@@ -19,6 +19,7 @@ const ProductManagement = () => {
     const fetchProducts = async () => {
       try {
         const response = await axios.get(`${API_URL}/api/Product`);
+        
         if (response.status === 200) {
           const data = response.data;
           setProducts(data);

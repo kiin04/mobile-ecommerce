@@ -28,6 +28,10 @@ const Sidebar = () => {
           <img className="menu-icon" src="src/img/icon/smartphone.png" alt="Quản lý sản phẩm" />
           <span>Quản lý sản phẩm</span>
         </li>
+        <li className={`menu-item ${activeMenu === 'product' ? 'active' : ''}`} onClick={() => handleNavigation('/product-management', 'product')}>
+          <img className="menu-icon" src="src/img/icon/smartphone.png" alt="Quản lý sản phẩm" />
+          <span>Quản lý danh mục </span>
+        </li>
         <li className={`menu-item ${activeMenu === 'order' ? 'active' : ''}`} onClick={() => handleNavigation('/order-management', 'order')}>
           <img className="menu-icon" src="src/img/icon/checklist.png" alt="Quản lý đơn hàng" />
           <span>Quản lý đơn hàng</span>
