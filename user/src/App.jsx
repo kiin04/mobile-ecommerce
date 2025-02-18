@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 import "./App.css";
 import CartSidebar from "./components/CartSidebar.jsx";
@@ -25,10 +25,34 @@ import Terms from "./pages/Terms.jsx";
 import Vacancies from "./pages/Vacancies.jsx";
 import PathNames from "./PathNames.js";
 import Breadcrumbs from './shared/Breadcrumbs.jsx';
-
+import userService from './facadeParttern/userService.js'
+import { useDispatch } from "react-redux";
+import { setUser } from "./redux/userSlide.js";
 function App() {
     const [cartOpen, setCartOpen] = useState(false);
+    const userId = localStorage.getItem("userId");
+    const emaillocal = localStorage.getItem("email");
+    const dispatch = useDispatch();
+    useEffect(() => {
+        const fetchUser = async () => {
+            if (userId) {
+                try {
+                    const user = await userService.fetchUserDetails(userId);
+                   
+                    dispatch(setUser({
+                        ...user, 
+                        email: emaillocal, 
+                    }));
+                } catch (error) {
+                    console.error("Error fetching user details:", error.message);
+                }
+            }
+        };
 
+        fetchUser();
+    }, [userId, dispatch]);
+    console.log(userId);
+    
     return (
         <>
             <Header cartOpen={cartOpen} setCartOpen={setCartOpen}  />
