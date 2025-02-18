@@ -9,13 +9,13 @@ namespace WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ProductController : ControllerBase
+    public class ProductsController : ControllerBase
     {
         //factory design parttern
         private readonly IRepository<Product> _ProductRepository;
         private ProductService _ProductService;
 
-        public ProductController(CSDLBanHang context, ProductService productService)
+        public ProductsController(CSDLBanHang context, ProductService productService)
         {
             _ProductRepository = RepositoryFactory.CreateRepository<Product>(context);
             _ProductService = productService;
