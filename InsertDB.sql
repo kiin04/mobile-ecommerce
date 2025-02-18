@@ -48,9 +48,15 @@ INSERT INTO Roles (name, promo) VALUES
 (N'Khách vãng lai', 0),
 (N'Admin', 0),
 (N'Nhân viên', 5),
+<<<<<<< HEAD
 N'Khách hàng thường', 0),
 N'Khách hàng Bạc', 7),
 N'Khách hàng Vàng', 10),
+=======
+(N'Khách hàng thường', 0),
+(N'Khách hàng Bạc', 7),
+(N'Khách hàng Vàng', 10),
+>>>>>>> c936b98d8b0fffc4a0ea8c110ea6903b10f6dfa6
 (N'Khách hàng Kim Cương', 15);
 
 -- Thêm dữ liệu vào bảng Accounts
