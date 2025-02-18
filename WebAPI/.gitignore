@@ -66,6 +66,7 @@ project.fragment.lock.json
 artifacts/
 bin/*
 obj/*
+.vs/*
 
 # Tye
 .tye/
