@@ -8,13 +8,13 @@ namespace WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CartController : ControllerBase
+    public class CartsController : ControllerBase
     {
         //factory design parttern
         private readonly IRepository<Cart> _CartRepository;
       
 
-        public CartController(CSDLBanHang context)
+        public CartsController(CSDLBanHang context)
         {
             _CartRepository = RepositoryFactory.CreateRepository<Cart>(context);
            

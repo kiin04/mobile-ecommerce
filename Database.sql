@@ -20,6 +20,7 @@ CREATE TABLE Products (
     name NVARCHAR(255) NOT NULL,
     description NVARCHAR(MAX),
     price DECIMAL(18, 2) NOT NULL,
+	--promo int,
 	unit NVARCHAR(50),
 	brand NVARCHAR(50),
 	sold INT default  0,
@@ -31,9 +32,20 @@ CREATE TABLE Products (
     FOREIGN KEY (category_id) REFERENCES Categories(id)
 );
 GO
+<<<<<<< HEAD
+alter table Products
+add promo int;
+GO
+UPDATE Products
+SET promo = 0;
+GO
+-- Bảng ColorSize
+CREATE TABLE ColorSize (
+=======
 
 -- Bảng ColorSizes
 CREATE TABLE ColorSizes (
+>>>>>>> 10bc1a0f3acb4135f6ea3a1277bd794635e62d98
 	id INT PRIMARY KEY IDENTITY(1,1),
     product_id INT NOT NULL,
     color NVARCHAR(50) NOT NULL,

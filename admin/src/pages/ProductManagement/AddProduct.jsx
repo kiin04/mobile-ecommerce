@@ -87,7 +87,7 @@ const AddProduct = () => {
     }
     console.log("product:", formData)
     try {
-      const response = await fetch(`${API_URL}/api/Product`, {
+      const response = await fetch(`${API_URL}/api/Products`, {
         method: 'POST',
         body: formData,
       });

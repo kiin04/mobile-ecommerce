@@ -49,7 +49,7 @@ const UserManagement = () => {
         };
         const fetchRole = async () => {
             try {
-                const response = await axios.get(`${API_URL}/api/Role`);
+                const response = await axios.get(`${API_URL}/api/Roles`);
                 console.log('role res',response);
                 if (response.status === 200) {
                     const data = response.data

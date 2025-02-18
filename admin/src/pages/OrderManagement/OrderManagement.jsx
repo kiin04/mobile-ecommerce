@@ -11,7 +11,11 @@ import axios from "axios";
 const OrderManagement = () => {
   const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [productOrder, setProductOrder] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [orderDetails, setOrderDetails] = useState([]);
+  const [selectedOrderDetails, setSelectedOrderDetails] = useState([]);
   const [searchQuery, setSearchQuery] = useState(''); // Search query state
   const [page, setPage] = useState(1);
   const [rowsPerPage] = useState(10);
@@ -31,12 +35,42 @@ const OrderManagement = () => {
         console.error('Error fetching orders:', error);
       }
     };
-
+    const fetchOrderDetail = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/api/OrderDetails`);
+        console.log('res order detail', response);
+        if (response.status == 200) {
+          const data = response.data;
+          setOrderDetails(data);
+        } else {
+          console.error('Failed to fetch orders');
+        }
+      } catch (error) {
+        console.error('Error fetching orders:', error);
+      }
+    };
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/api/Products}`);
+        if (response.status === 200) {
+          const data = response.data;
+          setProducts(data);
+        } else {
+          console.error(`Failed to fetch products: ${response.status} ${response.statusText}`);
+        }
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      }
+    };
+    fetchProducts()
+    fetchOrderDetail();
     fetchOrders();
   }, []);
+ 
 
   const handleViewDetails = (order) => {
     setSelectedOrder(order);
+    setSelectedOrderDetails(orderDetails.filter((od)=>od.orderId === order.id))
   };
 
   const handleCloseDialog = () => {
@@ -108,6 +142,11 @@ const OrderManagement = () => {
     setPage(newPage);
   };
 
+  const getProduct = (proId) => {
+    console.log("product of order detail",products.filter(item => item.id === proId) );
+    return products.filter(item => item.id === proId) 
+  };
+
   return (
     <Box padding={3}>
       <Typography variant="h4" gutterBottom>Quản lý đơn hàng</Typography>
@@ -153,12 +192,12 @@ const OrderManagement = () => {
             {paginatedOrders.map((order) => (
               <TableRow key={order.id}>
                 <TableCell>{order.id}</TableCell>
-                <TableCell>{order.customerName}</TableCell>
-                <TableCell>{order.shippingAddress}</TableCell>
+                <TableCell>{order?.name}</TableCell>
+                <TableCell>{order?.address}</TableCell>
                 {/* Format date as dd/MM/yyyy */}
-                <TableCell>{new Date(order.orderDate).toLocaleDateString('vi-VN')}</TableCell>
+                <TableCell>{new Date(order.createdAt).toLocaleDateString('vi-VN')}</TableCell>
                 <TableCell>{order.paymentMethod}</TableCell>
-                <TableCell>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(order.totalAmount)}</TableCell>
+                <TableCell>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(order?.totalPrice)}</TableCell>
                 <TableCell style={getStatusColor(order.status)}>{order.status}</TableCell>
                 <TableCell>
                   <Box display="flex" justifyContent="space-between">
@@ -232,11 +271,11 @@ const OrderManagement = () => {
                     borderRadius: 1
                   }}
                 >
-                  <Typography><strong>Tên khách hàng:</strong> {selectedOrder?.customerName}</Typography>
-                  <Typography><strong>Địa chỉ:</strong> {selectedOrder?.shippingAddress}</Typography>
-                  <Typography><strong>Ngày đặt:</strong> {new Date(selectedOrder?.orderDate).toLocaleDateString('vi-VN')}</Typography>
-                  <Typography><strong>Phương thức thanh toán:</strong> {selectedOrder?.paymentMethod}</Typography>
-                  <Typography><strong>Ghi chú:</strong> {selectedOrder?.notes}</Typography>
+                  <Typography><strong>Tên khách hàng:</strong> {selectedOrder?.name}</Typography>
+                  <Typography><strong>Địa chỉ:</strong> {selectedOrder?.address}</Typography>
+                  <Typography><strong>Ngày đặt:</strong> {new Date(selectedOrder?.createdAt).toLocaleDateString('vi-VN')}</Typography>
+                  <Typography><strong>Phương thức thanh toán:</strong> {selectedOrder?.paymentMethod || ""}</Typography>
+                  <Typography><strong>Ghi chú:</strong> {selectedOrder?.notes || ""}</Typography>
                 </Box>
               </Box>
 
@@ -254,13 +293,18 @@ const OrderManagement = () => {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {selectedOrder?.items.map((item) => (
-                        <TableRow key={item.productId}>
-                          <TableCell>{item.productId}</TableCell>
-                          <TableCell>{item.quantity}</TableCell>
+                    {selectedOrderDetails.map((item, key) => {
+                      // Lấy sản phẩm tương ứng với productId
+                      const product = getProduct(item.productId)[0];
+                      console.log(getProduct(item.productId)); 
+                      return (
+                        <TableRow key={key}>
+                          <TableCell>{item.productId} {product ? product.name : 'Không tìm thấy sản phẩm'}</TableCell>
+                          <TableCell>{item?.quantity}</TableCell>
                         </TableRow>
-                      ))}
-                    </TableBody>
+                      );
+                    })}
+                  </TableBody>
                   </Table>
                 </TableContainer>
               </Box>
@@ -282,12 +326,12 @@ const OrderManagement = () => {
                 >
                   <Typography variant="h6">Tổng tiền:</Typography>
                   <Typography variant="h6" color="primary">
-                    {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(selectedOrder.totalAmount)}
+                    {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(selectedOrder?.totalPrice)}
                   </Typography>
                   
                 </Box>
               </Box>
-              <Typography><strong>Lý do huỷ:</strong> {selectedOrder.cancellationReason}</Typography>
+              <Typography><strong>Lý do huỷ:</strong> {selectedOrder?.cancellationReason}</Typography>
               {/* Ghi chú */}
               {selectedOrder.notes && (
                 <Box>

@@ -54,6 +54,7 @@ namespace WebAPI.Controllers
                     CreatedAt = productDto.CreatedAt,
                     Id = id,
                     Name = productDto.Name,
+                    Promo = productDto.Promo,
                     Description = productDto.Description,
                     Price = productDto.Price,
                     Unit = productDto.Unit,
@@ -98,6 +99,7 @@ namespace WebAPI.Controllers
                     Rate = productDto.Rate,
                     Sold  = productDto.Sold,
                     Brand = productDto.Brand,
+                    Promo = productDto.Promo,
                 };
 
                 await _ProductRepository.AddAsync(product, image);

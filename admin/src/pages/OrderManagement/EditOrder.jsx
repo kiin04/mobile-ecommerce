@@ -2,9 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Box, TextField, Button, Typography, Grid, CircularProgress, MenuItem, Autocomplete } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
 import { BASE_URL } from '../../config.js';
+import apiConfigInstance from '../../../SingletonParttern.js';
+const API_URL = apiConfigInstance.getApiUrl();
 
 const EditOrder = () => {
   const { orderId } = useParams();
+  console.log('orderId',orderId );
   const navigate = useNavigate();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -42,14 +45,12 @@ const EditOrder = () => {
   useEffect(() => {
     const fetchOrder = async () => {
       try {
-        const response = await fetch(`${BASE_URL}/api/orders/${orderId}`);
-        if (response.ok) {
+        const response = await fetch(`${API_URL}/api/Orders/${orderId}`);
+        console.log('order', response);
+        if (response.status == 200) {
           const data = await response.json();
           // Format orderDate trước khi set vào state
-          setOrder({
-            ...data,
-            orderDate: formatDateForInput(data.orderDate)
-          });
+          setOrder(data);
         } else {
           throw new Error('Failed to fetch order');
         }
@@ -63,7 +64,7 @@ const EditOrder = () => {
 
     const fetchProducts = async () => {
       try {
-        const response = await fetch(`${BASE_URL}/api/products`);
+        const response = await fetch(`${API_URL}/api/Product`);
         if (response.ok) {
           const data = await response.json();
           setProducts(data);
@@ -160,7 +161,7 @@ const EditOrder = () => {
     }
 
     try {
-      const response = await fetch(`${BASE_URL}/api/orders/${orderId}`, {
+      const response = await fetch(`${API_URL}/api/Oders/${orderId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -194,8 +195,8 @@ const EditOrder = () => {
           <Grid item xs={12} sm={6}>
             <TextField
               label="ID Khách hàng"
-              name="customerId"
-              value={order.customerId || ''}
+              name="userId"
+              value={order?.userId || ''}
               onChange={handleChange}
               fullWidth
               required

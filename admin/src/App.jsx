@@ -22,6 +22,7 @@ import EditKho from './pages/KhoManagement/EditKho.jsx';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import './index.css';
+import CategoryManager from './pages/CategoryManager/CategoryManager.jsx';
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -56,6 +57,7 @@ function App() {
                     <Route path="/" element={<Navigate to="/dashboard" />} />
                     <Route path="/dashboard" element= <Dashboard /> />
                     <Route path="/product-management" element= <ProductManagement /> />
+                    <Route path="/category-management" element= <CategoryManager /> />
                     <Route path="/order-management" element= <OrderManagement /> />
                     <Route path="/add-product" element= <AddProduct /> />
                     <Route path="/edit-product/:productId" element= <EditProduct /> />

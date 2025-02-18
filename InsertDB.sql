@@ -102,3 +102,6 @@ INSERT INTO Promotion (name, value, end_at) VALUES
 (N'Sale Back To School', 5, '2025-08-31'),
 (N'Khuyến mãi Black Friday', 20, '2025-11-30'),
 (N'Giảm giá VIP Member', 12, '2025-12-31');
+UPDATE Products
+SET promo = 0;
+GO

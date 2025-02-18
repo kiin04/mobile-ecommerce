@@ -17,7 +17,7 @@ public partial class Product : BaseEntity,IHasImage
 
     public int CategoryId { get; set; }
 
-   
+    public int Promo { get; set; }
 
     public byte[]? Image { get; set; }
 
