@@ -21,8 +21,8 @@ INSERT INTO Products (name, description, price, unit, category_id) VALUES
 (N'Cáp sạc MagSafe', N'Cáp sạc không dây cho iPhone', 1290000, N'Cái', 6);
 UPDATE Products 
 SET brand = 'Apple';
--- Thêm dữ liệu vào bảng ColorSize
-INSERT INTO ColorSize (product_id, color, size, quantity) VALUES
+-- Thêm dữ liệu vào bảng ColorSizes
+INSERT INTO ColorSizes (product_id, color, size, quantity) VALUES
 (1, N'Đen Titan', N'128GB', 50),
 (1, N'Trắng Titan', N'256GB', 30),
 (2, N'Tím', N'512GB', 20),

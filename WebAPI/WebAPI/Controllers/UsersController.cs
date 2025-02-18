@@ -8,13 +8,13 @@ namespace WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class UsersController : ControllerBase
     {
         //factory design parttern
         private readonly IRepository<User> _UserRepository;
         private UserService _UserService;
 
-        public UserController(CSDLBanHang context, UserService userService)
+        public UsersController(CSDLBanHang context, UserService userService)
         {
             _UserRepository = RepositoryFactory.CreateRepository<User>(context);
             _UserService = userService;
