@@ -28,6 +28,7 @@ builder.Services.AddScoped<CategoriesService>();
 builder.Services.AddScoped<OrderService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<RoleService>();
+builder.Services.AddScoped<AccountService>();
 
 
 

@@ -1,220 +1,116 @@
-// import { LockOutlined, MailOutlined } from "@ant-design/icons";
-import { message } from "antd";
+import { LockOutlined, MailOutlined } from "@ant-design/icons";
+import { message, Form, Input, Button, Checkbox } from "antd";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { BASE_URL } from "../config";
-
+import axios from "axios";
+import { useDispatch } from "react-redux";
+import { setUser } from "../redux/userSlide"; // Import action
+import { API_URL } from "../config";
+import userService from '../facadeParttern/userService'
 const Login = ({ onSwitchToRegister }) => {
     const [formData, setFormData] = useState({
         email: "",
         password: "",
     });
-    const [errorMessage, setErrorMessage] = useState("");
-    const [showResend, setShowResend] = useState(false);
-    const [resendMessage, setResendMessage] = useState("");
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setErrorMessage("");
-        setResendMessage("");
-        setShowResend(false);
-
+    const loginUser = async (email, password) => {
         try {
-            const response = await fetch(`${BASE_URL}/api/login`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    email: formData.email,
-                    password: formData.password,
-                }),
+            const response = await axios.post(`${API_URL}/api/Accounts/login`, {
+                email,
+                password,
             });
-
-            if (response.ok) {
-                const data = await response.json();
-                sessionStorage.setItem("userEmail", formData.email);
-                sessionStorage.setItem("userId", data.user.userId);
-                sessionStorage.setItem("accountName", data.user.accountName);
-                window.dispatchEvent(new Event("loginSuccess"));
-                navigate("/");
-                console.log("Logged in successfully with user data:", data);
-                message.open({
-                    type: "success",
-                    content: "Đăng nhập thành công",
-                });
-            } else {
-                const errorData = await response.json();
-                message.open(
-                    {
-                        type: "warning",
-                        content:
-                            errorData.message ||
-                            "Email hoặc mật khẩu không chính xác",
-                        duration: 3,
-                    }
-                    // errorData.message || "Email hoặc mật khẩu không chính xác"
-                );
-            }
-        } catch (err) {
-            console.error("Error:", err);
-            // setErrorMessage("Email hoặc mật khẩu không chính xác");
-            message.open({
-                type: "warning",
-                content: "Email hoặc mật khẩu không chính xác",
-                duration: 3,
-            });
+            return response.data; // Trả về userId
+        } catch (error) {
+            throw new Error(error.response?.data?.message || "Đăng nhập thất bại");
         }
     };
 
-    const onFinish = (values) => {
-        console.log("Received values of form: ", values);
+   
+
+    const handleSubmit = async () => {
+        try {
+            const userId = await loginUser(formData.email, formData.password);
+
+            // Lấy thông tin chi tiết của user
+            const userDetails = await userService.fetchUserDetails(userId);
+
+            // Lưu vào Redux
+            dispatch(setUser({
+                ...userDetails, 
+                email: formData?.email, 
+            }));
+
+            // Lưu vào localStorage nếu cần
+            localStorage.setItem("userId", userId);
+            localStorage.setItem("email", formData?.email);
+            // Điều hướng về trang chính
+            navigate("/");
+            message.success("Đăng nhập thành công");
+        } catch (error) {
+            console.error("Error:", error.message);
+            message.warning(error.message || "Email hoặc mật khẩu không chính xác");
+        }
     };
 
     return (
-        //         <div className="flex justify-center items-center">
-        //             <Form
-        //                 name="login"
-        //                 initialValues={{
-        //                     remember: true,
-        //                 }}
-        //                 style={{
-        //                     maxWidth: 450,
-        //                 }}
-        //                 size="large"
-        //                 onFinish={handleSubmit}
-        //                 className="py-8"
-        //             >
-        //                 <Form.Item
-        //                     name="email"
-        //                     rules={[
-        //                         {
-        //                             required: true,
-        //                             message: "Trường này bắt buộc!",
-        //                         },
-        //                     ]}
-        //                     className="mb-6"
-        //                 >
-        //                     <label className="text-sm">Email</label>
-        //                     <Input
-        //                         prefix={<MailOutlined />}
-        //                         placeholder="Nhập email của bạn"
-        //                         value={formData.email}
-        //                         onChange={handleChange}
-        //                     />
-        //                 </Form.Item>
-        //                 <Form.Item
-        //                     name="password"
-        //                     rules={[
-        //                         {
-        //                             required: true,
-        //                             message: "Trường này bắt buộc!",
-        //                         },
-        //                     ]}
-        //                 >
-        //                     <label className="text-sm translate-y-4">Mật khẩu</label>
-        //                     <Input.Password
-        //                         prefix={<LockOutlined />}
-        //                         type="password"
-        //                         placeholder="Nhập mật khẩu của bạn"
-        //                         value={formData.password}
-        //                         onChange={handleChange}
-        //                     />
-        //                 </Form.Item>
-        //                 <Form.Item>
-        //                     <Flex
-        //                         justify="space-between"
-        //                         align="center"
-        //                         className="-mt-4"
-        //                     >
-        //                         <Form.Item
-        //                             name="remember"
-        //                             valuePropName="checked"
-        //                             noStyle
-        //                         >
-        //                             <Checkbox className="">Nhớ thông tin</Checkbox>
-        //                         </Form.Item>
-        //                     </Flex>
-        //                 </Form.Item>
-
-        //                 <Form.Item>
-        //                     <Button
-        //                         block
-        //                         type="primary"
-        //                         htmlType="submit"
-        //                         className="mb-2 h-12 -mt-2 text-lg font-medium bg-primary"
-        //                     >
-        //                         Đăng nhập
-        //                     </Button>
-        //                     {`Chưa có tài khoản? `}
-        //                     <Link onClick={onSwitchToRegister} className="text-primary">
-        //                         Đăng kí ngay!
-        //                     </Link>
-        //                 </Form.Item>
-        //             </Form>
-        //         </div>
-        //     );
-        // };
-
-        <div className="flex justify-center items-center  ">
-            <form
-                className="bg-white p-8 rounded-lg max-w-lg w-full"
-                onSubmit={handleSubmit}
+        <div className="flex justify-center items-center">
+            <Form
+                name="login"
+                initialValues={{
+                    remember: true,
+                }}
+                style={{
+                    maxWidth: 450,
+                }}
+                size="large"
+                onFinish={handleSubmit}
+                className="py-8"
             >
-            {/* <h2 className="text-2xl mb-6 text-center text-gray-800">
-            Đăng Nhập
-        </h2> */}
-        {errorMessage && (
-                    <p className="text-red-500 text-center mb-4">
-                        {errorMessage}
-                    </p>
-                )}
-                {resendMessage && (
-                    <p className="text-green-500 text-center mb-4">
-                        {resendMessage}
-                    </p>
-                )}
-
-                <input
-                    type="email"
-                    name="email"
-                    placeholder="Email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                    className="w-full p-3 mb-4 border border-gray-300 rounded focus:border-blue-500 focus:outline-none"
-                />
-                <input
-                    type="password"
-                    name="password"
-                    placeholder="Mật khẩu"
-                    value={formData.password}
-                    onChange={handleChange}
-                    required
-                    className="w-full p-3 mb-4 border border-gray-300 rounded focus:border-blue-500 focus:outline-none"
-                />
-                <button
-                    type="submit"
-                    className="w-full bg-blue-500 text-white p-3 rounded hover:bg-blue-600 transition duration-300"
-                >
-                    Đăng Nhập
-                </button>
-
-                <p className="text-center mt-4">
-                    Chưa có tài khoản?{" "}
+                <Form.Item name="email" className="mb-6">
+                    <label className="text-sm">Email</label>
+                    <Input
+                        prefix={<MailOutlined />}
+                        placeholder="Nhập email của bạn"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                    />
+                </Form.Item>
+                <Form.Item name="password">
+                    <label className="text-sm translate-y-4">Mật khẩu</label>
+                    <Input.Password
+                        prefix={<LockOutlined />}
+                        type="password"
+                        placeholder="Nhập mật khẩu của bạn"
+                        name="password"
+                        value={formData.password}
+                        onChange={handleChange}
+                    />
+                </Form.Item>
+                <Form.Item>
+                    <Button
+                        block
+                        type="primary"
+                        htmlType="submit"
+                        className="mb-2 h-12 -mt-2 text-lg font-medium bg-primary"
+                    >
+                        Đăng nhập
+                    </Button>
+                    {`Chưa có tài khoản? `}
                     <span
-                        className="text-blue-500 hover:underline cursor-pointer"
+                        className="text-primary cursor-pointer"
                         onClick={onSwitchToRegister}
                     >
-                        Đăng ký
+                        Đăng kí ngay!
                     </span>
-                </p>
-            </form>
+                </Form.Item>
+            </Form>
         </div>
     );
 };

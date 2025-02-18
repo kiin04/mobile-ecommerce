@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity.Data;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebAPI.Factory;
 using WebAPI.Models;
@@ -12,10 +13,12 @@ namespace WebAPI.Controllers
     {
         //factory design parttern
         private readonly IRepository<Account> _accountRepository;
+        private readonly AccountService _accountService;
        
-        public AccountsController(CSDLBanHang context)
+        public AccountsController(CSDLBanHang context, AccountService accountService)
         {
             _accountRepository = RepositoryFactory.CreateRepository<Account>(context);
+            _accountService = accountService;
         }
 
         // GET: api/Account
@@ -65,7 +68,7 @@ namespace WebAPI.Controllers
         {
             try
             {
-                await _accountRepository.AddAsync(Account);
+                await _accountService.CreateAccountAsync(Account);
                 return CreatedAtAction(nameof(GetAccount), new { id = Account.Id }, Account);
             }
             catch (InvalidOperationException ex)
@@ -88,6 +91,24 @@ namespace WebAPI.Controllers
             {
                 return NotFound(new { message = ex.Message });
             }
+        }
+        [HttpPost("login")]
+        public async Task<ActionResult<int>> Login([FromBody] LoginRequest loginRequest)
+        {
+            try
+            {
+                var userId = await _accountService.LoginAsync(loginRequest.Email, loginRequest.Password);
+                return Ok(userId); // Trả về ID tài khoản
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+        public class LoginRequest
+        {
+            public string Email { get; set; } = null!;
+            public string Password { get; set; } = null!;
         }
     }
 

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { Form, Upload } from "antd";
 import { PlusOutlined } from '@ant-design/icons';
-
+import API_URL from '../config'
 import { useNavigate } from "react-router-dom";
 import { auth, sendEmailVerification } from "../firebase"; // Adjust the import path as needed
 import { message, Modal } from "antd";
@@ -13,7 +13,7 @@ const Register = ({ onRegisterSuccess }) => {
     const [accountName, setAccountName] = useState("");
     const [gender, setGender] = useState("");
     const [address, setAddress] = useState("");
-    const [phoneNumber, setPhoneNumber] = useState("");
+    const [phone, setphone] = useState("");
     const [dayOfBirth, setDayOfBirth] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -25,7 +25,7 @@ const Register = ({ onRegisterSuccess }) => {
     const [accountNameError, setAccountNameError] = useState("");
     const [genderError, setGenderError] = useState("");
     const [addressError, setAddressError] = useState("");
-    const [phoneNumberError, setPhoneNumberError] = useState("");
+    const [phoneError, setphoneError] = useState("");
     const [dayOfBirthError, setDayOfBirthError] = useState("");
     const [emailError, setEmailError] = useState("");
     const [passwordError, setPasswordError] = useState("");
@@ -37,10 +37,10 @@ const Register = ({ onRegisterSuccess }) => {
         e.preventDefault();
         setNameError("");
         setAccountNameError("");
-        setGenderError("");
+        //setGenderError("");
         setAddressError("");
-        setPhoneNumberError("");
-        setDayOfBirthError("");
+        setphoneError("");
+       // setDayOfBirthError("");
         setEmailError("");
         setPasswordError("");
         setConfirmPasswordError("");
@@ -56,14 +56,15 @@ const Register = ({ onRegisterSuccess }) => {
             setAccountNameError("Tên tài khoản không được để trống.");
             isValid = false;
         }
-        if (!gender) {
-            setGenderError("Vui lòng chọn giới tính.");
-            isValid = false;
-        }
-        if (!dayOfBirth) {
-            setDayOfBirthError("Ngày sinh không được để trống.");
-            isValid = false;
-        } else {
+        // if (!gender) {
+        //     setGenderError("Vui lòng chọn giới tính.");
+        //     isValid = false;
+        // }
+        // if (!dayOfBirth) {
+        //     setDayOfBirthError("Ngày sinh không được để trống.");
+        //     isValid = false;
+        // }
+         else {
             const selectedDate = new Date(dayOfBirth);
             const today = new Date();
             today.setHours(0, 0, 0, 0);
@@ -77,8 +78,8 @@ const Register = ({ onRegisterSuccess }) => {
             isValid = false;
         }
         const phonePattern = /^[0-9]{10,11}$/;
-        if (!phonePattern.test(phoneNumber)) {
-            setPhoneNumberError("Số điện thoại không hợp lệ (10-11 số).");
+        if (!phonePattern.test(phone)) {
+            setphoneError("Số điện thoại không hợp lệ (10-11 số).");
             isValid = false;
         }
         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -107,10 +108,10 @@ const Register = ({ onRegisterSuccess }) => {
                 const formData = new FormData();
                 formData.append("name", name);
                 formData.append("accountName", accountName);
-                formData.append("gender", gender);
+                //formData.append("gender", gender);
                 formData.append("address", address);
-                formData.append("phoneNumber", phoneNumber);
-                formData.append("dayOfBirth", dayOfBirth);
+                formData.append("phone", phone);
+                //formData.append("dayOfBirth", dayOfBirth);
                 formData.append("email", email);
                 formData.append("password", password);
                 formData.append("userId", user.uid);
@@ -119,7 +120,7 @@ const Register = ({ onRegisterSuccess }) => {
                     formData.append("userAvatar", userAvatar);
                 }
 
-                await axios.post("http://localhost:5000/api/register", formData, {
+                await axios.post(`${API_URL}/api/Users`, formData, {
                     headers: {
                         "Content-Type": "multipart/form-data",
                     },
@@ -237,12 +238,12 @@ const Register = ({ onRegisterSuccess }) => {
                         <label className="block text-left">Số điện thoại</label>
                         <input
                             type="text"
-                            value={phoneNumber}
-                            onChange={(e) => setPhoneNumber(e.target.value)}
+                            value={phone}
+                            onChange={(e) => setphone(e.target.value)}
                             placeholder="Nhập số điện thoại"
                             className="border rounded-md p-2 w-full"
                         />
-                        {phoneNumberError && <p className="text-red-500">{phoneNumberError}</p>}
+                        {phoneError && <p className="text-red-500">{phoneError}</p>}
                     </div>
                     <div>
                         <label className="block text-left">Email</label>

@@ -2,6 +2,9 @@ import { ConfigProvider } from "antd";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
+import { Provider } from "react-redux";
+import { App as AntdApp } from "antd";
+import store from "./redux/store.js"; 
 import App from "./App.jsx";
 import "./index.css";
 
@@ -33,7 +36,7 @@ import "./index.css";
 
 createRoot(document.getElementById("root")).render(
     <StrictMode>
-        <ConfigProvider
+        <AntdApp
             theme={{
                 components: {
                     Badge: {
@@ -44,36 +47,36 @@ createRoot(document.getElementById("root")).render(
                         footerPaddingInline: 40,
                     },
                     Checkbox: {
-                        colorPrimary: '#f42c37',
-                        colorPrimaryHover: '#f42c37',
+                        colorPrimary: "#f42c37",
+                        colorPrimaryHover: "#f42c37",
                     },
                     Button: {
-                        defaultHoverColor: '#f42c37',
-                        defaultHoverBorderColor: '#f42c37',
-                        defaultHoverBg: '#f42c37',
+                        defaultHoverColor: "#f42c37",
+                        defaultHoverBorderColor: "#f42c37",
+                        defaultHoverBg: "#f42c37",
                     },
                     Input: {
-                        activeBorderColor: '#f42c37',
-                        hoverBorderColor: '#f42c37',
+                        activeBorderColor: "#f42c37",
+                        hoverBorderColor: "#f42c37",
                     },
                     Select: {
-                        activeBorderColor: '#f42c37',
-                        hoverBorderColor: '#f42c37',
-                        optionSelectedBg: '#f42c37',
-                        optionSelectedColor: '#fff',
+                        activeBorderColor: "#f42c37",
+                        hoverBorderColor: "#f42c37",
+                        optionSelectedBg: "#f42c37",
+                        optionSelectedColor: "#fff",
                     },
                     Breadcrumb: {
-                        linkHoverColor: '#f42c37',
-                    }
+                        linkHoverColor: "#f42c37",
+                    },
                 },
-                token: {
-
-                }
+                token: {},
             }}
         >
             <BrowserRouter>
+                <Provider store={store}>
                     <App />
+                </Provider>
             </BrowserRouter>
-        </ConfigProvider>
+        </AntdApp>
     </StrictMode>
 );

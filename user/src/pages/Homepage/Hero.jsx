@@ -30,7 +30,7 @@ const Hero = () => {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const response = await axios.get( ` ${API_URL}/api/Product`  );
+                const response = await axios.get( ` ${API_URL}/api/Products`  );
                 const productsData = response.data;
                 setProducts(productsData);
             } catch (error) {

@@ -2,7 +2,8 @@ import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import AccountSidebar from "../components/AccountSidebar.jsx";
 import { BASE_URL } from "../config.js";
-
+import { useDispatch, useSelector } from "react-redux";
+import { logoutUser, setUser } from "../redux/userSlide";
 const Profile = () => {
     const [userData, setUserData] = useState(null);
     const [error, setError] = useState(null);
@@ -42,7 +43,7 @@ const Profile = () => {
         return age >= 18;
     };
 
-    const validatePhoneNumber = (phone) => {
+    const validatephone = (phone) => {
         const phoneRegex = /(84|0[3|5|7|8|9])+([0-9]{8})\b/;
         return phoneRegex.test(phone);
     };
@@ -62,37 +63,20 @@ const Profile = () => {
     const [validationErrors, setValidationErrors] = useState({
         name: "",
         email: "",
-        phoneNumber: "",
+        phone: "",
         dayOfBirth: "",
         password: "",
     });
 
-    const fetchUserData = async () => {
-        const userEmail = sessionStorage.getItem("userEmail");
-        if (userEmail) {
-            try {
-                const response = await fetch(
-                    `${BASE_URL}/api/users/email/${userEmail}`
-                );
-                const data = await response.json();
-                console.log(data); // Log the fetched data
-                if (response.ok) {
-                    setUserData(data);
-                } else {
-                    setError("Error fetching user data");
-                }
-            } catch (err) {
-                console.error("Error fetching user data", err);
-                setError("Error fetching user data");
-            }
-        } else {
-            setError("User email not found");
-        }
-    };
-
+    const dispatch = useDispatch();
+    const user = useSelector((state) => state.user);
+   
     useEffect(() => {
-        fetchUserData();
-    }, []);
+        setUserData(user)
+    }, [user, dispatch]);
+    useEffect(() => {
+      console.log('userData',userData);
+    }, [userData]);
 
     const handleEditToggle = () => {
         setIsEditing(!isEditing);
@@ -116,7 +100,7 @@ const Profile = () => {
         setValidationErrors({
             name: "",
             email: "",
-            phoneNumber: "",
+            phone: "",
             dayOfBirth: "",
             password: "",
         });
@@ -135,8 +119,8 @@ const Profile = () => {
             hasErrors = true;
         }
 
-        if (!validatePhoneNumber(userData.phoneNumber)) {
-            newErrors.phoneNumber = "Số điện thoại không hợp lệ";
+        if (!validatephone(userData.phone)) {
+            newErrors.phone = "Số điện thoại không hợp lệ";
             hasErrors = true;
         }
 
@@ -169,7 +153,7 @@ const Profile = () => {
         const formData = new FormData(); // Create FormData to handle file uploads
         formData.append("name", userData.name);
         formData.append("email", userData.email);
-        formData.append("phoneNumber", userData.phoneNumber);
+        formData.append("phone", userData.phone);
         formData.append("dayOfBirth", userData.dayOfBirth);
         formData.append("gender", userData.gender);
         formData.append("address", userData.address);
@@ -199,7 +183,7 @@ const Profile = () => {
             const data = await response.json();
             if (response.ok) {
                 setIsEditing(false);
-                fetchUserData();
+                
                 setUserAvatar(null); // Reset userAvatar after successful update
                 setAvatarPreview(null); // Reset avatar preview after successful update
                 if (passwordData.newPassword) {
@@ -413,32 +397,32 @@ const Profile = () => {
                                                 <input
                                                     type="text"
                                                     className={`border rounded-lg p-2 w-full text-left ${
-                                                        validationErrors.phoneNumber
+                                                        validationErrors.phone
                                                             ? "border-red-500"
                                                             : ""
                                                     }`}
-                                                    name="phoneNumber"
-                                                    value={userData.phoneNumber}
+                                                    name="phone"
+                                                    value={userData.phone}
                                                     onChange={(e) =>
                                                         setUserData({
                                                             ...userData,
-                                                            phoneNumber:
+                                                            phone:
                                                                 e.target.value,
                                                         })
                                                     }
                                                     placeholder="Số điện thoại"
                                                     required
                                                 />
-                                                {validationErrors.phoneNumber && (
+                                                {validationErrors.phone && (
                                                     <p className="text-red-500 text-sm absolute right-0 mt-1">
                                                         {
-                                                            validationErrors.phoneNumber
+                                                            validationErrors.phone
                                                         }
                                                     </p>
                                                 )}
                                             </>
                                         ) : (
-                                            <p>{userData.phoneNumber}</p>
+                                            <p>{userData.phone}</p>
                                         )}
                                     </div>
                                 </div>

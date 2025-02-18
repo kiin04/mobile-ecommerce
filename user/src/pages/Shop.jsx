@@ -36,7 +36,7 @@ const Shop = () => {
     useEffect(() => {
         const fetchAllProducts = async () => {
             try {
-                const response = await axios.get(`${API_URL}/api/Product`);
+                const response = await axios.get(`${API_URL}/api/Products`);
                 setProducts(response.data);
                 setFilteredProducts(response.data);
 

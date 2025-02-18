@@ -105,3 +105,4 @@ INSERT INTO Promotion (name, value, end_at) VALUES
 UPDATE Products
 SET promo = 0;
 GO
+
