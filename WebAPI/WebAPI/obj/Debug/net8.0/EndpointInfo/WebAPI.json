@@ -2333,6 +2333,10 @@
             "type": "string",
             "nullable": true
           },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
           "phone": {
             "type": "string",
             "nullable": true

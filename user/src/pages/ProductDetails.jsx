@@ -2,7 +2,7 @@ import { notification, Select } from "antd";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { ShoppingCartOutlined } from "@ant-design/icons";
-import { BASE_URL } from "../config";
+import { API_URL, BASE_URL } from "../config";
 
 const ProductDetails = () => {
     const { productId } = useParams();
@@ -15,24 +15,24 @@ const ProductDetails = () => {
     const [selectedColor, setSelectedColor] = useState("");
 
     useEffect(() => {
-        fetch(`${BASE_URL}/api/products/${productId}`)
-            .then((response) => response.json())
-            .then((data) => {
-                console.log(data); // Check the structure of the data
-                setProduct(data.product);
-                setAvailableColors(data.availableColors);
-
-                const defaultColor = data.availableColors.find(
-                    (color) => color.color === data.product.color
-                );
-                if (defaultColor) {
-                    setSelectedColor(defaultColor.id);
-                }
-            })
-            .catch((error) => {
-                console.error("Error fetching product details:", error);
-            });
-    }, [productId]);
+        const fetchProduct = async () => {
+          try {
+            const response = await fetch(`${API_URL}/api/Product/${productId}`);
+            if (response.ok) {
+              const data = await response.json();
+              setProduct({ ...data }); 
+            } else {
+              throw new Error('Failed to fetch product');
+            }
+          } catch (error) {
+            console.error('Error fetching product:', error);
+            setError('Failed to load product data. Please try again.');
+          } finally {
+            setLoading(false);
+          }
+        };
+        fetchProduct(); 
+      }, [productId]);
 
     const handleQuantityChange = (e) => {
         const value = parseInt(e.target.value, 10);
@@ -225,7 +225,7 @@ const ProductDetails = () => {
                     {/* <!-- Product Images --> */}
                     <div className="w-full 2xl:w-[40%] xl:w-[50%] lg:w-[50%] md:w-[50%] sm:w-[50%] px-4 mb-8 -translate-x-4">
                         <img
-                            src={`${BASE_URL}/${product.image}`}
+                            src={`data:image/jpeg;base64,${product.image}`}
                             alt={product.name}
                             className="w-full h-auto rounded-lg shadow-md mb-4"
                             id="mainImage"

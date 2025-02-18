@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { BASE_URL } from "../../config";
+import { BASE_URL, API_URL } from "../../config";
 import Heading from "../../shared/Heading";
 import { notification } from "antd";
 import PathNames from "../../PathNames.js";
@@ -18,11 +18,9 @@ const NewReleases = () => {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const response = await axios.get(
-                    "http://localhost:5000/api/products/"
-                );
-                const productsData = response.data;
-                setProducts(productsData);
+                const response = await axios.get(`${API_URL}/api/Product`);
+                console.log('res release', response.data);
+                setProduct(response.data);
             } catch (error) {
                 console.error("Lỗi khi tải sản phẩm:", error);
             }
@@ -34,10 +32,10 @@ const NewReleases = () => {
         return products.filter((product) => ids.includes(product.id));
     };
     const NReleaseProducts = getProductsById([
-        "SP028",
-        "SP022",
-        "SP035",
-        "SP036",
+        "1",
+        "2",
+        "3",
+        "4",
     ]);
 
     const handleQuantityChange = (e) => {

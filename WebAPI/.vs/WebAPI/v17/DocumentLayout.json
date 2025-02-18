@@ -3,6 +3,30 @@
   "WorkspaceRootPath": "D:\\MobileEcommerce\\WebAPI\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|d:\\mobileecommerce\\webapi\\webapi\\controllers\\accountcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|solutionrelative:webapi\\controllers\\accountcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|d:\\mobileecommerce\\webapi\\webapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|solutionrelative:webapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|d:\\mobileecommerce\\webapi\\webapi\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|solutionrelative:webapi\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|d:\\mobileecommerce\\webapi\\webapi\\webapi.http||{5703B403-55E7-4C63-8C88-A8F52C7A45C5}",
+      "RelativeMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|solutionrelative:webapi\\webapi.http||{5703B403-55E7-4C63-8C88-A8F52C7A45C5}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|d:\\mobileecommerce\\webapi\\webapi\\appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|solutionrelative:webapi\\appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|d:\\mobileecommerce\\webapi\\webapi\\controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|solutionrelative:webapi\\controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|d:\\mobileecommerce\\webapi\\webapi\\models\\csdlbanhang.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|solutionrelative:webapi\\models\\csdlbanhang.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -11,16 +35,8 @@
       "RelativeMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|solutionrelative:webapi\\models\\order.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|d:\\mobileecommerce\\webapi\\webapi\\controllers\\accountcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|solutionrelative:webapi\\controllers\\accountcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|d:\\mobileecommerce\\webapi\\webapi\\controllers\\rolecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|solutionrelative:webapi\\controllers\\rolecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|d:\\mobileecommerce\\webapi\\webapi\\controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A9C469B6-6BA9-46D9-B80C-08834391DB49}|WebAPI\\WebAPI.csproj|solutionrelative:webapi\\controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -30,24 +46,72 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 6,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 3,
+              "Title": "WebAPI.http",
+              "DocumentMoniker": "D:\\MobileEcommerce\\WebAPI\\WebAPI\\WebAPI.http",
+              "RelativeDocumentMoniker": "WebAPI\\WebAPI.http",
+              "ToolTip": "D:\\MobileEcommerce\\WebAPI\\WebAPI\\WebAPI.http",
+              "RelativeToolTip": "WebAPI\\WebAPI.http",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003502|",
+              "WhenOpened": "2025-02-16T11:17:08.607Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "appsettings.Development.json",
+              "DocumentMoniker": "D:\\MobileEcommerce\\WebAPI\\WebAPI\\appsettings.Development.json",
+              "RelativeDocumentMoniker": "WebAPI\\appsettings.Development.json",
+              "ToolTip": "D:\\MobileEcommerce\\WebAPI\\WebAPI\\appsettings.Development.json",
+              "RelativeToolTip": "WebAPI\\appsettings.Development.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-02-16T11:16:57.527Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "D:\\MobileEcommerce\\WebAPI\\WebAPI\\appsettings.json",
+              "RelativeDocumentMoniker": "WebAPI\\appsettings.json",
+              "ToolTip": "D:\\MobileEcommerce\\WebAPI\\WebAPI\\appsettings.json",
+              "RelativeToolTip": "WebAPI\\appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAABoAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-02-16T10:37:19.462Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Program.cs",
+              "DocumentMoniker": "D:\\MobileEcommerce\\WebAPI\\WebAPI\\Program.cs",
+              "RelativeDocumentMoniker": "WebAPI\\Program.cs",
+              "ToolTip": "D:\\MobileEcommerce\\WebAPI\\WebAPI\\Program.cs",
+              "RelativeToolTip": "WebAPI\\Program.cs",
+              "ViewState": "AgIAAAUAAAAAAAAAAAAAADcAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-16T10:36:41.455Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
               "Title": "CSDLBanHang.cs",
               "DocumentMoniker": "D:\\MobileEcommerce\\WebAPI\\WebAPI\\Models\\CSDLBanHang.cs",
               "RelativeDocumentMoniker": "WebAPI\\Models\\CSDLBanHang.cs",
               "ToolTip": "D:\\MobileEcommerce\\WebAPI\\WebAPI\\Models\\CSDLBanHang.cs",
               "RelativeToolTip": "WebAPI\\Models\\CSDLBanHang.cs",
-              "ViewState": "AgIAALAAAAAAAAAAAAAnwMEAAAApAAAAAAAAAA==",
+              "ViewState": "AgIAALAAAAAAAAAAAAAnwMQAAAAqAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-15T18:08:11.939Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-02-15T18:08:11.939Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 7,
               "Title": "Order.cs",
               "DocumentMoniker": "D:\\MobileEcommerce\\WebAPI\\WebAPI\\Models\\Order.cs",
               "RelativeDocumentMoniker": "WebAPI\\Models\\Order.cs",
@@ -55,12 +119,11 @@
               "RelativeToolTip": "WebAPI\\Models\\Order.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-15T18:07:51.233Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-02-15T18:07:51.233Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 0,
               "Title": "AccountController.cs",
               "DocumentMoniker": "D:\\MobileEcommerce\\WebAPI\\WebAPI\\Controllers\\AccountController.cs",
               "RelativeDocumentMoniker": "WebAPI\\Controllers\\AccountController.cs",
@@ -73,25 +136,25 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 5,
               "Title": "UserController.cs",
               "DocumentMoniker": "D:\\MobileEcommerce\\WebAPI\\WebAPI\\Controllers\\UserController.cs",
               "RelativeDocumentMoniker": "WebAPI\\Controllers\\UserController.cs",
               "ToolTip": "D:\\MobileEcommerce\\WebAPI\\WebAPI\\Controllers\\UserController.cs",
               "RelativeToolTip": "WebAPI\\Controllers\\UserController.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAABYAAAAAAAAAAAAQwAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-02-15T17:21:11.448Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 8,
               "Title": "RoleController.cs",
               "DocumentMoniker": "D:\\MobileEcommerce\\WebAPI\\WebAPI\\Controllers\\RoleController.cs",
               "RelativeDocumentMoniker": "WebAPI\\Controllers\\RoleController.cs",
               "ToolTip": "D:\\MobileEcommerce\\WebAPI\\WebAPI\\Controllers\\RoleController.cs",
               "RelativeToolTip": "WebAPI\\Controllers\\RoleController.cs",
-              "ViewState": "AgIAAAkAAAAAAAAAAAAAAA8AAABLAAAAAAAAAA==",
+              "ViewState": "AgIAAAMAAAAAAAAAAIBZwA8AAABLAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-02-15T17:16:37.117Z"
             }
