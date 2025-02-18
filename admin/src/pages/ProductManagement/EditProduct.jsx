@@ -22,7 +22,7 @@ const EditProduct = () => {
   const fetchCategory = async () => {
     try {
       const response = await axios.get(`${API_URL}/api/Categories`);
-      console.log("API Response:", response);
+      
       return response.data;
     } catch (error) {
       console.error("Lỗi khi gọi API:", error);
@@ -37,7 +37,7 @@ const EditProduct = () => {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const response = await fetch(`${API_URL}/api/Product/${productId}`);
+        const response = await fetch(`${API_URL}/api/Products/${productId}`);
         if (response.ok) {
           const data = await response.json();
           setProduct({ ...data }); 
@@ -110,18 +110,16 @@ const EditProduct = () => {
         console.log(key, value);
     }
     try {
-      const response = await fetch(`${API_URL}/api/Product/${productId}`, {
+      const response = await fetch(`${API_URL}/api/Products/${productId}`, {
         method: 'PUT',
         body: formData
       });
       console.log("update response", response);
+      console.log(response);
       if (response.ok) {
         alert('Sản phẩm đã được cập nhật thành công');
         navigate('/product-management');
-      } else {
-        const result = await response.json();
-        throw new Error(result.message || 'Failed to update product');
-      }
+      } 
     } catch (error) {
       console.error('Lỗi khi cập nhật sản phẩm:', error);
       alert('Lỗi khi cập nhật sản phẩm: ' + error.message);
@@ -234,7 +232,7 @@ const EditProduct = () => {
             />
           </Grid>
 
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={3}>
             <TextField
               label="Giá"
               name="price"
@@ -248,6 +246,19 @@ const EditProduct = () => {
             />
           </Grid>
 
+          <Grid item xs={12} sm={3}>
+            <TextField
+              label="Giảm giá"
+              name="promo"
+              type="number"
+              value={product?.promo }
+              onChange={handleChange}
+              fullWidth
+              required
+              margin="normal"
+              inputProps={{ min: 0 }}
+            />
+          </Grid>
         
           <Grid item xs={12} sm={6}>
             <TextField

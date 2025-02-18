@@ -11,6 +11,7 @@
         public int Rate { get; set; }
         public int Sold { get; set; }
         public string Brand { get; set; }
+        public int Promo { get; set; }
         public DateTime? CreatedAt { get; set; }
     }
 }

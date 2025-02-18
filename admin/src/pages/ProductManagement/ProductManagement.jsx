@@ -18,7 +18,7 @@ const ProductManagement = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get(`${API_URL}/api/Product`);
+        const response = await axios.get(`${API_URL}/api/Products`);
         
         if (response.status === 200) {
           const data = response.data;
@@ -85,7 +85,7 @@ const getStock =  (id) => {
       // }
 
       // Nếu sản phẩm không được sử dụng, tiến hành xóa
-      const response = await fetch(`${API_URL}/api/Product/${productId}`, {
+      const response = await fetch(`${API_URL}/api/Products/${productId}`, {
         method: 'DELETE',
       });
 
@@ -251,6 +251,9 @@ const getStock =  (id) => {
                   </Typography>
                   <Typography>
                     <strong>Đơn giá:</strong> {formatPrice(selectedProduct.price)}
+                  </Typography>
+                  <Typography>
+                    <strong>Giảm giá giá:</strong> {(selectedProduct.promo)}%
                   </Typography>
                   <Typography>
                     <strong>Mô tả:</strong>

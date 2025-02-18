@@ -5,10 +5,10 @@
     "version": "1.0"
   },
   "paths": {
-    "/api/Account": {
+    "/api/Accounts": {
       "get": {
         "tags": [
-          "Account"
+          "Accounts"
         ],
         "responses": {
           "200": {
@@ -44,7 +44,7 @@
       },
       "post": {
         "tags": [
-          "Account"
+          "Accounts"
         ],
         "requestBody": {
           "content": {
@@ -89,10 +89,10 @@
         }
       }
     },
-    "/api/Account/{id}": {
+    "/api/Accounts/{id}": {
       "get": {
         "tags": [
-          "Account"
+          "Accounts"
         ],
         "parameters": [
           {
@@ -130,7 +130,7 @@
       },
       "put": {
         "tags": [
-          "Account"
+          "Accounts"
         ],
         "parameters": [
           {
@@ -170,7 +170,7 @@
       },
       "delete": {
         "tags": [
-          "Account"
+          "Accounts"
         ],
         "parameters": [
           {
@@ -190,10 +190,10 @@
         }
       }
     },
-    "/api/Cart": {
+    "/api/Carts": {
       "get": {
         "tags": [
-          "Cart"
+          "Carts"
         ],
         "responses": {
           "200": {
@@ -229,7 +229,7 @@
       },
       "post": {
         "tags": [
-          "Cart"
+          "Carts"
         ],
         "requestBody": {
           "content": {
@@ -274,10 +274,10 @@
         }
       }
     },
-    "/api/Cart/{id}": {
+    "/api/Carts/{id}": {
       "get": {
         "tags": [
-          "Cart"
+          "Carts"
         ],
         "parameters": [
           {
@@ -315,7 +315,7 @@
       },
       "put": {
         "tags": [
-          "Cart"
+          "Carts"
         ],
         "parameters": [
           {
@@ -355,7 +355,7 @@
       },
       "delete": {
         "tags": [
-          "Cart"
+          "Carts"
         ],
         "parameters": [
           {
@@ -1408,10 +1408,10 @@
         }
       }
     },
-    "/api/Product": {
+    "/api/Products": {
       "get": {
         "tags": [
-          "Product"
+          "Products"
         ],
         "responses": {
           "200": {
@@ -1447,7 +1447,7 @@
       },
       "post": {
         "tags": [
-          "Product"
+          "Products"
         ],
         "requestBody": {
           "content": {
@@ -1482,6 +1482,10 @@
                   },
                   "Brand": {
                     "type": "string"
+                  },
+                  "Promo": {
+                    "type": "integer",
+                    "format": "int32"
                   },
                   "CreatedAt": {
                     "type": "string",
@@ -1518,6 +1522,9 @@
                 "Brand": {
                   "style": "form"
                 },
+                "Promo": {
+                  "style": "form"
+                },
                 "CreatedAt": {
                   "style": "form"
                 },
@@ -1552,10 +1559,10 @@
         }
       }
     },
-    "/api/Product/{id}": {
+    "/api/Products/{id}": {
       "get": {
         "tags": [
-          "Product"
+          "Products"
         ],
         "parameters": [
           {
@@ -1593,7 +1600,7 @@
       },
       "put": {
         "tags": [
-          "Product"
+          "Products"
         ],
         "parameters": [
           {
@@ -1640,6 +1647,10 @@
                   "Brand": {
                     "type": "string"
                   },
+                  "Promo": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
                   "CreatedAt": {
                     "type": "string",
                     "format": "date-time"
@@ -1675,6 +1686,9 @@
                 "Brand": {
                   "style": "form"
                 },
+                "Promo": {
+                  "style": "form"
+                },
                 "CreatedAt": {
                   "style": "form"
                 },
@@ -1693,7 +1707,7 @@
       },
       "delete": {
         "tags": [
-          "Product"
+          "Products"
         ],
         "parameters": [
           {
@@ -1713,10 +1727,10 @@
         }
       }
     },
-    "/api/Role": {
+    "/api/Roles": {
       "get": {
         "tags": [
-          "Role"
+          "Roles"
         ],
         "responses": {
           "200": {
@@ -1752,7 +1766,7 @@
       },
       "post": {
         "tags": [
-          "Role"
+          "Roles"
         ],
         "requestBody": {
           "content": {
@@ -1797,10 +1811,10 @@
         }
       }
     },
-    "/api/Role/{id}": {
+    "/api/Roles/{id}": {
       "get": {
         "tags": [
-          "Role"
+          "Roles"
         ],
         "parameters": [
           {
@@ -1838,7 +1852,7 @@
       },
       "put": {
         "tags": [
-          "Role"
+          "Roles"
         ],
         "parameters": [
           {
@@ -1878,7 +1892,7 @@
       },
       "delete": {
         "tags": [
-          "Role"
+          "Roles"
         ],
         "parameters": [
           {
@@ -2425,6 +2439,10 @@
             "nullable": true
           },
           "categoryId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "promo": {
             "type": "integer",
             "format": "int32"
           },

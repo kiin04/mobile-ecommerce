@@ -20,9 +20,7 @@ builder.Services.Configure<FormOptions>(options =>
 {
     options.MultipartBodyLengthLimit = 20 * 1024 * 1024; // Cho phép file tối đa 10MB
 });
-//dung singleton
-//var connectionString = DatabaseManager.Instance.ConnectionString;
-//builder.Services.AddDbContext<CSDLBanHang>(otp => otp.UseSqlServer(connectionString));
+
 
 builder.Services.AddScoped<ColorSizesService>(); 
 builder.Services.AddScoped<ProductService>();

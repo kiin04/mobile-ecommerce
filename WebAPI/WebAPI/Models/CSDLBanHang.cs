@@ -255,6 +255,8 @@ public partial class CSDLBanHang : DbContext
             entity.Property(e => e.Price)
                 .HasColumnType("decimal(18, 2)")
                 .HasColumnName("price");
+            entity.Property(e => e.Promo)
+               .HasColumnName("promo");
             entity.Property(e => e.Rate)
                 .HasDefaultValue(0)
                 .HasColumnName("rate");

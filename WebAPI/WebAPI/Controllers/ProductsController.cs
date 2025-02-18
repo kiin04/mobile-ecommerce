@@ -9,13 +9,13 @@ namespace WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ProductController : ControllerBase
+    public class ProductsController : ControllerBase
     {
         //factory design parttern
         private readonly IRepository<Product> _ProductRepository;
         private ProductService _ProductService;
 
-        public ProductController(CSDLBanHang context, ProductService productService)
+        public ProductsController(CSDLBanHang context, ProductService productService)
         {
             _ProductRepository = RepositoryFactory.CreateRepository<Product>(context);
             _ProductService = productService;
@@ -54,6 +54,7 @@ namespace WebAPI.Controllers
                     CreatedAt = productDto.CreatedAt,
                     Id = id,
                     Name = productDto.Name,
+                    Promo = productDto.Promo,
                     Description = productDto.Description,
                     Price = productDto.Price,
                     Unit = productDto.Unit,
@@ -98,6 +99,7 @@ namespace WebAPI.Controllers
                     Rate = productDto.Rate,
                     Sold  = productDto.Sold,
                     Brand = productDto.Brand,
+                    Promo = productDto.Promo,
                 };
 
                 await _ProductRepository.AddAsync(product, image);
