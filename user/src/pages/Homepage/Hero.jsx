@@ -43,7 +43,7 @@ const Hero = () => {
     const getProductsById = (ids) => {
         return products.filter((product) => ids.includes(product.id));
     };
-    const heroProducts = getProductsById(["SP023", "SP035"]);
+    const heroProducts = getProductsById(["1", "5"]);
 
     const handleHeroClick = (productId) => {
         navigate(`${PathNames.PRODUCT_DETAILS}/${productId}`);

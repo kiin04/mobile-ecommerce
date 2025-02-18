@@ -32,8 +32,8 @@ CREATE TABLE Products (
 );
 GO
 
--- Bảng ColorSize
-CREATE TABLE ColorSize (
+-- Bảng ColorSizes
+CREATE TABLE ColorSizes (
 	id INT PRIMARY KEY IDENTITY(1,1),
     product_id INT NOT NULL,
     color NVARCHAR(50) NOT NULL,

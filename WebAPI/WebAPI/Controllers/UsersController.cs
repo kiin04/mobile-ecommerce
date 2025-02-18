@@ -8,31 +8,33 @@ namespace WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AccountController : ControllerBase
+    public class UsersController : ControllerBase
     {
         //factory design parttern
-        private readonly IRepository<Account> _accountRepository;
-       
-        public AccountController(CSDLBanHang context)
+        private readonly IRepository<User> _UserRepository;
+        private UserService _UserService;
+
+        public UsersController(CSDLBanHang context, UserService userService)
         {
-            _accountRepository = RepositoryFactory.CreateRepository<Account>(context);
+            _UserRepository = RepositoryFactory.CreateRepository<User>(context);
+            _UserService = userService;
         }
 
-        // GET: api/Account
+        // GET: api/User
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Account>>> GetAccount()
+        public async Task<ActionResult<IEnumerable<User>>> GetUser()
         {
-            return Ok(await _accountRepository.GetAllAsync());
+            return Ok(await _UserRepository.GetAllAsync());
         }
 
-        // GET: api/Account/5
+        // GET: api/User/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Account>> GetAccount(int id)
+        public async Task<ActionResult<User>> GetUser(int id)
         {
             try
             {
-                var Account = await _accountRepository.GetByIdAsync(id);
-                return Ok(Account);
+                var User = await _UserRepository.GetByIdAsync(id);
+                return Ok(User);
             }
             catch (KeyNotFoundException ex)
             {
@@ -40,13 +42,13 @@ namespace WebAPI.Controllers
             }
         }
 
-        // PUT: api/Account/5
+        // PUT: api/User/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutAccount(int id, Account Account)
+        public async Task<IActionResult> PutUser(int id, User User)
         {
             try
             {
-                await _accountRepository.UpdateAsync(Account);
+                await _UserRepository.UpdateAsync(User);
                 return NoContent();
             }
             catch (DbUpdateConcurrencyException ex)
@@ -59,14 +61,14 @@ namespace WebAPI.Controllers
             }
         }
 
-        // POST: api/Account
+        // POST: api/User
         [HttpPost]
-        public async Task<ActionResult<Account>> PostAccount(Account Account)
+        public async Task<ActionResult<User>> PostUser(User User)
         {
             try
             {
-                await _accountRepository.AddAsync(Account);
-                return CreatedAtAction(nameof(GetAccount), new { id = Account.Id }, Account);
+                await _UserRepository.AddAsync(User);
+                return CreatedAtAction(nameof(GetUser), new { id = User.Id }, User);
             }
             catch (InvalidOperationException ex)
             {
@@ -74,14 +76,14 @@ namespace WebAPI.Controllers
             }
         }
 
-        // DELETE: api/Account/5
+        // DELETE: api/User/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAccount(int id)
+        public async Task<IActionResult> DeleteUser(int id)
         {
 
             try
             {
-               await _accountRepository.DeleteAsync(id);
+               await _UserService.DeleteDependencieAsync(id);
                 return NoContent();
             }
             catch (KeyNotFoundException ex)

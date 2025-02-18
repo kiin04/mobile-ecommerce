@@ -8,12 +8,12 @@ namespace WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class RoleController : ControllerBase
+    public class RolesController : ControllerBase
     {
         private readonly IRepository<Role> _RoleRepository;
         private RoleService _roleService;
 
-        public RoleController(CSDLBanHang context, RoleService roleService)
+        public RolesController(CSDLBanHang context, RoleService roleService)
         {
             _RoleRepository = RepositoryFactory.CreateRepository<Role>(context);
             _roleService = roleService;
