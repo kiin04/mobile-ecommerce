@@ -1,5 +1,5 @@
 import { LockOutlined, MailOutlined } from "@ant-design/icons";
-import { message, Form, Input, Button, Checkbox } from "antd";
+import { message, Form, Input, Button } from "antd";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -31,7 +31,7 @@ const Login = ({ onSwitchToRegister }) => {
         }
     };
 
-   
+
 
     const handleSubmit = async () => {
         try {
@@ -42,8 +42,8 @@ const Login = ({ onSwitchToRegister }) => {
 
             // Lưu vào Redux
             dispatch(setUser({
-                ...userDetails, 
-                email: formData?.email, 
+                ...userDetails,
+                email: formData?.email,
             }));
 
             // Lưu vào localStorage nếu cần

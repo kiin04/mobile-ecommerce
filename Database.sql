@@ -33,22 +33,8 @@ CREATE TABLE Products (
 );
 GO
 
-alter table Products
-add promo int;
-GO
-UPDATE Products
-SET promo = 0;
-GO
-UPDATE Accounts
-SET password = '$2a$11$DtH80CwOQ5BiwisbC7g9eOEmBeIHWm4Wzw533d8k.nytLF87vo27a';
-GO
--- Bảng ColorSize
-CREATE TABLE ColorSize (
-=======
-
 -- Bảng ColorSizes
 CREATE TABLE ColorSizes (
->>>>>>> 10bc1a0f3acb4135f6ea3a1277bd794635e62d98
 	id INT PRIMARY KEY IDENTITY(1,1),
     product_id INT NOT NULL,
     color NVARCHAR(50) NOT NULL,
@@ -125,7 +111,7 @@ CREATE TABLE OrderDetails (
     updated_at DATETIME DEFAULT GETDATE()
 );
 GO
-
+y
 CREATE TABLE Cart (
     id INT PRIMARY KEY IDENTITY(1,1),
     product_id INT NOT NULL,
@@ -143,14 +129,14 @@ GO
 alter column
 --Bang Details
 CREATE TABLE Details (
-    id INT IDENTITY(1,1) PRIMARY KEY, 
+    id INT IDENTITY(1,1) PRIMARY KEY,
     ScreenSize NVARCHAR(50) NULL, -- Screen size
     ScreenTechnology NVARCHAR(100) NULL, -- Screen technology
     RearCamera NVARCHAR(100) NULL, -- Rear camera
     FrontCamera NVARCHAR(100) NULL, -- Front camera
     Chipset NVARCHAR(100) NULL, -- Chipset
     GPU NVARCHAR(100) NULL, -- GPU
-    NFC  NVARCHAR(10) NULL, -- NFC technology 
+    NFC  NVARCHAR(10) NULL, -- NFC technology
     RAM NVARCHAR(50) NULL, -- RAM capacity
     InternalStorage NVARCHAR(50) NULL, -- Internal storage
     Battery NVARCHAR(50) NULL, -- Battery capacity

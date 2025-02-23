@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import axios from "axios";
 import { Form, Upload } from "antd";
 import { PlusOutlined } from '@ant-design/icons';
-import API_URL from '../config'
+import { API_URL } from '../config.js'
 import { useNavigate } from "react-router-dom";
-import { auth, sendEmailVerification } from "../firebase"; // Adjust the import path as needed
+import { auth, sendEmailVerification } from "../firebase.js"; // Adjust the import path as needed
 import { message, Modal } from "antd";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 

@@ -19,7 +19,7 @@ INSERT INTO Products (name, description, price, unit, category_id) VALUES
 (N'AirPods Pro 2', N'Tai nghe chống ồn chủ động', 5890000, N'Cái', 4),
 (N'Apple Watch Series 9', N'Màn hình Always-On, chip S9', 12990000, N'Cái', 5),
 (N'Cáp sạc MagSafe', N'Cáp sạc không dây cho iPhone', 1290000, N'Cái', 6);
-UPDATE Products 
+UPDATE Products
 SET brand = 'Apple';
 -- Thêm dữ liệu vào bảng ColorSizes
 INSERT INTO ColorSizes (product_id, color, size, quantity) VALUES
@@ -48,15 +48,9 @@ INSERT INTO Roles (name, promo) VALUES
 (N'Khách vãng lai', 0),
 (N'Admin', 0),
 (N'Nhân viên', 5),
-<<<<<<< HEAD
-N'Khách hàng thường', 0),
-N'Khách hàng Bạc', 7),
-N'Khách hàng Vàng', 10),
-=======
 (N'Khách hàng thường', 0),
 (N'Khách hàng Bạc', 7),
 (N'Khách hàng Vàng', 10),
->>>>>>> c936b98d8b0fffc4a0ea8c110ea6903b10f6dfa6
 (N'Khách hàng Kim Cương', 15);
 
 -- Thêm dữ liệu vào bảng Accounts
@@ -89,8 +83,8 @@ INSERT INTO Cart (product_id, quantity, user_id, price) VALUES
 (3, 2, 3, 33980000);
 
 -- Thêm dữ liệu vào bảng Details
-INSERT INTO Details 
-(ScreenSize, ScreenTechnology, RearCamera, FrontCamera, Chipset, GPU, NFC, RAM, InternalStorage, Battery, SIMCard, ScreenResolution, ChargingTechnology, ProductId) 
+INSERT INTO Details
+(ScreenSize, ScreenTechnology, RearCamera, FrontCamera, Chipset, GPU, NFC, RAM, InternalStorage, Battery, SIMCard, ScreenResolution, ChargingTechnology, ProductId)
 VALUES
 (N'6.7 inch', N'OLED', N'48MP', N'12MP', N'A17 Pro', N'Apple GPU', 1, N'8GB', N'256GB', N'4500mAh', N'Nano SIM + eSIM', N'2796x1290', N'Fast Charging', 1),
 (N'14 inch', N'Mini-LED', NULL, NULL, N'Apple M3', N'Apple GPU', 0, N'16GB', N'512GB', NULL, NULL, N'3024x1964', N'Fast Charging', 2);
