@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Box, TextField, Button, Grid, Typography, MenuItem } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { BASE_URL } from '../../config.js';
+import { API_URL } from '../../config.js';
 
 const AddUser = () => {
     const navigate = useNavigate();
@@ -107,7 +107,7 @@ const AddUser = () => {
         }
 
         try {
-            const response = await axios.post(`${BASE_URL}/api/addUser`, user);
+            const response = await axios.post(`${API_URL}/api/addUser`, user);
             if (response.status === 201) {
                 alert(response.data.message);
                 navigate("/user-management");

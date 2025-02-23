@@ -2,7 +2,7 @@ import { ExclamationCircleFilled } from "@ant-design/icons";
 import { Drawer, Modal } from "antd";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { BASE_URL } from "../config";
+import { API_URL } from "../config";
 import PathNames from "../PathNames.js";
 
 const CartSidebar = ({ cartOpen, setCartOpen }) => {
@@ -33,7 +33,7 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
             }
 
             try {
-                const response = await fetch(`${BASE_URL}/api/cart/${userId}`);
+                const response = await fetch(`${API_URL}/api/cart/${userId}`);
                 if (!response.ok) {
                     throw new Error("Failed to fetch cart items");
                 }
@@ -65,7 +65,7 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
         const userId = sessionStorage.getItem("userId"); // Lấy userId từ sessionStorage
 
         try {
-            await fetch(`${BASE_URL}/api/cart/${userId}/remove`, {
+            await fetch(`${API_URL}/api/cart/${userId}/remove`, {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json",
@@ -94,7 +94,7 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
         } else {
             try {
                 const response = await fetch(
-                    `${BASE_URL}/api/cart/${userId}/update`,
+                    `${API_URL}/api/cart/${userId}/update`,
                     {
                         method: "PUT",
                         headers: {
@@ -217,7 +217,7 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
                                     <img
                                         src={
                                             item.image
-                                                ? `${BASE_URL}/${item.image.replace(
+                                                ? `${API_URL}/${item.image.replace(
                                                       /\\/g,
                                                       "/"
                                                   )}`

@@ -2,7 +2,7 @@ import { Carousel } from "antd";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { BASE_URL,API_URL } from "../../config";
+import {  API_URL   } from "../../config";
 import PathNames from "../../PathNames.js";
 import Button from "../../shared/Button.jsx";
 
@@ -114,7 +114,7 @@ const Hero = () => {
                                             data-aos-duration="500"
                                             data-aos-once={false}>
                                             <img
-                                                src={`${BASE_URL}/${product.image}`}
+                                                src={`${API_URL}/${product.image}`}
                                                 alt=""
                                                 className="w-[300px] sm:w-[450px] h-[320px] sm:h-[470px] sm:scale-105 lg:scale-110 object-contain mx-auto drop-shadow-[-8px_4px_6px_rgba(0,0,0,.4)] relative z-40"
                                             />

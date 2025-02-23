@@ -13,7 +13,7 @@ import {
     Pagination,
 } from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom";
-import { BASE_URL, API_URL } from "../../config.js";
+import { API_URL } from "../../config.js";
 import { useQuery } from "@tanstack/react-query";
 import ColorSize from "../../components/ColorSize.jsx";
 import Detail from "../../components/Detail.jsx";

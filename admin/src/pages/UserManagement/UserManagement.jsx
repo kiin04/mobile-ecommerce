@@ -18,7 +18,7 @@ import {
 } from "@mui/material";
 import { Delete, Visibility } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-import { BASE_URL } from '../../config.js';
+import { API_URL } from '../../config.js';
 import apiConfigInstance from '../../../SingletonParttern.js';
 const API_URL = apiConfigInstance.getApiUrl();
 import axios from "axios";
@@ -76,7 +76,7 @@ const UserManagement = () => {
     const handleDeleteUser = async (userId) => {
         try {
             const response = await fetch(
-                `${BASE_URL}/api/users/${userId}`,
+                `${API_URL}/api/users/${userId}`,
                 {
                     method: "DELETE",
                 }
@@ -241,7 +241,7 @@ const UserManagement = () => {
                                         }}
                                     >
                                         <img 
-                                            src={`${BASE_URL}/${selectedUser.userAvatar.replace(/\\/g, '/')}`}
+                                            src={`${API_URL}/${selectedUser.userAvatar.replace(/\\/g, '/')}`}
                                             alt={selectedUser.name}
                                         />
                                     </Box>

@@ -2,7 +2,7 @@ import { notification, Select } from "antd";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { ShoppingCartOutlined } from "@ant-design/icons";
-import { API_URL, BASE_URL } from "../config";
+import { API_URL } from "../config";
 
 const ProductDetails = () => {
     const { productId } = useParams();
@@ -103,7 +103,7 @@ const ProductDetails = () => {
         };
 
         try {
-            const response = await fetch(`${BASE_URL}/api/cart/${userId}/add`, {
+            const response = await fetch(`${API_URL}/api/cart/${userId}/add`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -450,7 +450,7 @@ const ProductDetails = () => {
         //         {/* Image Section */}
         //         <div className="w-full md:w-1/3 p-4">
         //             <img
-        //                 src={`${BASE_URL}/${product.image}`}
+        //                 src={`${API_URL}/${product.image}`}
         //                 alt={product.name}
         //                 className="w-full h-auto object-cover rounded-lg border border-gray-300"
         //             />

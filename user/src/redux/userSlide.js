@@ -5,7 +5,6 @@ const userSlice = createSlice({
     initialState: {
         id: null,
         name: "",
-        email: "",
         image: "",
         role: "",
         email:"",
@@ -26,7 +25,6 @@ const userSlice = createSlice({
                 image: "",
                 role: "",
                 address: "",
-                email:"",
                 phone:"",
                 totalBuy: 0,
                 isLoggedIn: false,

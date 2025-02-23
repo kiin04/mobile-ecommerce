@@ -4,7 +4,7 @@ import { Edit, Delete, Visibility, Close } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import {format} from "date-fns"
 import axios from "axios";
-import { BASE_URL } from '../../config.js'
+import { API_URL } from '../../config.js'
 
 const exampleVouchers = [
     {
@@ -36,7 +36,7 @@ const VoucherManagement = () => {
     useEffect(() => {
         const fetchVouchers = async () => {
             try {
-                const response = await axios.get(`${BASE_URL}/api/discountCodes`);
+                const response = await axios.get(`${API_URL}/api/discountCodes`);
                 if (response.status === 200) {
                     const data = response.data;
                     setVouchers(data);
@@ -60,7 +60,7 @@ const VoucherManagement = () => {
 
     const handleDeleteVoucher = async (voucherId) => {
         try {
-            const response = await axios.delete(`${BASE_URL}/api/discountCodes/${voucherId}`);
+            const response = await axios.delete(`${API_URL}/api/discountCodes/${voucherId}`);
             if (response.status === 200) {
                 setVouchers(vouchers.filter((voucher) => voucher.id !== voucherId));
             } else {

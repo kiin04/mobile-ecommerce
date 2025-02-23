@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Box, TextField, Button, CircularProgress, Grid, Typography } from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { BASE_URL } from "../../config";
+import { API_URL } from "../../config";
 
 const EditVoucher = () => {
     const { voucherId } = useParams();
@@ -22,7 +22,7 @@ const EditVoucher = () => {
     useEffect(() => {
         const fetchVoucher = async () => {
             try {
-                const response = await axios.get(`${BASE_URL}/api/discountCodes/${voucherId}`);
+                const response = await axios.get(`${API_URL}/api/discountCodes/${voucherId}`);
                 if (response.data) {
                     console.log('Received voucher data:', response.data); // Thêm log
                     const voucherData = {
@@ -140,7 +140,7 @@ const EditVoucher = () => {
             };
 
             const response = await axios.put(
-                `${BASE_URL}/api/discountCodes/${voucherId}`,
+                `${API_URL}/api/discountCodes/${voucherId}`,
                 updateData,
                 {
                     headers: { "Content-Type": "application/json" },

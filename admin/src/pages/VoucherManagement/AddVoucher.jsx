@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Box, TextField, Button, Grid, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { BASE_URL } from "../../config";
+import { API_URL } from "../../config";
 
 const AddVoucher = () => {
     const navigate = useNavigate();
@@ -107,7 +107,7 @@ const AddVoucher = () => {
                 maxDiscountAmount: Number(voucher.maxDiscountAmount)
             };
 
-            const response = await axios.post(`${BASE_URL}/api/addDiscountCode`, voucherData, {
+            const response = await axios.post(`${API_URL}/api/addDiscountCode`, voucherData, {
                 headers: { "Content-Type": "application/json" },
             });
             

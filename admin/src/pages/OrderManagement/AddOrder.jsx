@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'; 
 import { Box, TextField, Button, Grid, Typography, MenuItem, Autocomplete } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { BASE_URL } from '../../config.js';
+import { API_URL } from '../../config.js';
 
 const AddOrder = () => {
   const navigate = useNavigate();
@@ -93,7 +93,7 @@ const AddOrder = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch(`${BASE_URL}/api/products`);
+        const response = await fetch(`${API_URL}/api/products`);
         if (response.ok) {
           const data = await response.json();
           setProducts(data);
@@ -114,7 +114,7 @@ const AddOrder = () => {
     const fetchCustomerInfo = async () => {
       if (order.customerId) {
         try {
-          const response = await fetch(`${BASE_URL}/api/users/${order.customerId}`);
+          const response = await fetch(`${API_URL}/api/users/${order.customerId}`);
           if (response.ok) {
             const data = await response.json();
             setOrder((prevOrder) => ({ ...prevOrder, customerName: data.name }));
@@ -213,7 +213,7 @@ const AddOrder = () => {
         paymentMethod: order.paymentMethod // Kiểm tra giá trị này
       });
 
-      const response = await fetch(`${BASE_URL}/api/orders`, {
+      const response = await fetch(`${API_URL}/api/orders`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

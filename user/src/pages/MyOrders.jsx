@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import AccountSidebar from "../components/AccountSidebar.jsx";
 import { Modal, Button, Input } from "antd"; // Import Modal, Button, and Input from Ant Design
 import axios from "axios"; // Import Axios for API calls
-import { BASE_URL } from "../config.js";
+import { API_URL } from "../config.js";
 
 const MyOrders = () => {
     const [orders, setOrders] = useState([]);
@@ -29,7 +29,7 @@ const MyOrders = () => {
 
             try {
                 const response = await fetch(
-                    `${BASE_URL}/api/orders/customer/${userId}`
+                    `${API_URL}/api/orders/customer/${userId}`
                 );
                 if (!response.ok) {
                     throw new Error("Error fetching orders");
@@ -46,7 +46,7 @@ const MyOrders = () => {
 
         const fetchProducts = async () => {
             try {
-                const response = await axios.get(`${BASE_URL}/api/products`);
+                const response = await axios.get(`${API_URL}/api/products`);
                 if (response.status === 200) {
                     const data = response.data;
                     console.log("Fetched products:", data); // Log the products
@@ -176,7 +176,7 @@ const MyOrders = () => {
 
         try {
             const response = await axios.post(
-                `${BASE_URL}/api/orders/${cancellingOrder.id}/cancel`,
+                `${API_URL}/api/orders/${cancellingOrder.id}/cancel`,
                 { cancellationReason: cancelReason }
             );
 
