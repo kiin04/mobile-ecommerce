@@ -1,4 +1,5 @@
-﻿-- Thêm dữ liệu vào bảng Categories
+﻿USE DBShop
+-- Thêm dữ liệu vào bảng Categories
 INSERT INTO Categories (name, description) VALUES
 (N'iPhone', N'Các dòng iPhone mới nhất của Apple'),
 (N'MacBook', N'Các dòng MacBook Air và MacBook Pro'),
@@ -96,7 +97,4 @@ INSERT INTO Promotion (name, value, end_at) VALUES
 (N'Sale Back To School', 5, '2025-08-31'),
 (N'Khuyến mãi Black Friday', 20, '2025-11-30'),
 (N'Giảm giá VIP Member', 12, '2025-12-31');
-UPDATE Products
-SET promo = 0;
-GO
 

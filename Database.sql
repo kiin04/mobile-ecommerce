@@ -1,6 +1,7 @@
 ﻿
---CREATE DATABASE DBShop
---GO
+CREATE DATABASE DBShop
+GO
+USE DBShop
 -- Bảng Categories
 
 CREATE TABLE Categories (
@@ -105,13 +106,13 @@ CREATE TABLE OrderDetails (
     quantity INT NOT NULL,
     price DECIMAL(18, 2) NOT NULL,
     FOREIGN KEY (order_id) REFERENCES Orders(id),
-    FOREIGN KEY (color_size_id) REFERENCES ColorSize(id),
+    FOREIGN KEY (color_size_id) REFERENCES ColorSizes(id),
 	productId INT,
 	created_at DATETIME DEFAULT GETDATE(),
     updated_at DATETIME DEFAULT GETDATE()
 );
 GO
-y
+
 CREATE TABLE Cart (
     id INT PRIMARY KEY IDENTITY(1,1),
     product_id INT NOT NULL,
@@ -126,7 +127,6 @@ CREATE TABLE Cart (
 );
 GO
 
-alter column
 --Bang Details
 CREATE TABLE Details (
     id INT IDENTITY(1,1) PRIMARY KEY,
