@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import AccountSidebar from "../components/AccountSidebar.jsx";
-import { BASE_URL } from "../config.js";
+import { API_URL } from "../config.js";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutUser, setUser } from "../redux/userSlide";
 const Profile = () => {
@@ -175,7 +175,7 @@ const Profile = () => {
         }
 
         try {
-            const response = await fetch(`${BASE_URL}/api/users/${userId}`, {
+            const response = await fetch(`${API_URL}/api/users/${userId}`, {
                 method: "PUT",
                 body: formData,
             });
@@ -297,7 +297,7 @@ const Profile = () => {
                                             <img
                                                 src={
                                                     userData.userAvatar
-                                                        ? `${BASE_URL}/${userData.userAvatar.replace(
+                                                        ? `${API_URL}/${userData.userAvatar.replace(
                                                               /\\/g,
                                                               "/"
                                                           )}`

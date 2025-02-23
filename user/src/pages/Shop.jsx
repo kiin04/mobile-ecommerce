@@ -3,7 +3,7 @@ import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { BASE_URL, API_URL } from "../config";
+import { API_URL } from "../config";
 import PathNames from "../PathNames.js";
 import Heading from "../shared/Heading";
 import { notification } from "antd";
@@ -55,7 +55,7 @@ const Shop = () => {
 
         const fetchBrands = async () => {
             try {
-                const response = await axios.get("http://localhost:5000/api/brands");
+                const response = await axios.get("http://localhost:7192/api/Products");
                 setBrands(response.data);
             } catch (error) {
                 console.error(error);
@@ -64,7 +64,7 @@ const Shop = () => {
 
         const fetchColors = async () => {
             try {
-                const response = await axios.get("http://localhost:5000/api/colors");
+                const response = await axios.get("http://localhost:7192/api/colors");
                 setColors(response.data);
             } catch (error) {
                 console.error(error);
@@ -350,7 +350,7 @@ const Shop = () => {
                                     <div className="productcard-img relative">
                                         {item.image ? (
                                             <img
-                                                src={ `data:image/jpeg;base64,${item?.image}`|| ""}
+                                                src={ item?.image ? `data:image/jpeg;base64,${item.image}` : "" }
                                                 alt={item.name}
                                                 className="h-[13em] w-[13em] lg:h-[18em] lg:w-[18em] sm:h-[13em] sm:w-[13em] md:h-[13.5em] md:w-[16em] object-cover rounded-xl mb-3"
                                             />

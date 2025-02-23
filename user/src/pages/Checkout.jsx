@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { BASE_URL } from "../config";
+import { API_URL } from "../config";
 import { useLocation, useNavigate } from "react-router-dom";
 import { notification } from "antd";
 import PathNames from "../PathNames.js";
@@ -29,7 +29,7 @@ const Checkout = () => {
     useEffect(() => {
         const fetchCustomerInfo = async () => {
             try {
-                const response = await fetch(`${BASE_URL}/api/users/${userId}`);
+                const response = await fetch(`${API_URL}/api/users/${userId}`);
                 if (!response.ok) {
                     throw new Error("Failed to fetch customer info");
                 }
@@ -63,7 +63,7 @@ const Checkout = () => {
     useEffect(() => {
         const fetchDiscountCodes = async () => {
             try {
-                const response = await fetch(`${BASE_URL}/api/discountCodes`);
+                const response = await fetch(`${API_URL}/api/discountCodes`);
                 if (!response.ok) {
                     throw new Error("Failed to fetch discount codes");
                 }
@@ -120,7 +120,7 @@ const Checkout = () => {
         if (paymentMethod === "MoMo") {
             try {
                 // Gọi API tạo thanh toán MOMO
-                const paymentResponse = await fetch(`${BASE_URL}/payment`, {
+                const paymentResponse = await fetch(`${API_URL}/payment`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -161,7 +161,7 @@ const Checkout = () => {
         } else if (paymentMethod === "Tiền mặt") {
             try {
                 // Tạo đơn hàng với trạng thái chờ xác nhận
-                const response = await fetch(`${BASE_URL}/api/orders/create`, {
+                const response = await fetch(`${API_URL}/api/orders/create`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -177,7 +177,7 @@ const Checkout = () => {
                 if (response.ok) {
                     // Xóa sản phẩm khỏi giỏ hàng
                     const productIds = cartItems.map((item) => item.productId);
-                    await fetch(`${BASE_URL}/api/cart/${userId}/removeMultiple`, {
+                    await fetch(`${API_URL}/api/cart/${userId}/removeMultiple`, {
                         method: "DELETE",
                         headers: {
                             "Content-Type": "application/json",
@@ -238,7 +238,7 @@ const Checkout = () => {
                             <div className="flex items-center">
                                 <img
                                     src={item.image
-                                        ? `${BASE_URL}/${
+                                        ? `${API_URL}/${
                                             item.image.replace(
                                                 /\\/g,
                                                 "/",

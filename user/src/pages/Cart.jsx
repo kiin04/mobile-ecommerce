@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { BASE_URL } from "../config";
+import { API_URL } from "../config";
 import { notification } from "antd";
 import PathNames from "../PathNames.js";
 
@@ -33,7 +33,7 @@ const Cart = () => {
             }
 
             try {
-                const response = await fetch(`${BASE_URL}/api/cart/${userId}`);
+                const response = await fetch(`${API_URL}/api/cart/${userId}`);
                 if (!response.ok) {
                     throw new Error("Failed to fetch cart items");
                 }
@@ -63,7 +63,7 @@ const Cart = () => {
         const userId = sessionStorage.getItem("userId");
 
         try {
-            const response = await fetch(`${BASE_URL}/api/cart/${userId}/remove`, {
+            const response = await fetch(`${API_URL}/api/cart/${userId}/remove`, {
                     method: "DELETE",
                     headers: {
                         "Content-Type": "application/json",
@@ -95,7 +95,7 @@ const Cart = () => {
         } else {
             try {
                 const response = await fetch(
-                    `${BASE_URL}/api/cart/${userId}/update`,
+                    `${API_URL}/api/cart/${userId}/update`,
                     {
                         method: "PUT",
                         headers: {
@@ -155,7 +155,7 @@ const Cart = () => {
 
         try {
             const response = await fetch(
-                `${BASE_URL}/api/cart/${userId}/removeMultiple`,
+                `${API_URL}/api/cart/${userId}/removeMultiple`,
                 {
                     method: "DELETE",
                     headers: {
@@ -249,7 +249,7 @@ const Cart = () => {
                             <img
                                 src={
                                     item.image
-                                        ? `${BASE_URL}/${item.image.replace(
+                                        ? `${API_URL}/${item.image.replace(
                                               /\\/g,
                                               "/"
                                           )}`

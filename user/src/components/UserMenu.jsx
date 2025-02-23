@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Login from "./Login";
 import Register from "./Register";
 import PathNames from "../PathNames";
-import { BASE_URL } from "../config";
+import { API_URL } from "../config";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutUser, setUser } from "../redux/userSlide";
 const UserMenu = () => {
@@ -99,7 +99,7 @@ const UserMenu = () => {
                             }`}
                         />
                         {user.image ? (
-                            <Avatar src={`${BASE_URL}/${user.image}`} />
+                            <Avatar src={`${API_URL}/${user.image}`} />
                         ) : (
                             <UserOutlined />
                         )}

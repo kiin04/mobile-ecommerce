@@ -5,7 +5,7 @@ import { Button, ButtonGroup } from '@mui/material';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
 import { TrendingUp, TrendingDown, Users, Package, DollarSign, Clock } from 'lucide-react';
 import '../styles/Dashboard.css';
-import { BASE_URL } from '../config';
+import { API_URL } from '../config';
 import { useNavigate } from 'react-router-dom';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
@@ -84,7 +84,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const response = await fetch(`${BASE_URL}/api/dashboard/stats`);
+        const response = await fetch(`${API_URL}/api/dashboard/stats`);
         if (!response.ok) {
           throw new Error('Failed to fetch dashboard data');
         }
@@ -118,7 +118,7 @@ const Dashboard = () => {
 
         switch (timeRange) {
           case 'day': {
-            const dailyResponse = await fetch(`${BASE_URL}/api/dashboard/revenue/daily`);
+            const dailyResponse = await fetch(`${API_URL}/api/dashboard/revenue/daily`);
             data = await dailyResponse.json();
             labels = data.map(item => {
               const date = new Date(item._id);
@@ -132,7 +132,7 @@ const Dashboard = () => {
           }
 
           case 'week': {
-            const weeklyResponse = await fetch(`${BASE_URL}/api/dashboard/revenue/weekly`);
+            const weeklyResponse = await fetch(`${API_URL}/api/dashboard/revenue/weekly`);
             data = await weeklyResponse.json();
             labels = data.map(item => {
               const date = new Date(item.startDate);

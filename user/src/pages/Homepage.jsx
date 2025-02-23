@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BASE_URL } from '../config.js';
+import { API_URL } from '../config.js';
 
 const Homepage = () => {
   const [products, setProducts] = useState([]);
@@ -14,7 +14,7 @@ const Homepage = () => {
 
   const fetchProducts = async () => {
     try {
-      const response = await fetch(`${BASE_URL}/api/products`);
+      const response = await fetch(`${API_URL}/api/products`);
       const data = await response.json();
 
       if (response.ok) {
@@ -51,7 +51,7 @@ const Homepage = () => {
         {filteredProducts.slice(0, visibleProducts).map(product => (
           <div key={product.id} className="bg-white border border-gray-200 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer" onClick={() => handleProductClick(product.id)}>
             <img
-              src={`${BASE_URL}/${product.image}`}
+              src={`${API_URL}/${product.image}`}
               alt={product.name}
               className="w-full h-80 rounded-t-lg"
             />

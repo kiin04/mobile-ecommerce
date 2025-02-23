@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { BASE_URL, API_URL } from "../../config";
+import { API_URL } from "../../config";
 import Heading from "../../shared/Heading";
 import { notification } from "antd";
 import PathNames from "../../PathNames.js";
@@ -106,7 +106,7 @@ const NewReleases = () => {
         console.log("Sending cart item:", cartItem);
 
         try {
-            const response = await fetch(`${BASE_URL}/api/cart/${userId}/add`, {
+            const response = await fetch(`${API_URL}/api/cart/${userId}/add`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -172,7 +172,7 @@ const NewReleases = () => {
                                 {item.image ? (
                                     <img
                                         className="p-8 rounded-t-lg cursor-pointer"
-                                        src={`${BASE_URL}/${item.image}`}
+                                        src={`${API_URL}/${item.image}`}
                                         alt="product image"
                                         onClick={() =>
                                             handleProductClick(item.id)
@@ -220,7 +220,7 @@ export default NewReleases;
 // import axios from "axios";
 // import { useEffect, useState } from "react";
 // import { Link, useNavigate } from "react-router-dom";
-// import { BASE_URL } from "../../config";
+// import { API_URL } from "../../config";
 // import Heading from "../../shared/Heading";
 // import { notification } from "antd";
 // import PathNames from "../../PathNames.js";
@@ -304,7 +304,7 @@ export default NewReleases;
 //         setLoading(true);
         
 //         try {
-//             const response = await fetch(`${BASE_URL}/api/cart/${userId}/add`, {
+//             const response = await fetch(`${API_URL}/api/cart/${userId}/add`, {
 //                 method: "POST",
 //                 headers: {
 //                     "Content-Type": "application/json",
@@ -369,7 +369,7 @@ export default NewReleases;
 //                                 {item.image ? (
 //                                     <img
 //                                         className="p-8 rounded-t-lg cursor-pointer"
-//                                         src={`${BASE_URL}/${item.image}`}
+//                                         src={`${API_URL}/${item.image}`}
 //                                         alt="product image"
 //                                         onClick={() => handleProductClick(item.id)}
 //                                     />

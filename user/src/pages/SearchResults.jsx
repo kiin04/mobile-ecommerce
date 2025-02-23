@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { BASE_URL } from "../config";
+import { API_URL } from "../config";
 import PathNames from "../PathNames.js";
 import { Spin, Pagination } from "antd"; // Import Spin for loading animation and Pagination
 
@@ -26,7 +26,7 @@ const SearchResults = () => {
 
         try {
             const response = await fetch(
-                `${BASE_URL}/api/products?query=${query}`
+                `${API_URL}/api/products?query=${query}`
             );
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -75,7 +75,7 @@ const SearchResults = () => {
                                     onClick={() => handleProductClick(product.id)}
                                 >
                                     <img
-                                        src={`${BASE_URL}/${product.image}`}
+                                        src={`${API_URL}/${product.image}`}
                                         alt={product.name}
                                         className="object-cover w-full rounded-t-lg h-80"
                                     />
