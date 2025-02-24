@@ -6,7 +6,7 @@ import axios from "axios";
 import { useDispatch } from "react-redux";
 import { setUser } from "../redux/userSlide"; // Import action
 import { API_URL } from "../config";
-import userService from '../facadeParttern/userService'
+import userService from "../facadeParttern/userService";
 const Login = ({ onSwitchToRegister }) => {
     const [formData, setFormData] = useState({
         email: "",
@@ -27,11 +27,11 @@ const Login = ({ onSwitchToRegister }) => {
             });
             return response.data; // Trả về userId
         } catch (error) {
-            throw new Error(error.response?.data?.message || "Đăng nhập thất bại");
+            throw new Error(
+                error.response?.data?.message || "Đăng nhập thất bại"
+            );
         }
     };
-
-
 
     const handleSubmit = async () => {
         try {
@@ -41,20 +41,24 @@ const Login = ({ onSwitchToRegister }) => {
             const userDetails = await userService.fetchUserDetails(userId);
 
             // Lưu vào Redux
-            dispatch(setUser({
-                ...userDetails,
-                email: formData?.email,
-            }));
+            dispatch(
+                setUser({
+                    ...userDetails,
+                    email: formData?.email,
+                })
+            );
 
             // Lưu vào localStorage nếu cần
             localStorage.setItem("userId", userId);
             localStorage.setItem("email", formData?.email);
             // Điều hướng về trang chính
-            navigate("/");
             message.success("Đăng nhập thành công");
+            window.location.reload();
         } catch (error) {
             console.error("Error:", error.message);
-            message.warning(error.message || "Email hoặc mật khẩu không chính xác");
+            message.warning(
+                error.message || "Email hoặc mật khẩu không chính xác"
+            );
         }
     };
 
