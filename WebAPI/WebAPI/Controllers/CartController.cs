@@ -12,11 +12,12 @@ namespace WebAPI.Controllers
     {
         //factory design parttern
         private readonly IRepository<Cart> _CartRepository;
-      
+        private readonly CartService _cartService;
 
-        public CartsController(CSDLBanHang context)
+        public CartsController(CSDLBanHang context, CartService cartService)
         {
             _CartRepository = RepositoryFactory.CreateRepository<Cart>(context);
+            _cartService = cartService;
            
         }
 
@@ -41,7 +42,25 @@ namespace WebAPI.Controllers
                 return NotFound(new { message = ex.Message });
             }
         }
+        // GET: api/Carts/User/5
+        [HttpGet("User/{userId}")]
+        public async Task<ActionResult<IEnumerable<Cart>>> GetCartsByUser(int userId)
+        {
+            try
+            {
+                var carts = await _cartService.GetByUserAsync(userId);
+                if (carts == null || !carts.Any())
+                {
+                    return NotFound(new { message = "No carts found for the given user." });
+                }
 
+                return Ok(carts);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message });
+            }
+        }
         // PUT: api/Carts/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutCart(int id, Cart Cart)

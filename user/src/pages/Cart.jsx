@@ -33,7 +33,7 @@ const Cart = () => {
             }
 
             try {
-                const response = await fetch(`${API_URL}/api/cart/${userId}`);
+                const response = await fetch(`${API_URL}/api/Carts/User/${userId}`);
                 if (!response.ok) {
                     throw new Error("Failed to fetch cart items");
                 }

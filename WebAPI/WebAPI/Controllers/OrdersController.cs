@@ -43,7 +43,25 @@ namespace WebAPI.Controllers
                 return NotFound(new { message = ex.Message });
             }
         }
+        // GET: api/User/CheckUser/1
+        [HttpGet("User/{id}")]
+        public async Task<ActionResult<List<Order>>> GetByUser(int id)
+        {
+            try
+            {
+                var orders = await _OrderService.GetOrdersByUserAsync(id);
 
+                return Ok(orders);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred.", details = ex.Message });
+            }
+        }
         // PUT: api/Orders/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutOrder(int id, Order Order)

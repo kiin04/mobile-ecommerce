@@ -1,23 +1,31 @@
 import { notification, Select } from "antd";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
 import { ShoppingCartOutlined } from "@ant-design/icons";
 import { API_URL } from "../config";
+import { useDispatch, useSelector } from "react-redux";
+import { logoutUser, setUser } from "../redux/userSlide";
+import { useNavigate } from "react-router-dom";
 
 const ProductDetails = () => {
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
     const { productId } = useParams();
     const [product, setProduct] = useState(null);
+    const [colorSizes, setColorSizes] = useState(null);
+    const [details, setDetails] = useState(null);
     const [quantity, setQuantity] = useState(1);
     const [error, setError] = useState("");
-    const userId = sessionStorage.getItem("userId");
-
+    const user = useSelector((state) => state.user);
+    const userId = user?.id
+    console.log("user", user);
     const [availableColors, setAvailableColors] = useState([]);
     const [selectedColor, setSelectedColor] = useState("");
 
     useEffect(() => {
         const fetchProduct = async () => {
           try {
-            const response = await fetch(`${API_URL}/api/Product/${productId}`);
+            const response = await fetch(`${API_URL}/api/Products/${productId}`);
             if (response.ok) {
               const data = await response.json();
               setProduct({ ...data }); 
@@ -28,15 +36,75 @@ const ProductDetails = () => {
             console.error('Error fetching product:', error);
             setError('Failed to load product data. Please try again.');
           } finally {
-            setLoading(false);
+            //setLoading(false);
           }
         };
+        
+        const fetchColorSize = async () => {
+            try {
+            const response = await fetch(`${API_URL}/api/ColorSizes/ProductColorSize/${productId}`);
+          
+            if (response.ok) {
+                const data = await response.json();
+                setColorSizes(data); 
+            } else {
+                throw new Error('Failed to fetch product');
+            }
+            } catch (error) {
+            console.error('Error fetching product:', error);
+            setError('Failed to load product data. Please try again.');
+            } finally {
+           
+            }
+        };
+        const fetchDetails = async () => {
+            try {
+            const response = await fetch(`${API_URL}/api/Details/ProductDetail/${productId}`);
+         
+            if (response.ok) {
+                const data = await response.json();
+                //console.log('Response data details :', data[0]);
+                setDetails(data[0]); 
+            } else {
+                throw new Error('Failed to fetch product');
+            }
+            } catch (error) {
+            console.error('Error fetching product:', error);
+            setError('Failed to load product data. Please try again.');
+            } finally {
+           
+            }
+        };
+          
+        fetchColorSize();
         fetchProduct(); 
+        fetchDetails()
       }, [productId]);
 
+      useEffect(() => {
+        if(colorSizes){
+            setAvailableColors(colorSizes.filter((item) => item.quantity > 0));
+        }
+      }, [colorSizes]);
+
+      const handelChangeColorSize =(colorSizeId)=>{
+        setSelectedColor(availableColors.find((item)=>item.id === colorSizeId))
+      }
+     
+      const getStock = () => {
+        let stock = 0;
+        if (Array.isArray(colorSizes)) {
+            stock = colorSizes
+                .filter((item) => item.productId == productId)
+                .reduce((total, item) => total + (item.quantity || 0), 0);
+        }
+
+        return stock;
+    };
+    
     const handleQuantityChange = (e) => {
         const value = parseInt(e.target.value, 10);
-        if (value > product.quantity) {
+        if (value > selectedColor.quantity) {
             setError("Số lượng bạn chọn đã đạt mức tối đa của sản phẩm này");
             notification.warning({
                 message: "Lưu ý",
@@ -53,7 +121,7 @@ const ProductDetails = () => {
         setQuantity(value);
     };
 
-    const handleBuyNow = async () => {
+    const handleAddCart = async () => {
         if (!userId) {
             notification.warning({
                 message: "Lưu ý",
@@ -79,7 +147,7 @@ const ProductDetails = () => {
             return;
         }
 
-        if (quantity <= 0 || quantity > product.quantity) {
+        if (quantity <= 0 || quantity > selectedColor.quantity) {
             notification.error({
                 message: "Lỗi",
                 description: "Số lượng không hợp lệ!",
@@ -142,7 +210,31 @@ const ProductDetails = () => {
             });
         }
     };
-
+    const handleBuyNow =()=>{
+        if(selectedColor) {
+            const productBuyNow ={
+                productId : productId,
+                image :product.image,
+                name : product.name,
+                quantity : quantity,
+                colorSizeId : selectedColor.id,
+                color : selectedColor.color,
+                size : selectedColor.size,
+                price:product?.price,
+               }
+               navigate('/checkout-buynow', { state: { product: productBuyNow } });
+        }else{
+            notification.error({
+                message: "Lỗi",
+                description: "Vui lòng chọn màu trước khi mua",
+                duration: 4,
+                placement: "bottomRight",
+                showProgress: true,
+                pauseOnHover: true,
+            });
+        }
+       
+    }
     if (!product) {
         return (
             <div className="flex items-center justify-center min-h-screen p-5 text-lg">
@@ -152,13 +244,10 @@ const ProductDetails = () => {
     }
 
     const tableData = [
-        {
-            key: "Màu sắc",
-            value: product.color,
-        },
+        
         {
             key: "Hệ điều hành",
-            value: product.os,
+            value: product?.os,
         },
         {
             key: "Thương hiệu",
@@ -166,55 +255,55 @@ const ProductDetails = () => {
         },
         {
             key: "RAM",
-            value: product.cauhinh?.dungLuongRAM,
+            value:details?.ram,
         },
         {
             key: "Bộ nhớ trong",
-            value: product.cauhinh?.boNhoTrong,
+            value:details?.internalStorage,
         },
         {
             key: "Pin",
-            value: product.cauhinh?.pin,
+            value:details?.battery,
         },
         {
             key: "Kích thước màn hình",
-            value: product.cauhinh?.kichThuocManHinh,
+            value:details?.screenSize,
         },
         {
             key: "Công nghệ màn hình",
-            value: product.cauhinh?.congNgheManHinh,
+            value:details?.screenTechnology,
         },
         {
             key: "Camera sau",
-            value: product.cauhinh?.cameraSau,
+            value:details?.rearCamera,
         },
         {
             key: "Camera trước",
-            value: product.cauhinh?.cameraTruoc,
+            value:details?.frontCamera,
         },
         {
             key: "Chipset",
-            value: product.cauhinh?.chipset,
+            value:details?.chipset,
         },
         {
             key: "GPU",
-            value: product.cauhinh?.gpu,
+            value:details?.gpu,
         },
         {
             key: "Công nghệ NFC",
-            value: product.cauhinh?.congNgheNFC,
+            value:details?.nfc,
         },
         {
             key: "Thẻ SIM",
-            value: product.cauhinh?.theSIM,
+            value:details?.simcard,
         },
         {
             key: "Độ phân giải màn hình",
-            value: product.cauhinh?.doPhanGiaiManHinh,
+            value:details?.screenResolution,
         },
         {
             key: "Cổng sạc",
-            value: product.cauhinh?.congSac,
+            value:details?.chargingTechnology,
         },
     ];
 
@@ -261,26 +350,40 @@ const ProductDetails = () => {
                     {/* <!-- Product Details --> */}
                     <div className="w-full md:w-1/2 px-4">
                         {/* Show how many items are left in stock */}
-                        {/* <p className="text-md text-gray-600 mb-4">
+                        <p className="text-md text-gray-600 mb-4">
                             Trạng thái:{" "}
-                            <span
+                            {   selectedColor.quantity > 0
+                                ?  <span
                                 className={
-                                    product.quantity > 0
+                                    selectedColor.quantity > 0
+                                        ? "text-green-600"
+                                        : "text-red-600"
+                                }
+                                >
+                                    {selectedColor.quantity > 0
+                                        ? `${selectedColor.quantity} sản phẩm còn lại`
+                                        : "Hết hàng"}
+                                </span> 
+                                :<span
+                                className={
+                                    getStock() > 0
                                         ? "text-green-600"
                                         : "text-red-600"
                                 }
                             >
-                                {product.quantity > 0
-                                    ? `${product.quantity} sản phẩm còn lại`
+                                { getStock() > 0
+                                    ? `${ getStock()} sản phẩm còn lại`
                                     : "Hết hàng"}
                             </span>
-                        </p> */}
+                             }
+                           
+                        </p>
 
                         <p className="text-red-500 mb-1 text-lg">{product.brand}</p>
                         <h2 className="text-3xl font-bold mb-2">
                             {product.name}
                         </h2>
-                        <p className="text-gray-600 mb-4 text-xs">SKU: {product.id}</p>
+                        <p className="text-gray-600 mb-4 text-xs">SKU: {product.productId}</p>
                         <div className="mb-4">
                             <span className="text-2xl font-bold mr-2 text-primary">
                                 {product.price.toLocaleString()} đ
@@ -301,41 +404,36 @@ const ProductDetails = () => {
                         </div> */}
 
                         {/* Color Selection */}
-                        {availableColors.length >= 0 && (
+                        {availableColors.length > 0 && (
                             <div className="my-6">
                                 <label
-                                    htmlFor="color"
-                                    className="block text-lg font-semibold mb-1"
+                                htmlFor="color"
+                                className="block text-lg font-semibold mb-1"
                                 >
-                                    Màu:
+                                Màu:
                                 </label>
                                 <Select
-                                    size="large"
-                                    id="color"
-                                    value={selectedColor}
-                                    onChange={(e) => {
-                                        const newColorId = e.target.value;
-                                        setSelectedColor(newColorId); // Update selected color
-                                        const newProduct = availableColors.find(
-                                            (color) => color.id === newColorId
-                                        );
-                                        if (newProduct) {
-                                            window.location.href = `/product/${newProduct.id}`; // Redirect to the new product
-                                        }
-                                    }}
-                                    className="w-32 rounded-lg focus:outline-none"
+                                size="large"
+                                id="color"
+                                value={selectedColor?selectedColor.id : ""}
+                                onChange={(value) => {
+                                    handelChangeColorSize(value)
+                                }}
+                                className="w-40 rounded-lg focus:outline-none"
                                 >
-                                    {availableColors.map((colorOption) => (
-                                        <option
-                                            key={colorOption.id}
-                                            value={colorOption.id}
-                                        >
-                                            {colorOption.color}
-                                        </option>
-                                    ))}
+                                {availableColors.map((colorOption) => (
+                                    <Select.Option
+                                    key={colorOption.id}
+                                    value={colorOption.id}
+                                    >
+                                    {colorOption.color} - {colorOption.size}
+                                    </Select.Option>
+                                ))}
                                 </Select>
+                                
                             </div>
                         )}
+
 
                         <div className="mb-6">
                             <label
@@ -349,7 +447,7 @@ const ProductDetails = () => {
                                 name="quantity"
                                 id="quantity"
                                 min="1"
-                                max={product.quantity}
+                                max={selectedColor.quantity}
                                 value={quantity}
                                 onChange={handleQuantityChange}
                                 className="w-12 text-center rounded-md border-gray-300  shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
@@ -359,7 +457,7 @@ const ProductDetails = () => {
                         <div className="flex space-x-4 mb-6">
                             <button
                                 className="bg-primary flex gap-2 items-center text-white px-6 py-2 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
-                                onClick={handleBuyNow}
+                                // onClick={handleBuyNow}
                             >
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
@@ -376,6 +474,26 @@ const ProductDetails = () => {
                                     />
                                 </svg>
                                 Thêm vào giỏ
+                            </button>
+                            <button
+                                className="bg-green-600 flex gap-2 items-center text-white px-6 py-2 rounded-md hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                                onClick={handleBuyNow}
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    strokeWidth="1.5"
+                                    stroke="currentColor"
+                                    className="size-6"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"
+                                    />
+                                </svg>
+                                Mua ngay
                             </button>
                             {/* <button className="bg-gray-200 flex gap-2 items-center  text-gray-800 px-6 py-2 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
                                 <svg

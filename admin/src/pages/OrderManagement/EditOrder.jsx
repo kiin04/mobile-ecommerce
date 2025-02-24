@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Box, TextField, Button, Typography, Grid, CircularProgress, MenuItem, Autocomplete } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
-import { API_URL } from '../../config.js';
+
 import apiConfigInstance from '../../../SingletonParttern.js';
 const API_URL = apiConfigInstance.getApiUrl();
 

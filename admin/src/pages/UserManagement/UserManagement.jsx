@@ -18,7 +18,7 @@ import {
 } from "@mui/material";
 import { Delete, Visibility } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-import { API_URL } from '../../config.js';
+
 import apiConfigInstance from '../../../SingletonParttern.js';
 const API_URL = apiConfigInstance.getApiUrl();
 import axios from "axios";
@@ -35,7 +35,7 @@ const UserManagement = () => {
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-                const response = await axios.get(`${API_URL}/api/User`);
+                const response = await axios.get(`${API_URL}/api/Users`);
                 console.log(response);
                 if (response.status === 200) {
                     const data = response.data

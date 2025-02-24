@@ -30,10 +30,17 @@ namespace WebAPI.Services
             {
                 await Task.WhenAll(colorSizeIds.Select(colorSizeId => _colorSizesService.DeleteDependencieAsync(colorSizeId)));
             }
-          
-            await _context.Details
+            var detailID = await _context.ColorSizes
+                 .Where(cs => cs.ProductId == productId)
+                 .Select(cs => cs.Id)
+                 .ToListAsync();
+            if (detailID.Any())
+            {
+                await _context.Details
                 .Where(dt => dt.ProductId == productId)
                 .ExecuteDeleteAsync();
+
+            }  
             _context.Products.Remove(product);
             await _context.SaveChangesAsync();
         }
