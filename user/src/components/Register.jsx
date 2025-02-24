@@ -1,12 +1,10 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import axios from "axios";
 import { Form, Upload } from "antd";
-import { PlusOutlined } from '@ant-design/icons';
-import { API_URL } from '../config.js'
+import { PlusOutlined } from "@ant-design/icons";
+import { API_URL } from "../config.js";
 import { useNavigate } from "react-router-dom";
-import { auth, sendEmailVerification } from "../firebase.js"; // Adjust the import path as needed
 import { message, Modal } from "antd";
-import { createUserWithEmailAndPassword } from "firebase/auth";
 
 const Register = ({ onRegisterSuccess }) => {
     const [name, setName] = useState("");
@@ -40,7 +38,7 @@ const Register = ({ onRegisterSuccess }) => {
         //setGenderError("");
         setAddressError("");
         setphoneError("");
-       // setDayOfBirthError("");
+        // setDayOfBirthError("");
         setEmailError("");
         setPasswordError("");
         setConfirmPasswordError("");
@@ -64,12 +62,14 @@ const Register = ({ onRegisterSuccess }) => {
         //     setDayOfBirthError("Ngày sinh không được để trống.");
         //     isValid = false;
         // }
-         else {
+        else {
             const selectedDate = new Date(dayOfBirth);
             const today = new Date();
             today.setHours(0, 0, 0, 0);
             if (selectedDate > today) {
-                setDayOfBirthError("Ngày sinh không thể là ngày trong tương lai.");
+                setDayOfBirthError(
+                    "Ngày sinh không thể là ngày trong tương lai."
+                );
                 isValid = false;
             }
         }
@@ -98,11 +98,6 @@ const Register = ({ onRegisterSuccess }) => {
 
         if (isValid) {
             try {
-                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                const user = userCredential.user;
-                await sendEmailVerification(user);
-                console.log("User registered successfully, verification email sent.");
-                setIsModalVisible(true);
 
                 // Prepare user data to send to your server
                 const formData = new FormData();
@@ -114,7 +109,6 @@ const Register = ({ onRegisterSuccess }) => {
                 //formData.append("dayOfBirth", dayOfBirth);
                 formData.append("email", email);
                 formData.append("password", password);
-                formData.append("userId", user.uid);
 
                 if (userAvatar) {
                     formData.append("userAvatar", userAvatar);
@@ -187,7 +181,9 @@ const Register = ({ onRegisterSuccess }) => {
                             placeholder="Nhập họ tên"
                             className="border rounded-md p-2 w-full"
                         />
-                        {nameError && <p className="text-red-500">{nameError}</p>}
+                        {nameError && (
+                            <p className="text-red-500">{nameError}</p>
+                        )}
                     </div>
                     <div>
                         <label className="block text-left">Tên tài khoản</label>
@@ -198,7 +194,9 @@ const Register = ({ onRegisterSuccess }) => {
                             placeholder="Nhập tên tài khoản"
                             className="border rounded-md p-2 w-full"
                         />
-                        {accountNameError && <p className="text-red-500">{accountNameError}</p>}
+                        {accountNameError && (
+                            <p className="text-red-500">{accountNameError}</p>
+                        )}
                     </div>
                     <div>
                         <label className="block text-left">Giới tính</label>
@@ -211,7 +209,9 @@ const Register = ({ onRegisterSuccess }) => {
                             <option value="Nam">Nam</option>
                             <option value="Nữ">Nữ</option>
                         </select>
-                        {genderError && <p className="text-red-500">{genderError}</p>}
+                        {genderError && (
+                            <p className="text-red-500">{genderError}</p>
+                        )}
                     </div>
                     <div>
                         <label className="block text-left">Ngày sinh</label>
@@ -221,7 +221,9 @@ const Register = ({ onRegisterSuccess }) => {
                             onChange={(e) => setDayOfBirth(e.target.value)}
                             className="border rounded-md p-2 w-full"
                         />
-                        {dayOfBirthError && <p className="text-red-500">{dayOfBirthError}</p>}
+                        {dayOfBirthError && (
+                            <p className="text-red-500">{dayOfBirthError}</p>
+                        )}
                     </div>
                     <div>
                         <label className="block text-left">Địa chỉ</label>
@@ -232,7 +234,9 @@ const Register = ({ onRegisterSuccess }) => {
                             placeholder="Nhập địa chỉ"
                             className="border rounded-md p-2 w-full"
                         />
-                        {addressError && <p className="text-red-500">{addressError}</p>}
+                        {addressError && (
+                            <p className="text-red-500">{addressError}</p>
+                        )}
                     </div>
                     <div>
                         <label className="block text-left">Số điện thoại</label>
@@ -243,7 +247,9 @@ const Register = ({ onRegisterSuccess }) => {
                             placeholder="Nhập số điện thoại"
                             className="border rounded-md p-2 w-full"
                         />
-                        {phoneError && <p className="text-red-500">{phoneError}</p>}
+                        {phoneError && (
+                            <p className="text-red-500">{phoneError}</p>
+                        )}
                     </div>
                     <div>
                         <label className="block text-left">Email</label>
@@ -254,7 +260,9 @@ const Register = ({ onRegisterSuccess }) => {
                             placeholder="Nhập email"
                             className="border rounded-md p-2 w-full"
                         />
-                        {emailError && <p className="text-red-500">{emailError}</p>}
+                        {emailError && (
+                            <p className="text-red-500">{emailError}</p>
+                        )}
                     </div>
                     <div>
                         <label className="block text-left">Mật khẩu</label>
@@ -265,10 +273,14 @@ const Register = ({ onRegisterSuccess }) => {
                             placeholder="Nhập mật khẩu"
                             className="border rounded-md p-2 w-full"
                         />
-                        {passwordError && <p className="text-red-500">{passwordError}</p>}
+                        {passwordError && (
+                            <p className="text-red-500">{passwordError}</p>
+                        )}
                     </div>
                     <div>
-                        <label className="block text-left">Nhập lại mật khẩu</label>
+                        <label className="block text-left">
+                            Nhập lại mật khẩu
+                        </label>
                         <input
                             type="password"
                             value={confirmPassword}
@@ -276,7 +288,11 @@ const Register = ({ onRegisterSuccess }) => {
                             placeholder="Nhập lại mật khẩu"
                             className="border rounded-md p-2 w-full"
                         />
-                        {confirmPasswordError && <p className="text-red-500">{confirmPasswordError}</p>}
+                        {confirmPasswordError && (
+                            <p className="text-red-500">
+                                {confirmPasswordError}
+                            </p>
+                        )}
                     </div>
                     <div>
                         <label className="block text-left">Avatar</label>
@@ -318,12 +334,19 @@ const Register = ({ onRegisterSuccess }) => {
                 onOk={handleOk}
                 onCancel={handleCancel}
                 footer={[
-                    <button key="submit" className="bg-blue-600 text-white rounded-md p-2 hover:bg-blue-700 transition duration-300" onClick={handleOk}>
+                    <button
+                        key="submit"
+                        className="bg-blue-600 text-white rounded-md p-2 hover:bg-blue-700 transition duration-300"
+                        onClick={handleOk}
+                    >
                         Đã xác thực
                     </button>,
                 ]}
             >
-                <p>Vui lòng xác thực tài khoản của bạn bằng cách nhấp vào liên kết đã gửi đến email của bạn.</p>
+                <p>
+                    Vui lòng xác thực tài khoản của bạn bằng cách nhấp vào liên
+                    kết đã gửi đến email của bạn.
+                </p>
             </Modal>
         </div>
     );
