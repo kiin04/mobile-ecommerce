@@ -5,7 +5,6 @@ namespace WebAPI.Models;
 
 public partial class Order : BaseEntity
 {
-    public int Id { get; set; }
 
     public int UserId { get; set; }
 
@@ -15,6 +14,8 @@ public partial class Order : BaseEntity
 
     public string? Name { get; set; }
 
+    public string? PaymentMethod { get; set; }
+    public string? PaymentStatus { get; set; }
     public string? Phone { get; set; }
 
     public string? Address { get; set; }

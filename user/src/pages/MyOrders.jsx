@@ -3,7 +3,7 @@ import AccountSidebar from "../components/AccountSidebar.jsx";
 import { Modal, Button, Input } from "antd"; // Import Modal, Button, and Input from Ant Design
 import axios from "axios"; // Import Axios for API calls
 import { API_URL } from "../config.js";
-
+import { useDispatch, useSelector } from "react-redux";
 const MyOrders = () => {
     const [orders, setOrders] = useState([]);
     const [products, setProducts] = useState([]); // State for products
@@ -12,30 +12,38 @@ const MyOrders = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [ordersPerPage] = useState(5); // Display 5 orders per page
     const [selectedOrder, setSelectedOrder] = useState(null); // Selected order for details
+    const [productOrder, setProductOrder] = useState([])
     const [isModalVisible, setIsModalVisible] = useState(false); // State for modal visibility
     const [cancelModalVisible, setCancelModalVisible] = useState(false);
     const [cancelReason, setCancelReason] = useState("");
     const [cancellingOrder, setCancellingOrder] = useState(null);
     const [refreshTrigger, setRefreshTrigger] = useState(0);
+    const user = useSelector((state) => state.user);
+    const [userId, setUderId] = useState( user?.id)
 
+    useEffect(()=>{
+        setUderId(  user?.id )
+    },user)
+ 
+  
     useEffect(() => {
         const fetchOrders = async () => {
-            const userId = sessionStorage.getItem("userId");
-            if (!userId) {
-                setError("User is not logged in");
-                setLoading(false);
-                return;
-            }
-
+            // if (userId == "") {
+            //     setError("User is not logged in");
+            //     setLoading(false);
+            //     return;
+            // }
+            console.log('userId',userId);
             try {
                 const response = await fetch(
-                    `${API_URL}/api/orders/customer/${userId}`
+                    `${API_URL}/api/Orders/User/${user.id}`
                 );
                 if (!response.ok) {
                     throw new Error("Error fetching orders");
                 }
-
+               
                 const data = await response.json();
+                console.log('data', data);
                 setOrders(data);
                 setLoading(false);
             } catch (err) {
@@ -49,7 +57,7 @@ const MyOrders = () => {
                 const response = await axios.get(`${API_URL}/api/products`);
                 if (response.status === 200) {
                     const data = response.data;
-                    console.log("Fetched products:", data); // Log the products
+                    //console.log("Fetched products:", data); // Log the products
                     setProducts(data); // Set the products state
                 } else {
                     console.error(
@@ -64,7 +72,7 @@ const MyOrders = () => {
         // Call both fetch functions
         fetchOrders();
         fetchProducts();
-    }, [refreshTrigger]);
+    }, [userId,refreshTrigger]);
 
     // Get current orders for the current page
     const indexOfLastOrder = currentPage * ordersPerPage;
@@ -78,6 +86,7 @@ const MyOrders = () => {
     const showOrderDetails = (order) => {
         setSelectedOrder(order);
         setIsModalVisible(true);
+        
     };
 
     // Close modal
@@ -218,6 +227,7 @@ const MyOrders = () => {
                         {orders.length === 0 ? (
                             <p className="text-center text-lg">
                                 Bạn không có đơn hàng nào.
+                              
                             </p>
                         ) : (
                             <>
@@ -250,13 +260,13 @@ const MyOrders = () => {
                                                         <p className="text-lg text-gray-600">
                                                             Tổng tiền:{" "}
                                                             {formatCurrency(
-                                                                order.totalAmount
+                                                                order.totalPrice
                                                             )}
                                                         </p>
                                                         <p className="text-md text-gray-500">
                                                             Ngày đặt:{" "}
                                                             {formatDate(
-                                                                order.orderDate
+                                                                order?.createdAt
                                                             )}
                                                         </p>
                                                     </div>
@@ -334,7 +344,7 @@ const MyOrders = () => {
                                                     </p>
                                                     <p className="font-semibold">
                                                         {formatDate(
-                                                            selectedOrder.orderDate
+                                                            selectedOrder.createdAt
                                                         )}
                                                     </p>
                                                 </div>
@@ -348,8 +358,8 @@ const MyOrders = () => {
                                                                 selectedOrder.status
                                                             ).text
                                                         } 
-                            ${getStatusStyle(selectedOrder.status).bg} 
-                            px-3 py-1 rounded-full inline-block mt-1`}
+                                                ${getStatusStyle(selectedOrder.status).bg} 
+                                                px-3 py-1 rounded-full inline-block mt-1`}
                                                     >
                                                         {selectedOrder.status}
                                                     </p>
@@ -360,7 +370,7 @@ const MyOrders = () => {
                                                     </p>
                                                     <p className="font-semibold">
                                                         {formatCurrency(
-                                                            selectedOrder.totalAmount
+                                                            selectedOrder.totalPrice
                                                         )}
                                                     </p>
                                                 </div>
@@ -370,7 +380,7 @@ const MyOrders = () => {
                                                     </p>
                                                     <p className="font-semibold">
                                                         {
-                                                            selectedOrder.shippingAddress
+                                                            selectedOrder.address
                                                         }
                                                     </p>
                                                 </div>

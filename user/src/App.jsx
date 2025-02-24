@@ -28,6 +28,7 @@ import Breadcrumbs from './shared/Breadcrumbs.jsx';
 import userService from './facadeParttern/userService.js'
 import { useDispatch } from "react-redux";
 import { setUser } from "./redux/userSlide.js";
+import CheckoutBuyNow from "./pages/CheckOutNuyNow.jsx";
 function App() {
     const [cartOpen, setCartOpen] = useState(false);
     const userId = localStorage.getItem("userId");
@@ -64,6 +65,7 @@ function App() {
                 <Routes>
                     <Route path="/" element={<Homepage />} />
                     <Route path={PathNames.ABOUT} element={<About />} />
+                    <Route path={PathNames.CHECKOUTBUYNOW} element={<CheckoutBuyNow />} />
                     <Route path={PathNames.STORIES} element={<Stories />} />
                     <Route path={PathNames.FAQ} element={<FaQ />} />
                     <Route path={PathNames.VACANCIES} element={<Vacancies />} />

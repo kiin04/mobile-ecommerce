@@ -14,6 +14,18 @@ namespace WebAPI.Services
             _orderService= orderService;
         }
 
+        public async Task<User> CheckPhoneAsync(string phone)
+        {
+          
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Phone == phone);
+            if (user == null)
+            {
+                throw new KeyNotFoundException($"Not Found User with number {phone}");
+            }
+         
+            return user;
+        }
+
         public async Task DeleteDependencieAsync(int id)
         {
             var user = await _context.Users.FindAsync(id);

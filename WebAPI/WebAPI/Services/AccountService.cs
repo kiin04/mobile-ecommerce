@@ -13,7 +13,17 @@ namespace WebAPI.Services
             _context = context;
             
         }
+        public async Task<Account> CheckUserAsync(int id)
+        {
 
+            var user = await _context.Accounts.FirstOrDefaultAsync(u => u.UserId == id);
+            if (user == null)
+            {
+                throw new KeyNotFoundException($"Not Found User with id {id}");
+            }
+
+            return user;
+        }
         public async Task<Account> CreateAccountAsync(Account account)
         {
             // Kiểm tra nếu email đã tồn tại

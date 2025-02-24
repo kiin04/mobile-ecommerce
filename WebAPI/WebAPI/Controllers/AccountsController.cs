@@ -42,7 +42,25 @@ namespace WebAPI.Controllers
                 return NotFound(new { message = ex.Message });
             }
         }
+        // GET: api/User/CheckUser/1
+        [HttpGet("CheckUser/{id}")]
+        public async Task<ActionResult<Account>> CheckUser(int id)
+        {
+            try
+            {  
+                var user = await _accountService.CheckUserAsync(id);
 
+                return Ok(user);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred.", details = ex.Message });
+            }
+        }
         // PUT: api/Account/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutAccount(int id, Account Account)

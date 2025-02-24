@@ -11,6 +11,19 @@ namespace WebAPI.Services
         {
             _context = context;
         }
+        public async Task<List<Order>> GetOrdersByUserAsync(int userId)
+        {
+            var orders = await _context.Orders
+                .Where(o => o.UserId == userId)
+                .ToListAsync();
+
+            if (orders == null || !orders.Any())
+            {
+                throw new KeyNotFoundException($"No orders found for User with ID: {userId}");
+            }
+
+            return orders;
+        }
 
         public async Task DeleteDependencieAsync(int id)
         {

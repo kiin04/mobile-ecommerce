@@ -42,6 +42,28 @@ namespace WebAPI.Controllers
             }
         }
 
+        // GET: api/User/CheckUser/1
+        [HttpGet("CheckUser/{phone}")]
+        public async Task<ActionResult<User>> CheckUser(string phone)
+        {
+            try
+            {
+                // Gọi phương thức CheckPhoneAsync từ service
+                var user = await _UserService.CheckPhoneAsync(phone);
+              
+                return Ok(user);
+            }
+            catch (KeyNotFoundException ex)
+            {  
+                return NotFound(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred.", details = ex.Message });
+            }
+        }
+
+
         // PUT: api/User/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutUser(int id, User User)
