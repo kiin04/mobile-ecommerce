@@ -16,7 +16,7 @@ GO
 alter table Orders
 add paymentMethod NVARCHAR(70) NUll;
 GO
-alter table Orders 
+alter table Orders
 add cancellationReason NVARCHAR(255) NUll;
 GO
 ALTER TABLE [Users]
