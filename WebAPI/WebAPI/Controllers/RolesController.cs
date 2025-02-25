@@ -46,13 +46,9 @@ namespace WebAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutRole(int id, Role Role)
         {
-            if (id != Role.Id)
-            {
-                return BadRequest(new { message = "ID không khớp" });
-            }
-
             try
             {
+                Role.Id = id;
                 await _RoleRepository.UpdateAsync(Role);
                 return NoContent();
             }

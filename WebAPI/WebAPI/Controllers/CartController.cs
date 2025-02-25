@@ -67,6 +67,7 @@ namespace WebAPI.Controllers
         {
             try
             {
+                Cart.Id = id;
                 await _CartRepository.UpdateAsync(Cart);
                 return NoContent();
             }

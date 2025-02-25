@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using WebAPI.DTO;
 using WebAPI.Factory;
 using WebAPI.Models;
 using WebAPI.Services;
@@ -66,31 +67,61 @@ namespace WebAPI.Controllers
 
         // PUT: api/User/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(int id, User User)
+        public async Task<IActionResult> PutUser(int id, [FromForm] UserDTO userDTO, IFormFile? image)
         {
             try
             {
-                await _UserRepository.UpdateAsync(User);
+                var user = new User
+                {
+                    Id = id,
+                    Name = userDTO.Name,
+                    Phone = userDTO.Phone,
+                    Address = userDTO.Address,
+                    Role = userDTO.Role,
+                    TotalBuy = userDTO.TotalBuy,
+                    Account = userDTO.Account,
+                    CreatedAt = userDTO.CreatedAt,
+                };
+                if (userDTO.CreatedAt == null)
+                {
+                    return BadRequest(new { message = "CreatedAt không được để trống." });
+                }
+                if (image != null)
+                    await _UserRepository.UpdateAsync(user, image);
+                else
+                    await _UserRepository.UpdateAsync(user);
                 return NoContent();
             }
-            catch (DbUpdateConcurrencyException ex)
+            catch (InvalidOperationException ex)
             {
-                return Conflict(new { message = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = ex.Message });
+                return BadRequest(new { message = ex.Message });
             }
         }
 
         // POST: api/User
         [HttpPost]
-        public async Task<ActionResult<User>> PostUser(User User)
+        public async Task<ActionResult<User>> PostUser([FromForm] UserDTO userDTO, IFormFile? image)
         {
             try
             {
-                await _UserRepository.AddAsync(User);
-                return CreatedAtAction(nameof(GetUser), new { id = User.Id }, User);
+                var user = new User
+                {
+                    Name = userDTO.Name,
+                    Phone = userDTO.Phone,
+                    Address = userDTO.Address,
+                    Role = userDTO.Role,
+                    TotalBuy = userDTO.TotalBuy,
+                    Account = userDTO.Account,
+                };
+                if (image == null)
+                {
+                    await _UserRepository.AddAsync(user);
+                }
+                else
+                {
+                    await _UserRepository.AddAsync(user, image);
+                }
+                return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user);
             }
             catch (InvalidOperationException ex)
             {

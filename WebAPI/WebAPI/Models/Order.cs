@@ -16,6 +16,7 @@ public partial class Order : BaseEntity
 
     public string? PaymentMethod { get; set; }
     public string? PaymentStatus { get; set; }
+    public string? CancellationReason { get; set; }
     public string? Phone { get; set; }
 
     public string? Address { get; set; }

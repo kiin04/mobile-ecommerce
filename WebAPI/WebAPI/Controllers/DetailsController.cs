@@ -56,17 +56,10 @@ namespace WebAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutDetail(int id, Detail Detail)
         {
-            if (id != Detail.Id)
-            {
-                return BadRequest(new { message = "ID không khớp" });
-            }
-            bool search = await _DetailRepository.ExistsAsync(id);
-            if (!search)
-            {
-                return NotFound();
-            }
+            
             try
             {
+                Detail.Id = id;
                 await _DetailRepository.UpdateAsync(Detail);
                 return NoContent();
             }

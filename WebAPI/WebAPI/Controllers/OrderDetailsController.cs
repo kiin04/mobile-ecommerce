@@ -42,17 +42,10 @@ namespace WebAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutOrderDetail(int id, OrderDetail OrderDetail)
         {
-            if (id != OrderDetail.Id)
-            {
-                return BadRequest(new { message = "ID không khớp" });
-            }
-            bool search = await _OrderDetailRepository.ExistsAsync(id);
-            if (!search)
-            {
-                return NotFound();
-            }
+           
             try
             {
+                OrderDetail.Id = id;
                 await _OrderDetailRepository.UpdateAsync(OrderDetail);
                 return NoContent();
             }

@@ -191,8 +191,11 @@ public partial class CSDLBanHang : DbContext
               .HasMaxLength(70)
               .HasColumnName("paymentMethod");
             entity.Property(e => e.PaymentStatus)
-            .HasMaxLength(70)
-            .HasColumnName("paymentStatus");
+                .HasMaxLength(70)
+                .HasColumnName("paymentStatus");
+            entity.Property(e => e.CancellationReason)
+                .HasMaxLength(255)
+                .HasColumnName("cancellationReason");
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime")
