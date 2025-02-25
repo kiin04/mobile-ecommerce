@@ -6,15 +6,14 @@ import Apple from "../../assets/BrandLogos/Apple.svg";
 import Xiaomi from "../../assets/BrandLogos/Xiaomi_logo.svg";
 import Huawei from "../../assets/BrandLogos/Huawei_logo.svg";
 import { useNavigate } from "react-router-dom";
-
+import PathNames from "../../PathNames";
 // TODO: Điều hướng đến trang sản phẩm được lọc theo thương hiệu đó
 const Featured = () => {
     const navigate = useNavigate();
-
     const handleCategoryBrowse = (brand) => {
-        // navigate(`/products?brand=${brand}`);
+        navigate(`${PathNames.SHOP}`, { state: { brand: brand } })
     }
-
+    
     return (
         <section className="py-8">
             <div className="container">
@@ -53,6 +52,7 @@ const Featured = () => {
                                     bgColor={"bg-primary"}
                                     textColor={"text-white"}
                                     fontSize= {"text-sm"}
+                                    onClick={() => handleCategoryBrowse("Huawei")}
                                 />
                             </div>
                         </div>
@@ -97,6 +97,7 @@ const Featured = () => {
                                     bgColor={"bg-white"}
                                     textColor={"text-brandYellow"}
                                     fontSize= {"text-sm"}
+                                    onClick={() => handleCategoryBrowse("Xiaomi")}
                                 />
                             </div>
                         </div>
@@ -126,6 +127,7 @@ const Featured = () => {
                                     bgColor={"bg-white"}
                                     textColor={"text-[#1b1b1b]"}
                                     fontSize= {"text-sm"}
+                                    onClick={() => handleCategoryBrowse("Apple")}
                                 />
                             </div>
                         </div>

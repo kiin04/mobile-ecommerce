@@ -10,7 +10,7 @@ import AddtoCartBtn from "../../shared/AddtoCartBtn.jsx";
 const NewReleases = () => {
     const userId = sessionStorage.getItem("userId");
     const [products, setProducts] = useState([]);
-    const [product, setProduct] = useState(null);
+   
     const [quantity, setQuantity] = useState(1);
     const [error, setError] = useState("");
     const navigate = useNavigate();
@@ -19,8 +19,7 @@ const NewReleases = () => {
         const fetchProducts = async () => {
             try {
                 const response = await axios.get(`${API_URL}/api/Products`);
-                console.log('res release', response.data);
-                setProduct(response.data);
+                setProducts(response.data);
             } catch (error) {
                 console.error("Lỗi khi tải sản phẩm:", error);
             }
@@ -28,16 +27,14 @@ const NewReleases = () => {
         fetchProducts();
     }, []);
 
-    const getProductsById = (ids) => {
-        return products.filter((product) => ids.includes(product.id));
+    const getProductsById = () => {
+        return products
+            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // Sắp xếp giảm dần theo createdAt
+            .slice(0, 4); // Lấy 4 sản phẩm đầu tiên
     };
-    const NReleaseProducts = getProductsById([
-        "1",
-        "2",
-        "3",
-        "4",
-    ]);
-
+    
+    const NReleaseProducts = getProductsById();
+    console.log("NReleaseProducts: ",NReleaseProducts);
     const handleQuantityChange = (e) => {
         const value = parseInt(e.target.value, 10);
         if (value > product.quantity) {
@@ -167,12 +164,12 @@ const NewReleases = () => {
                         {NReleaseProducts.map((item) => (
                             <div
                                 key={item.id}
-                                className="w-[20rem] bg-white border xl:scale-100 lg:scale-90 md:scale-75 sm:scale-50 border-gray-200 rounded-2xl shadow dark:bg-gray-800 dark:border-gray-700"
+                                className="w-[19rem]  mx-2 my-2 bg-white border xl:scale-90 lg:scale-90 md:scale-75 sm:scale-50 border-gray-200 rounded-2xl shadow dark:bg-gray-800 dark:border-gray-700"
                             >
                                 {item.image ? (
                                     <img
                                         className="p-8 rounded-t-lg cursor-pointer"
-                                        src={`${API_URL}/${item.image}`}
+                                        src={`data:image/jpeg;base64,${item.image}`}
                                         alt="product image"
                                         onClick={() =>
                                             handleProductClick(item.id)

@@ -51,7 +51,7 @@ const Homepage = () => {
         {filteredProducts.slice(0, visibleProducts).map(product => (
           <div key={product.id} className="bg-white border border-gray-200 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer" onClick={() => handleProductClick(product.id)}>
             <img
-              src={`${API_URL}/${product.image}`}
+              src={`data:image/jpeg;base64,${product.image}`}
               alt={product.name}
               className="w-full h-80 rounded-t-lg"
             />
