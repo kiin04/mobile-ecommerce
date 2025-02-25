@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, Dialog, DialogTitle, DialogContent, IconButton, Button, TextField, Pagination } from '@mui/material';
 import { Edit, Delete, Visibility } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import { API_URL } from '../../config.js';
 import apiConfigInstance from '../../../SingletonParttern.js';
 const API_URL = apiConfigInstance.getApiUrl();
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";

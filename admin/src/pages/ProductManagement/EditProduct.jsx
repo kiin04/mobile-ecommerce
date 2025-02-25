@@ -81,7 +81,7 @@ const EditProduct = () => {
                     const data = await response.json();
                     setProduct({ ...data });
                     setProductImage(
-                        product?.image ? `data:image/jpeg;base64,${product.image}` : ""
+                        data.image ? `data:image/jpeg;base64,${data.image}` : ""
                     );
                 } else {
                     throw new Error("Failed to fetch product");
@@ -94,7 +94,7 @@ const EditProduct = () => {
             }
         };
         fetchProduct();
-    }, [productId, product.image]);
+    }, [productId]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
