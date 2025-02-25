@@ -36,7 +36,7 @@ const NewReleases = () => {
         "2",
         "3",
         "4",
-    ]);
+    ],[]);
 
     const handleQuantityChange = (e) => {
         const value = parseInt(e.target.value, 10);

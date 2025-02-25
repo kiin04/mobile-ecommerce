@@ -17,81 +17,89 @@ const ProductDetails = () => {
     const [quantity, setQuantity] = useState(1);
     const [error, setError] = useState("");
     const user = useSelector((state) => state.user);
-    const userId = user?.id
+    const userId = user?.id;
     console.log("user", user);
     const [availableColors, setAvailableColors] = useState([]);
     const [selectedColor, setSelectedColor] = useState("");
 
     useEffect(() => {
         const fetchProduct = async () => {
-          try {
-            const response = await fetch(`${API_URL}/api/Products/${productId}`);
-            if (response.ok) {
-              const data = await response.json();
-              setProduct({ ...data }); 
-            } else {
-              throw new Error('Failed to fetch product');
+            try {
+                const response = await fetch(
+                    `${API_URL}/api/Products/${productId}`
+                );
+                if (response.ok) {
+                    const data = await response.json();
+                    setProduct({ ...data });
+                } else {
+                    throw new Error("Failed to fetch product");
+                }
+            } catch (error) {
+                console.error("Error fetching product:", error);
+                setError("Failed to load product data. Please try again.");
+            } finally {
+                //setLoading(false);
             }
-          } catch (error) {
-            console.error('Error fetching product:', error);
-            setError('Failed to load product data. Please try again.');
-          } finally {
-            //setLoading(false);
-          }
         };
-        
+
         const fetchColorSize = async () => {
             try {
-            const response = await fetch(`${API_URL}/api/ColorSizes/ProductColorSize/${productId}`);
-          
-            if (response.ok) {
-                const data = await response.json();
-                setColorSizes(data); 
-            } else {
-                throw new Error('Failed to fetch product');
-            }
+                const response = await fetch(
+                    `${API_URL}/api/ColorSizes/ProductColorSize/${productId}`
+                );
+
+                if (response.ok) {
+                    const data = await response.json();
+                    setColorSizes(data);
+                } else {
+                    throw new Error("Failed to fetch product");
+                }
             } catch (error) {
-            console.error('Error fetching product:', error);
-            setError('Failed to load product data. Please try again.');
+                console.error("Error fetching product:", error);
+                setError("Failed to load product data. Please try again.");
             } finally {
-           
+                //
             }
         };
         const fetchDetails = async () => {
             try {
-            const response = await fetch(`${API_URL}/api/Details/ProductDetail/${productId}`);
-         
-            if (response.ok) {
-                const data = await response.json();
-                //console.log('Response data details :', data[0]);
-                setDetails(data[0]); 
-            } else {
-                throw new Error('Failed to fetch product');
-            }
+                const response = await fetch(
+                    `${API_URL}/api/Details/ProductDetail/${productId}`
+                );
+
+                if (response.ok) {
+                    const data = await response.json();
+                    //console.log('Response data details :', data[0]);
+                    setDetails(data[0]);
+                } else {
+                    throw new Error("Failed to fetch product");
+                }
             } catch (error) {
-            console.error('Error fetching product:', error);
-            setError('Failed to load product data. Please try again.');
+                console.error("Error fetching product:", error);
+                setError("Failed to load product data. Please try again.");
             } finally {
-           
+                //
             }
         };
-          
-        fetchColorSize();
-        fetchProduct(); 
-        fetchDetails()
-      }, [productId]);
 
-      useEffect(() => {
-        if(colorSizes){
+        fetchColorSize();
+        fetchProduct();
+        fetchDetails();
+    }, [productId]);
+
+    useEffect(() => {
+        if (colorSizes) {
             setAvailableColors(colorSizes.filter((item) => item.quantity > 0));
         }
-      }, [colorSizes]);
+    }, [colorSizes]);
 
-      const handelChangeColorSize =(colorSizeId)=>{
-        setSelectedColor(availableColors.find((item)=>item.id === colorSizeId))
-      }
-     
-      const getStock = () => {
+    const handelChangeColorSize = (colorSizeId) => {
+        setSelectedColor(
+            availableColors.find((item) => item.id === colorSizeId)
+        );
+    };
+
+    const getStock = () => {
         let stock = 0;
         if (Array.isArray(colorSizes)) {
             stock = colorSizes
@@ -101,7 +109,7 @@ const ProductDetails = () => {
 
         return stock;
     };
-    
+
     const handleQuantityChange = (e) => {
         const value = parseInt(e.target.value, 10);
         if (value > selectedColor.quantity) {
@@ -210,20 +218,20 @@ const ProductDetails = () => {
             });
         }
     };
-    const handleBuyNow =()=>{
-        if(selectedColor) {
-            const productBuyNow ={
-                productId : productId,
-                image :product.image,
-                name : product.name,
-                quantity : quantity,
-                colorSizeId : selectedColor.id,
-                color : selectedColor.color,
-                size : selectedColor.size,
-                price:product?.price,
-               }
-               navigate('/checkout-buynow', { state: { product: productBuyNow } });
-        }else{
+    const handleBuyNow = () => {
+        if (selectedColor) {
+            const productBuyNow = {
+                productId: productId,
+                image: product.image,
+                name: product.name,
+                quantity: quantity,
+                colorSizeId: selectedColor.id,
+                color: selectedColor.color,
+                size: selectedColor.size,
+                price: product?.price,
+            };
+            navigate("/checkout-buynow", { state: { product: productBuyNow } });
+        } else {
             notification.error({
                 message: "Lỗi",
                 description: "Vui lòng chọn màu trước khi mua",
@@ -233,8 +241,7 @@ const ProductDetails = () => {
                 pauseOnHover: true,
             });
         }
-       
-    }
+    };
     if (!product) {
         return (
             <div className="flex items-center justify-center min-h-screen p-5 text-lg">
@@ -244,7 +251,6 @@ const ProductDetails = () => {
     }
 
     const tableData = [
-        
         {
             key: "Hệ điều hành",
             value: product?.os,
@@ -255,55 +261,55 @@ const ProductDetails = () => {
         },
         {
             key: "RAM",
-            value:details?.ram,
+            value: details?.ram,
         },
         {
             key: "Bộ nhớ trong",
-            value:details?.internalStorage,
+            value: details?.internalStorage,
         },
         {
             key: "Pin",
-            value:details?.battery,
+            value: details?.battery,
         },
         {
             key: "Kích thước màn hình",
-            value:details?.screenSize,
+            value: details?.screenSize,
         },
         {
             key: "Công nghệ màn hình",
-            value:details?.screenTechnology,
+            value: details?.screenTechnology,
         },
         {
             key: "Camera sau",
-            value:details?.rearCamera,
+            value: details?.rearCamera,
         },
         {
             key: "Camera trước",
-            value:details?.frontCamera,
+            value: details?.frontCamera,
         },
         {
             key: "Chipset",
-            value:details?.chipset,
+            value: details?.chipset,
         },
         {
             key: "GPU",
-            value:details?.gpu,
+            value: details?.gpu,
         },
         {
             key: "Công nghệ NFC",
-            value:details?.nfc,
+            value: details?.nfc,
         },
         {
             key: "Thẻ SIM",
-            value:details?.simcard,
+            value: details?.simcard,
         },
         {
             key: "Độ phân giải màn hình",
-            value:details?.screenResolution,
+            value: details?.screenResolution,
         },
         {
             key: "Cổng sạc",
-            value:details?.chargingTechnology,
+            value: details?.chargingTechnology,
         },
     ];
 
@@ -352,38 +358,42 @@ const ProductDetails = () => {
                         {/* Show how many items are left in stock */}
                         <p className="text-md text-gray-600 mb-4">
                             Trạng thái:{" "}
-                            {   selectedColor.quantity > 0
-                                ?  <span
-                                className={
-                                    selectedColor.quantity > 0
-                                        ? "text-green-600"
-                                        : "text-red-600"
-                                }
+                            {selectedColor.quantity > 0 ? (
+                                <span
+                                    className={
+                                        selectedColor.quantity > 0
+                                            ? "text-green-600"
+                                            : "text-red-600"
+                                    }
                                 >
                                     {selectedColor.quantity > 0
                                         ? `${selectedColor.quantity} sản phẩm còn lại`
                                         : "Hết hàng"}
-                                </span> 
-                                :<span
-                                className={
-                                    getStock() > 0
-                                        ? "text-green-600"
-                                        : "text-red-600"
-                                }
-                            >
-                                { getStock() > 0
-                                    ? `${ getStock()} sản phẩm còn lại`
-                                    : "Hết hàng"}
-                            </span>
-                             }
-                           
+                                </span>
+                            ) : (
+                                <span
+                                    className={
+                                        getStock() > 0
+                                            ? "text-green-600"
+                                            : "text-red-600"
+                                    }
+                                >
+                                    {getStock() > 0
+                                        ? `${getStock()} sản phẩm còn lại`
+                                        : "Hết hàng"}
+                                </span>
+                            )}
                         </p>
 
-                        <p className="text-red-500 mb-1 text-lg">{product.brand}</p>
+                        <p className="text-red-500 mb-1 text-lg">
+                            {product.brand}
+                        </p>
                         <h2 className="text-3xl font-bold mb-2">
                             {product.name}
                         </h2>
-                        <p className="text-gray-600 mb-4 text-xs">SKU: {product.productId}</p>
+                        <p className="text-gray-600 mb-4 text-xs">
+                            SKU: {product.productId}
+                        </p>
                         <div className="mb-4">
                             <span className="text-2xl font-bold mr-2 text-primary">
                                 {product.price.toLocaleString()} đ
@@ -407,33 +417,34 @@ const ProductDetails = () => {
                         {availableColors.length > 0 && (
                             <div className="my-6">
                                 <label
-                                htmlFor="color"
-                                className="block text-lg font-semibold mb-1"
+                                    htmlFor="color"
+                                    className="block text-lg font-semibold mb-1"
                                 >
-                                Màu:
+                                    Màu:
                                 </label>
                                 <Select
-                                size="large"
-                                id="color"
-                                value={selectedColor?selectedColor.id : ""}
-                                onChange={(value) => {
-                                    handelChangeColorSize(value)
-                                }}
-                                className="w-40 rounded-lg focus:outline-none"
+                                    size="large"
+                                    id="color"
+                                    value={
+                                        selectedColor ? selectedColor.id : ""
+                                    }
+                                    onChange={(value) => {
+                                        handelChangeColorSize(value);
+                                    }}
+                                    className="w-40 rounded-lg focus:outline-none"
                                 >
-                                {availableColors.map((colorOption) => (
-                                    <Select.Option
-                                    key={colorOption.id}
-                                    value={colorOption.id}
-                                    >
-                                    {colorOption.color} - {colorOption.size}
-                                    </Select.Option>
-                                ))}
+                                    {availableColors.map((colorOption) => (
+                                        <Select.Option
+                                            key={colorOption.id}
+                                            value={colorOption.id}
+                                        >
+                                            {colorOption.color} -{" "}
+                                            {colorOption.size}
+                                        </Select.Option>
+                                    ))}
                                 </Select>
-                                
                             </div>
                         )}
-
 
                         <div className="mb-6">
                             <label
