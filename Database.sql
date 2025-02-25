@@ -20,19 +20,26 @@ CREATE TABLE Products (
     id INT PRIMARY KEY IDENTITY(1,1),
     name NVARCHAR(255) NOT NULL,
     description NVARCHAR(MAX),
-    price DECIMAL(18, 2) NOT NULL,
+    price DECIMAL(18, 2) N
+    
+    
+    OT NULL,
 	--promo int,
 	unit NVARCHAR(50),
 	brand NVARCHAR(50),
 	sold INT default  0,
 	rate INT default  0,
 	image VARBINARY(MAX),
-    category_id INT NOT NULL,
+    
+    
+    
+   gory_id INT NOT NULL,
     created_at DATETIME DEFAULT GETDATE(),
     updated_at DATETIME DEFAULT GETDATE(),
     FOREIGN KEY (category_id) REFERENCES Categories(id)
 );
 GO
+
 
 -- Bảng ColorSizes
 CREATE TABLE ColorSizes (
