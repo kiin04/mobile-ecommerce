@@ -67,6 +67,7 @@ namespace WebAPI.Controllers
         {
             try
             {
+                Account.Id = id;
                 await _accountRepository.UpdateAsync(Account);
                 return NoContent();
             }

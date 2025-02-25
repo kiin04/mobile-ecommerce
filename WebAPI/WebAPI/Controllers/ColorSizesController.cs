@@ -65,6 +65,7 @@ namespace WebAPI.Controllers
 
             try
             {
+                colorSize.Id = id;
                 await _colorSizeRepository.UpdateAsync(colorSize);
                 return NoContent();
             }

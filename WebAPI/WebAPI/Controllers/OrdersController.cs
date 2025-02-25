@@ -19,7 +19,6 @@ namespace WebAPI.Controllers
             _OrderRepository = RepositoryFactory.CreateRepository<Order>(context);
             _OrderService = new OrderService(context);
 
-
         }
 
         // GET: api/Orders
@@ -68,6 +67,7 @@ namespace WebAPI.Controllers
         {
             try
             {
+                Order.Id = id;
                 await _OrderRepository.UpdateAsync(Order);
                 return NoContent();
             }
