@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { API_URL } from "../config";
 import { notification } from "antd";
 import PathNames from "../PathNames.js";
-
+import {  useSelector } from "react-redux";
 const Cart = () => {
     const [cartItems, setCartItems] = useState([]);
     const [cartAmount, setCartAmount] = useState(0);
@@ -14,42 +14,48 @@ const Cart = () => {
     const [overStockError, setOverStockError] = useState(null);
     const [selectedItems, setSelectedItems] = useState([]);
     const navigate = useNavigate();
-
-    useEffect(() => {
-        const fetchCartItems = async () => {
-            const userId = sessionStorage.getItem("userId");
-
-            if (!userId) {
-                console.error("Xin hãy đăng nhập để sử dụng tính năng này");
-                // notification.warning({
-                //     message: 'Lỗi',
-                //     description: "Vui lòng đăng nhập để sử dụng tính năng này",
-                //     duration: 4,
-                //     placement: "bottomRight",
-                //     showProgress: true,
-                //     pauseOnHover: true
-                // });
-                return;
+    const user = useSelector((state) => state.user);
+    const userId = user?.id
+    console.log('userId',userId);
+    const fetchCartItems = async () => {
+           
+        if (!userId) {
+            console.error("Xin hãy đăng nhập để sử dụng tính năng này");
+        }
+        try {
+            const response = await fetch(`${API_URL}/api/Carts/User/${user.id}`);
+            if (!response.ok) {
+                throw new Error("Failed to fetch cart items");
             }
-
+            const data = await response.json();
+            setCartItems(data);
+            setLoading(false);
+        } catch (error) {
+            console.error("Error fetching cart items:", error);
+            setError(error.message);
+            setLoading(false);
+        }
+    };
+    useEffect(() => {
+        if (userId) {
+            fetchCartItems();
+        }
+    }, [userId]);
+    const getProduct = async (id)=>{
             try {
-                const response = await fetch(`${API_URL}/api/Carts/User/${userId}`);
+                const response = await fetch(`${API_URL}/api/Products/${id}`);
                 if (!response.ok) {
                     throw new Error("Failed to fetch cart items");
                 }
                 const data = await response.json();
-                setCartItems(data);
-                setLoading(false);
+                return data
             } catch (error) {
                 console.error("Error fetching cart items:", error);
                 setError(error.message);
-                setLoading(false);
+               
             }
-        };
-
-        fetchCartItems();
-    }, [navigate]);
-
+       
+    }
     // Tính tổng giá tiền
     const calculateTotal = () => {
         return cartItems.reduce(
@@ -248,19 +254,14 @@ const Cart = () => {
                             </div>
                             <img
                                 src={
-                                    item.image
-                                        ? `${API_URL}/${item.image.replace(
-                                              /\\/g,
-                                              "/"
-                                          )}`
-                                        : "/default-image.jpg"
+                                    `data:image/jpeg;base64,${getProduct(item.productId)?.image}`
                                 }
                                 alt={item.name}
                                 className="object-cover w-20 h-20"
                             />
                             <div className="ml-4">
                                 <h3 className="text-lg font-semibold">
-                                    Tên sản phẩm: {item.name}
+                                    Tên sản phẩm: {getProduct(item.productId)?.name}
                                 </h3>
                                 <p className="text-sm font-semibold">
                                     Màu: {item.color}

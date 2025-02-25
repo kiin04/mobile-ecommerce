@@ -116,12 +116,29 @@ const CheckoutBuyNow = () => {
             });
     
             if (orderResponse.status === 201) {
-                notification.success({
-                    message: 'Đơn hàng mới đã được tạo',
-                    description: 'Đơn hàng mới đã được tạo',
-                    duration: 4,
-                    placement: "bottomRight",
+                const orderRes =  await orderResponse.json();
+                const orderDetail ={
+                    orderId : orderRes.id,
+                    colorSizeId:productBuyNow.colorSizeId,
+                    quantity:productBuyNow.quantity,
+                    price:productBuyNow.price,
+                }
+                const orderDetailResponse = await fetch(`${API_URL}/api/Orders`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(orderDetail),
                 });
+                if (orderResponse.status === 201) {
+                    notification.success({
+                        message: 'Đơn hàng mới đã được tạo',
+                        description: 'Đơn hàng mới đã được tạo',
+                        duration: 4,
+                        placement: "bottomRight",
+                    });
+                }
+               
             } else {
                 alert("Đã xảy ra lỗi khi tạo đơn hàng. Vui lòng thử lại.");
             }

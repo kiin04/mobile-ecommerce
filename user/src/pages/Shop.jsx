@@ -2,24 +2,24 @@ import axios from "axios";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { API_URL } from "../config";
 import PathNames from "../PathNames.js";
 import Heading from "../shared/Heading";
 import { notification } from "antd";
-
+import { useLocation, useNavigate } from "react-router-dom";
 const Shop = () => {
+    const location = useLocation();
     const [products, setProducts] = useState([]);
     const [filteredProducts, setFilteredProducts] = useState([]);
-    const [brands, setBrands] = useState([]);
+    const [brands, setBrands] = useState(["Apple", "Xiaomi","Huawei"]);
     const [colors, setColors] = useState([]);
 
     // Temporary states for filter changes
-    const [tempSelectedBrands, setTempSelectedBrands] = useState([]);
+    const [tempSelectedBrands, setTempSelectedBrands] = useState([location.state.brand]);
     const [tempSelectedColors, setTempSelectedColors] = useState([]);
     const [tempPriceRange, setTempPriceRange] = useState([0, 20000000]);
 
-    const [selectedBrands, setSelectedBrands] = useState([]);
+    const [selectedBrands, setSelectedBrands] = useState([location.state.brand]);
     const [selectedColors, setSelectedColors] = useState([]);
     const [priceRange, setPriceRange] = useState([0, 20000000]);
 
@@ -30,7 +30,7 @@ const Shop = () => {
 
     const [currentPage, setCurrentPage] = useState(1);
     const productsPerPage = 20;
-
+    let filtered = products;    
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -72,10 +72,19 @@ const Shop = () => {
         };
 
         fetchAllProducts();
-        fetchBrands();
-        fetchColors();
+        // fetchBrands();
+        // fetchColors();
+       
     }, []);
-
+    console.log('tempSelectedBrands ',tempSelectedBrands);
+    useEffect(()=>{
+        if (tempSelectedBrands.length > 0) {
+            filtered = filtered.filter((item) =>
+                tempSelectedBrands.includes(item.brand)
+            );
+            console.log("fliter: ",filtered);
+        }
+    },[tempSelectedBrands])
     const toggleBrandFilter = () => {
         setIsBrandOpen(!isBrandOpen);
         setIsPriceOpen(false);
@@ -105,7 +114,7 @@ const Shop = () => {
                 : [...prevSelectedBrands, brand];
         });
     };
-
+    
     const handleColorSelection = (color) => {
         setTempSelectedColors((prevSelectedColors) => {
             return prevSelectedColors.includes(color)
@@ -117,13 +126,9 @@ const Shop = () => {
     const handleSliderChange = (range) => {
         setTempPriceRange(range);
     };
-
+   
     const applyFilters = () => {
-        setSelectedBrands(tempSelectedBrands);
-        setSelectedColors(tempSelectedColors);
-        setPriceRange(tempPriceRange);
-
-        let filtered = products;
+      
 
         if (tempSelectedBrands.length > 0) {
             filtered = filtered.filter((item) =>

@@ -4,8 +4,10 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { API_URL } from "../config";
 import PathNames from "../PathNames.js";
-
+import {  useSelector } from "react-redux";
 const CartSidebar = ({ cartOpen, setCartOpen }) => {
+    const user = useSelector((state) => state.user);
+    const userId = user?.id
     const [cartItems, setCartItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -17,23 +19,13 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
 
     useEffect(() => {
         const fetchCartItems = async () => {
-            const userId = sessionStorage.getItem("userId");
-
             if (!userId) {
                 console.error("Xin hãy đăng nhập để sử dụng tính năng này");
-                // notification.warning({
-                //     message: 'Lỗi',
-                //     description: "Vui lòng đăng nhập để sử dụng tính năng này",
-                //     duration: 4,
-                //     placement: "bottomRight",
-                //     showProgress: true,
-                //     pauseOnHover: true
-                // });
                 return;
             }
 
             try {
-                const response = await fetch(`${API_URL}/api/cart/${userId}`);
+                const response = await fetch(`${API_URL}/api/Carts/User/${userId}`);
                 if (!response.ok) {
                     throw new Error("Failed to fetch cart items");
                 }
@@ -94,7 +86,7 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
         } else {
             try {
                 const response = await fetch(
-                    `${API_URL}/api/cart/${userId}/update`,
+                    `${API_URL}/api/Carts/${userId}/update`,
                     {
                         method: "PUT",
                         headers: {

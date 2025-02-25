@@ -161,17 +161,15 @@ const ProductDetails = () => {
 
         const cartItem = {
             productId: product.id,
-            name: product.name,
+            userId: userId,
             price: product.price,
-            color: selectedColor
-                ? availableColors.find((c) => c.id === selectedColor)?.color
-                : product.color,
+            colorSizeId: selectedColor.id,
             quantity: parseInt(quantity),
-            image: product.image,
+           // image: product.image,
         };
 
         try {
-            const response = await fetch(`${API_URL}/api/cart/${userId}/add`, {
+            const response = await fetch(`${API_URL}/api/Carts`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -457,7 +455,7 @@ const ProductDetails = () => {
                         <div className="flex space-x-4 mb-6">
                             <button
                                 className="bg-primary flex gap-2 items-center text-white px-6 py-2 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
-                                // onClick={handleBuyNow}
+                                onClick={handleAddCart}
                             >
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
