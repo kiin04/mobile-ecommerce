@@ -38,12 +38,12 @@ const AdminLogin = ({ onLoginSuccess }) => {
     e.preventDefault();
 
    
-      if (email==="admin" && password ==="123") {
-        alert('Đăng nhập thành công!');
-        onLoginSuccess(); // Gọi hàm khi đăng nhập thành công
-      } else {
-        setLoginError(data.message); // Hiển thị thông báo lỗi
-      }
+    if (email === "admin" && password === "123") {
+      alert('Đăng nhập thành công!');
+      onLoginSuccess(); // Gọi hàm khi đăng nhập thành công
+    } else {
+      setLoginError("Đăng nhập không thành công"); // Hiển thị thông báo lỗi
+    }
     
   };
 

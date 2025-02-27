@@ -6,6 +6,7 @@ import { API_URL } from "../config.js";
 import { useNavigate } from "react-router-dom";
 import { message, Modal } from "antd";
 
+
 const Register = ({ onRegisterSuccess }) => {
     const [name, setName] = useState("");
     const [accountName, setAccountName] = useState("");
@@ -42,6 +43,17 @@ const Register = ({ onRegisterSuccess }) => {
         setEmailError("");
         setPasswordError("");
         setConfirmPasswordError("");
+
+        const userData = {
+            name,
+            accountName,
+            gender,
+            address,
+            phone,
+            dayOfBirth,
+            email,
+            password
+        };
 
         let isValid = true;
 
@@ -113,12 +125,14 @@ const Register = ({ onRegisterSuccess }) => {
                 if (userAvatar) {
                     formData.append("userAvatar", userAvatar);
                 }
-
+                
+                
                 await axios.post(`${API_URL}/api/Users`, formData, {
                     headers: {
-                        "Content-Type": "multipart/form-data",
+                        "Content-Type": "application/json"
                     },
                 });
+                
 
                 // notification.success({
                 //     message: 'Thành công',
