@@ -32,9 +32,9 @@ const NewReleases = () => {
             .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // Sắp xếp giảm dần theo createdAt
             .slice(0, 4); // Lấy 4 sản phẩm đầu tiên
     };
-    
     const NReleaseProducts = getProductsById();
     console.log("NReleaseProducts: ",NReleaseProducts);
+
     const handleQuantityChange = (e) => {
         const value = parseInt(e.target.value, 10);
         if (value > product.quantity) {
