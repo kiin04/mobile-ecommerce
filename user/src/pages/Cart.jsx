@@ -41,20 +41,23 @@ const Cart = () => {
             fetchCartItems();
         }
     }, [userId]);
-    const getProduct = async (id)=>{
-            try {
-                const response = await fetch(`${API_URL}/api/Products/${id}`);
-                if (!response.ok) {
-                    throw new Error("Failed to fetch cart items");
-                }
-                const data = await response.json();
-                return data
-            } catch (error) {
-                console.error("Error fetching cart items:", error);
-                setError(error.message);
-               
+    const fetchProduct =async(id)=>{
+        try {
+            const response = await fetch(`${API_URL}/api/Products/${id}`);
+            if (!response.ok) {
+                throw new Error("Failed to fetch cart items");
             }
-       
+            const data = await response.json();
+            console.log('data product', data);
+            return data
+        } catch (error) {
+            console.error("Error fetching cart items:", error);
+            setError(error.message);
+           
+        }
+    }
+    const getProduct = async (id)=>{
+        await fetchProduct(id)  ;
     }
     // Tính tổng giá tiền
     const calculateTotal = () => {
@@ -202,6 +205,7 @@ const Cart = () => {
             },
         });
     };
+    console.log('test get pro', getProduct(1));
 
     // Giao diện khi giỏ hàng trống
     // if (loading) {

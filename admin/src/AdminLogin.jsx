@@ -1,32 +1,29 @@
 import { useState } from "react";
 import "./styles/AdminLogin.css";
 import { API_URL } from "./config";
+import axios from "axios";
 // eslint-disable-next-line react/prop-types
 const AdminLogin = ({ onLoginSuccess }) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loginError, setLoginError] = useState("");
 
+     // Gửi request login
+    
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         try {
-            const response = await fetch(`${API_URL}/accounts/login`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ email, password }),
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
+            const response = await axios.post(`${API_URL}/api/Accounts/login`, {
+                email,
+                password,
+            })
+            console.log('response login',response.data);
+            if (response.data) {
                 alert("Đăng nhập thành công!");
-                localStorage.setItem("adminToken", data.token); // Lưu token để xác thực
                 onLoginSuccess();
             } else {
-                setLoginError(data.message || "Đăng nhập không thành công");
+                setLoginError( "Đăng nhập không thành công");
             }
         } catch (err) {
             setLoginError("Lỗi server");

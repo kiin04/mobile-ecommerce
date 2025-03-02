@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using WebAPI.Factory;
 using WebAPI.Models;
+using WebAPI.Services;
 
 namespace WebAPI.Controllers
 {
@@ -10,10 +11,12 @@ namespace WebAPI.Controllers
     public class OrderDetailsController : ControllerBase
     {
         private readonly IRepository<OrderDetail> _OrderDetailRepository;
+        OrderDetailService _ordererService;
 
-        public OrderDetailsController(CSDLBanHang context)
+        public OrderDetailsController(CSDLBanHang context , OrderDetailService orderDetailService)
         {
             _OrderDetailRepository = RepositoryFactory.CreateRepository<OrderDetail>(context);
+            _ordererService = orderDetailService;
         }
 
         // GET: api/OrderDetails
@@ -30,6 +33,20 @@ namespace WebAPI.Controllers
             try
             {
                 var OrderDetail = await _OrderDetailRepository.GetByIdAsync(id);
+                return Ok(OrderDetail);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+        }
+        // GET: apiByOrder/OrderDetails/5
+        [HttpGet("ByOrder/{id}")]
+        public async Task<ActionResult<OrderDetail>> GetByOrderId(int id)
+        {
+            try
+            {
+                var OrderDetail = await _ordererService.GetByOrderId(id);
                 return Ok(OrderDetail);
             }
             catch (KeyNotFoundException ex)
