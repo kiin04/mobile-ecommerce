@@ -10,8 +10,10 @@ const AdminLogin = ({ onLoginSuccess }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        setLoginError("");
+
         try {
-            const response = await fetch(`${API_URL}/accounts/login`, {
+            const response = await fetch(`${API_URL}/api/accounts/login`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
