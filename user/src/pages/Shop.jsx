@@ -15,11 +15,11 @@ const Shop = () => {
     const [colors, setColors] = useState([]);
 
     // Temporary states for filter changes
-    const [tempSelectedBrands, setTempSelectedBrands] = useState([location.state.brand]);
+    const [tempSelectedBrands, setTempSelectedBrands] = useState([location.state?.brand || ""]);
     const [tempSelectedColors, setTempSelectedColors] = useState([]);
     const [tempPriceRange, setTempPriceRange] = useState([0, 20000000]);
 
-    const [selectedBrands, setSelectedBrands] = useState([location.state.brand]);
+    const [selectedBrands, setSelectedBrands] = useState([location.state?.brand || ""]);
     const [selectedColors, setSelectedColors] = useState([]);
     const [priceRange, setPriceRange] = useState([0, 20000000]);
 
