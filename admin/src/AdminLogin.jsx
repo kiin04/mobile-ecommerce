@@ -7,44 +7,48 @@
     const [password, setPassword] = useState("");
     const [loginError, setLoginError] = useState("");
 
-    // const handleSubmit = async (e) => {
-    //   e.preventDefault();
-
-    //   try {
-    //     // Gửi yêu cầu POST đến backend
-    //     const response = await fetch(`${API_URL}/loginAdmin`, {
-    //       method: 'POST',
-    //       headers: {
-    //         'Content-Type': 'application/json',
-    //       },
-    //       body: JSON.stringify({ email, password }), // Gửi email và password
-    //     });
-    //     console.log('Sending login request:', { email, password });
-
-    //     const data = await response.json();
-
-    //     if (response.ok) {
-    //       alert('Đăng nhập thành công!');
-    //       onLoginSuccess(); // Gọi hàm khi đăng nhập thành công
-    //     } else {
-    //       setLoginError(data.message); // Hiển thị thông báo lỗi
-    //     }
-    //   } catch (err) {
-    //     setLoginError("Lỗi server");
-    //     console.log(err)
-    //   }
-    // };
     const handleSubmit = async (e) => {
       e.preventDefault();
-
-    
-      if (email === "admin" && password === "123") {
-        alert('Đăng nhập thành công!');
-        onLoginSuccess(); // Gọi hàm khi đăng nhập thành công
-      } else {
-        setLoginError("Đăng nhập không thành công"); // Hiển thị thông báo lỗi
+      //dsach admin
+      const adminCredentials = [
+        { username: "admin", password: "123" },
+        { username: "admin1", password: "123" }
+      ];
+      
+      // Kiểm tra admin trong dsach
+      const isAdmin = adminCredentials.some(
+        admin => admin.username === email && admin.password === password
+      );
+      
+      if (isAdmin) {
+        alert("Đăng nhập thành công!");
+        onLoginSuccess();
+        return;
       }
       
+      try {
+        // Gửi yêu cầu POST đến backend
+        const response = await fetch(`${API_URL}/loginAdmin`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password }), // Gửi email và password
+        });
+        
+        console.log("Sending login request:", { email, password });
+        const data = await response.json();
+        
+        if (response.ok) {
+          alert("Đăng nhập thành công!");
+          onLoginSuccess(); // Gọi hàm khi đăng nhập thành công
+        } else {
+          setLoginError(data.message || "Đăng nhập không thành công"); // Hiển thị thông báo lỗi
+        }
+      } catch (err) {
+        setLoginError("Lỗi server");
+        console.error(err);
+      }
     };
 
     return (
