@@ -31,7 +31,7 @@ builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<RoleService>();
 builder.Services.AddScoped<AccountService>();
 builder.Services.AddScoped<CartService>();
-
+builder.Services.AddScoped<OrderDetailService>();
 
 
 var app = builder.Build();

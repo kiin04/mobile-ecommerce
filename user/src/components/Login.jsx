@@ -57,7 +57,7 @@ const Login = ({ onSwitchToRegister }) => {
             // Lưu vào localStorage
             localStorage.setItem("userId", userId);
             localStorage.setItem("email", formData.email);
-            localStorage.setItem("password", formData.password);
+            //localStorage.setItem("password", formData.password);
 
             // Điều hướng về trang chính
             navigate("/");

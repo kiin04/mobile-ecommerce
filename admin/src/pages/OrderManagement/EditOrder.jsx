@@ -10,6 +10,7 @@ const EditOrder = () => {
   console.log('orderId',orderId );
   const navigate = useNavigate();
   const [order, setOrder] = useState(null);
+  const [orderDetails, setOrderDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [errors, setErrors] = useState({});
@@ -49,7 +50,7 @@ const EditOrder = () => {
         console.log('order', response);
         if (response.status == 200) {
           const data = await response.json();
-          // Format orderDate trước khi set vào state
+          console.log('data order', data);
           setOrder(data);
         } else {
           throw new Error('Failed to fetch order');
@@ -61,10 +62,27 @@ const EditOrder = () => {
         setLoading(false);
       }
     };
-
+    const fetchOrderDetails = async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/OrderDetails/${orderId}`);
+        console.log('order detail', response);
+        if (response.status == 200) {
+          const data = await response.json();
+          console.log('data order', data);
+          setOrderDetails(data);
+        } else {
+          throw new Error('Failed to fetch order');
+        }
+      } catch (error) {
+        console.error('Error fetching order:', error);
+        setError('Failed to load order data');
+      } finally {
+        setLoading(false);
+      }
+    };
     const fetchProducts = async () => {
       try {
-        const response = await fetch(`${API_URL}/api/Product`);
+        const response = await fetch(`${API_URL}/api/Products`);
         if (response.ok) {
           const data = await response.json();
           setProducts(data);
@@ -73,7 +91,7 @@ const EditOrder = () => {
         console.error('Error fetching products:', error);
       }
     };
-
+    fetchOrderDetails();
     fetchOrder();
     fetchProducts();
   }, [orderId]);
@@ -83,35 +101,35 @@ const EditOrder = () => {
     const newErrors = {};
 
     // Validate customer info
-    if (!order.customerId) {
-      newErrors.customerId = 'Vui lòng nhập ID khách hàng';
+    if (!order.userId) {
+      newErrors.userId = 'Vui lòng nhập ID khách hàng';
     }
 
-    if (!order.customerName) {
-      newErrors.customerName = 'Vui lòng nhập tên khách hàng';
+    if (!order.name) {
+      newErrors.name = 'Vui lòng nhập tên khách hàng';
     }
 
-    if (!order.shippingAddress) {
-      newErrors.shippingAddress = 'Vui lòng nhập địa chỉ giao hàng';
+    if (!order.address) {
+      newErrors.address = 'Vui lòng nhập địa chỉ giao hàng';
     }
 
-    // Validate items
-    if (!order.items || order.items.length === 0) {
-      newErrors.items = 'Đơn hàng phải có ít nhất một sản phẩm';
-    } else {
-      order.items.forEach((item, index) => {
-        if (!item.productId) {
-          newErrors[`items[${index}].productId`] = 'Vui lòng chọn sản phẩm';
-        }
-        if (!item.quantity || item.quantity <= 0) {
-          newErrors[`items[${index}].quantity`] = 'Số lượng phải lớn hơn 0';
-        }
-      });
-    }
+    // // Validate items
+    // if (!order.items || order.items.length === 0) {
+    //   newErrors.items = 'Đơn hàng phải có ít nhất một sản phẩm';
+    // } else {
+    //   order.items.forEach((item, index) => {
+    //     if (!item.productId) {
+    //       newErrors[`items[${index}].productId`] = 'Vui lòng chọn sản phẩm';
+    //     }
+    //     if (!item.quantity || item.quantity <= 0) {
+    //       newErrors[`items[${index}].quantity`] = 'Số lượng phải lớn hơn 0';
+    //     }
+    //   });
+    // }
 
     // Validate ngày đặt hàng
-    if (!order.orderDate) {
-      newErrors.orderDate = 'Vui lòng chọn ngày đặt hàng';
+    if (!order.createdAt) {
+      newErrors.createdAt = 'Vui lòng chọn ngày đặt hàng';
     }
 
     if (!order.status) {
@@ -166,7 +184,7 @@ const EditOrder = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(order),
+        body: JSON.stringify(order) ,
       });
 
       if (response.ok) {
@@ -200,8 +218,8 @@ const EditOrder = () => {
               onChange={handleChange}
               fullWidth
               required
-              error={!!errors.customerId}
-              helperText={errors.customerId}
+              error={!!errors.userId}
+              helperText={errors.userId}
               margin="normal"
             />
           </Grid>
@@ -210,12 +228,12 @@ const EditOrder = () => {
             <TextField
               label="Tên khách hàng"
               name="customerName"
-              value={order.customerName || ''}
+              value={order.name || ''}
               onChange={handleChange}
               fullWidth
               required
-              error={!!errors.customerName}
-              helperText={errors.customerName}
+              error={!!order.name}
+              helperText={errors.name}
               margin="normal"
             />
           </Grid>
@@ -224,12 +242,12 @@ const EditOrder = () => {
             <TextField
               label="Địa chỉ giao hàng"
               name="shippingAddress"
-              value={order.shippingAddress || ''}
+              value={order.address || ''}
               onChange={handleChange}
               fullWidth
               required
-              error={!!errors.shippingAddress}
-              helperText={errors.shippingAddress}
+              error={!!errors.address}
+              helperText={errors.address}
               margin="normal"
               multiline
               rows={2}
@@ -344,13 +362,13 @@ const EditOrder = () => {
               label="Ngày đặt hàng"
               name="orderDate"
               type="datetime-local"
-              value={order.orderDate || ''}
+              value={order.createdAt || ''}
               onChange={handleChange}
               fullWidth
               required
               margin="normal"
-              error={!!errors.orderDate}
-              helperText={errors.orderDate}
+              error={!!errors.createdAt}
+              helperText={errors.createdAt}
               InputLabelProps={{
                 shrink: true,
               }}

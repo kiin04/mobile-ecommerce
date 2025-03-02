@@ -24,33 +24,33 @@ const MyOrders = () => {
     useEffect(()=>{
         setUderId(  user?.id )
     },user)
- 
+    const fetchOrders = async (id) => {
+        // if (userId == "") {
+        //     setError("User is not logged in");
+        //     setLoading(false);
+        //     return;
+        // }
+        console.log('userId',id);
+        try {
+            const response = await fetch(
+                `${API_URL}/api/Orders/User/${user.id}`
+            );
+            if (!response.ok) {
+                throw new Error("Error fetching orders");
+            }
+           
+            const data = await response.json();
+            console.log('data', data);
+            setOrders(data);
+            setLoading(false);
+        } catch (err) {
+            setError(err.message);
+            setLoading(false);
+        }
+    };
   
     useEffect(() => {
-        const fetchOrders = async () => {
-            // if (userId == "") {
-            //     setError("User is not logged in");
-            //     setLoading(false);
-            //     return;
-            // }
-            console.log('userId',userId);
-            try {
-                const response = await fetch(
-                    `${API_URL}/api/Orders/User/${user.id}`
-                );
-                if (!response.ok) {
-                    throw new Error("Error fetching orders");
-                }
-               
-                const data = await response.json();
-                console.log('data', data);
-                setOrders(data);
-                setLoading(false);
-            } catch (err) {
-                setError(err.message);
-                setLoading(false);
-            }
-        };
+       
 
         const fetchProducts = async () => {
             try {
@@ -69,10 +69,13 @@ const MyOrders = () => {
             }
         };
 
-        // Call both fetch functions
-        fetchOrders();
         fetchProducts();
     }, [userId,refreshTrigger]);
+    useEffect(()=>{
+        if (userId) {
+            fetchOrders(userId)
+        }
+    },[userId])
 
     // Get current orders for the current page
     const indexOfLastOrder = currentPage * ordersPerPage;
