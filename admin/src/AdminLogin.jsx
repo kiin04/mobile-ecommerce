@@ -13,13 +13,17 @@ const AdminLogin = ({ onLoginSuccess }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        setLoginError("");
+
         try {
+
             const response = await axios.post(`${API_URL}/api/Accounts/login`, {
                 email,
                 password,
             })
             console.log('response login',response.data);
             if (response.data) {
+           
                 alert("Đăng nhập thành công!");
                 onLoginSuccess();
             } else {

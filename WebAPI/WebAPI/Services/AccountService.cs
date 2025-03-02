@@ -6,12 +6,12 @@ namespace WebAPI.Services
     public class AccountService
     {
         private readonly CSDLBanHang _context;
-    
+
 
         public AccountService(CSDLBanHang context)
         {
             _context = context;
-            
+
         }
         public async Task<Account> CheckUserAsync(int id)
         {
@@ -53,6 +53,6 @@ namespace WebAPI.Services
             // Trả về ID tài khoản
             return account.UserId;
         }
-       
+
     }
 }
