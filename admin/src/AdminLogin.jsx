@@ -7,45 +7,33 @@
     const [password, setPassword] = useState("");
     const [loginError, setLoginError] = useState("");
 
-    // const handleSubmit = async (e) => {
-    //   e.preventDefault();
-
-    //   try {
-    //     // Gửi yêu cầu POST đến backend
-    //     const response = await fetch(`${API_URL}/loginAdmin`, {
-    //       method: 'POST',
-    //       headers: {
-    //         'Content-Type': 'application/json',
-    //       },
-    //       body: JSON.stringify({ email, password }), // Gửi email và password
-    //     });
-    //     console.log('Sending login request:', { email, password });
-
-    //     const data = await response.json();
-
-    //     if (response.ok) {
-    //       alert('Đăng nhập thành công!');
-    //       onLoginSuccess(); // Gọi hàm khi đăng nhập thành công
-    //     } else {
-    //       setLoginError(data.message); // Hiển thị thông báo lỗi
-    //     }
-    //   } catch (err) {
-    //     setLoginError("Lỗi server");
-    //     console.log(err)
-    //   }
-    // };
     const handleSubmit = async (e) => {
       e.preventDefault();
-
-    
-      if (email === "admin" && password === "123") {
-        alert('Đăng nhập thành công!');
-        onLoginSuccess(); // Gọi hàm khi đăng nhập thành công
-      } else {
-        setLoginError("Đăng nhập không thành công"); // Hiển thị thông báo lỗi
+  
+      try {
+        const response = await fetch(`${API_URL}/accounts/login`, { 
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password }),
+        });
+  
+        const data = await response.json();
+  
+        if (response.ok) {
+          alert("Đăng nhập thành công!");
+          localStorage.setItem("adminToken", data.token); // Lưu token để xác thực
+          onLoginSuccess();
+        } else {
+          setLoginError(data.message || "Đăng nhập không thành công");
+        }
+      } catch (err) {
+        setLoginError("Lỗi server");
+        console.error(err);
       }
-      
     };
+  
 
     return (
       <div className="login-container">
