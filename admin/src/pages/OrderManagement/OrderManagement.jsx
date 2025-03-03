@@ -11,7 +11,6 @@ const OrderManagement = () => {
   const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
   const [products, setProducts] = useState([]);
-  const [productOrder, setProductOrder] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [orderDetails, setOrderDetails] = useState([]);
   const [selectedOrderDetails, setSelectedOrderDetails] = useState([]);
@@ -19,48 +18,48 @@ const OrderManagement = () => {
   const [page, setPage] = useState(1);
   const [rowsPerPage] = useState(10);
 
+  const fetchOrders = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/api/Orders`);
+      console.log('res order', response);
+      if (response.status == 200) {
+        const data = response.data;
+        setOrders(data);
+      } else {
+        console.error('Failed to fetch orders');
+      }
+    } catch (error) {
+      console.error('Error fetching orders:', error);
+    }
+  };
+  const fetchOrderDetail = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/api/OrderDetails`);
+      if (response.status == 200) {
+        const data = response.data;
+        setOrderDetails(data);
+      } else {
+        console.error('Failed to fetch orders');
+      }
+    } catch (error) {
+      console.error('Error fetching orders:', error);
+    }
+  };
+  const fetchProducts = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/api/Products`);
+      if (response.status === 200) {
+        const data = response.data;
+        setProducts(data);
+      } else {
+        console.error(`Failed to fetch products: ${response.status} ${response.statusText}`);
+      }
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    }
+  };
   useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const response = await axios.get(`${API_URL}/api/Orders`);
-        console.log('res order', response);
-        if (response.status == 200) {
-          const data = response.data;
-          setOrders(data);
-        } else {
-          console.error('Failed to fetch orders');
-        }
-      } catch (error) {
-        console.error('Error fetching orders:', error);
-      }
-    };
-    const fetchOrderDetail = async () => {
-      try {
-        const response = await axios.get(`${API_URL}/api/OrderDetails`);
-        console.log('res order detail', response);
-        if (response.status == 200) {
-          const data = response.data;
-          setOrderDetails(data);
-        } else {
-          console.error('Failed to fetch orders');
-        }
-      } catch (error) {
-        console.error('Error fetching orders:', error);
-      }
-    };
-    const fetchProducts = async () => {
-      try {
-        const response = await axios.get(`${API_URL}/api/Products}`);
-        if (response.status === 200) {
-          const data = response.data;
-          setProducts(data);
-        } else {
-          console.error(`Failed to fetch products: ${response.status} ${response.statusText}`);
-        }
-      } catch (error) {
-        console.error('Error fetching products:', error);
-      }
-    };
+    
     fetchProducts()
     fetchOrderDetail();
     fetchOrders();
@@ -177,11 +176,10 @@ const OrderManagement = () => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Order ID</TableCell>
               <TableCell>Tên khách hàng</TableCell>
               <TableCell>Địa chỉ giao hàng</TableCell>
               <TableCell>Ngày đặt hàng</TableCell>
-              <TableCell>Phương thức thanh toán</TableCell>
+            
               <TableCell>Tổng tiền</TableCell>
               <TableCell>Trạng thái</TableCell>
               <TableCell>Hành động</TableCell>
@@ -190,12 +188,10 @@ const OrderManagement = () => {
           <TableBody>
             {paginatedOrders.map((order) => (
               <TableRow key={order.id}>
-                <TableCell>{order.id}</TableCell>
                 <TableCell>{order?.name}</TableCell>
                 <TableCell>{order?.address}</TableCell>
                 {/* Format date as dd/MM/yyyy */}
                 <TableCell>{new Date(order.createdAt).toLocaleDateString('vi-VN')}</TableCell>
-                <TableCell>{order.paymentMethod}</TableCell>
                 <TableCell>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(order?.totalPrice)}</TableCell>
                 <TableCell style={getStatusColor(order.status)}>{order.status}</TableCell>
                 <TableCell>

@@ -6,7 +6,7 @@ import {format} from "date-fns"
 import axios from "axios";
 import { API_URL } from '../../config.js'
 
-const exampleVouchers = [
+const examplePromotion = [
     {
         id: "V001",
         name: "GIAM10",
@@ -29,25 +29,25 @@ const VoucherManagement = () => {
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedVoucher, setSelectedVoucher] = useState(null);
-    const [vouchers, setVouchers] = useState(exampleVouchers);
+    const [promotion, setPromotion] = useState(examplePromotion);
     const [page, setPage] = useState(1);
     const [rowsPerPage] = useState(10);
 
     useEffect(() => {
-        const fetchVouchers = async () => {
+        const fetchPromotion = async () => {
             try {
-                const response = await axios.get(`${API_URL}/api/discountCodes`);
+                const response = await axios.get(`${API_URL}/api/Promotions`);
                 if (response.status === 200) {
                     const data = response.data;
-                    setVouchers(data);
+                    setPromotion(data);
                 } else {
-                    console.error(`Failed to fetch vouchers: ${response.status} ${response.statusText}`);
+                    console.error(`Failed to fetch Promotion: ${response.status} ${response.statusText}`);
                 }
             } catch (error) {
-                console.error("Error fetching vouchers:", error);
+                console.error("Error fetching Promotion:", error);
             }
         };
-        fetchVouchers();
+        fetchPromotion();
     }, []);
 
     const handleViewDetails = (voucher) => {
@@ -60,9 +60,9 @@ const VoucherManagement = () => {
 
     const handleDeleteVoucher = async (voucherId) => {
         try {
-            const response = await axios.delete(`${API_URL}/api/discountCodes/${voucherId}`);
+            const response = await axios.delete(`${API_URL}/api/Promotions/${voucherId}`);
             if (response.status === 200) {
-                setVouchers(vouchers.filter((voucher) => voucher.id !== voucherId));
+                setPromotion(Promotion.filter((voucher) => voucher.id !== voucherId));
             } else {
                 console.error("Failed to delete voucher");
             }
@@ -79,15 +79,15 @@ const VoucherManagement = () => {
         navigate(`/edit-voucher/${voucherId}`);
     };
 
-    const filteredVouchers = vouchers.filter(
-        (voucher) =>
-            (voucher.name?.toLowerCase().includes(searchTerm.toLowerCase()) || false) ||
-            (voucher.id?.includes(searchTerm) || false)
+    const filteredPromotion = promotion.filter(
+        (promotion) =>
+            (promotion.name?.toLowerCase().includes(searchTerm.toLowerCase()) || false) ||
+            (promotion.id?.includes(searchTerm) || false)
     );
 
     // Tính toán phân trang
-    const totalPages = Math.ceil(filteredVouchers.length / rowsPerPage);
-    const paginatedVouchers = filteredVouchers.slice(
+    const totalPages = Math.ceil(filteredPromotion.length / rowsPerPage);
+    const paginatedPromotion = filteredPromotion.slice(
         (page - 1) * rowsPerPage,
         page * rowsPerPage
     );
@@ -138,20 +138,20 @@ const VoucherManagement = () => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {paginatedVouchers.map((voucher) => (
+                        {paginatedPromotion.map((voucher) => (
                             <TableRow key={voucher.id}>
                                 <TableCell>{voucher.id}</TableCell>
                                 <TableCell>{voucher.name}</TableCell>
                                 <TableCell>
-                                    {new Date(voucher.startDate || voucher.usageDate).toLocaleDateString("vi-VN")}
+                                    {new Date(voucher.createdAt || voucher.usageDate).toLocaleDateString("vi-VN")}
                                 </TableCell>
                                 <TableCell>
-                                    {new Date(voucher.endDate || voucher.expirationDate).toLocaleDateString("vi-VN")}
+                                    {new Date(voucher.endAt || voucher.expirationDate).toLocaleDateString("vi-VN")}
                                 </TableCell>
                                 <TableCell>
-                                    {(voucher.discountPercent || voucher.discountRate)}%
+                                    {(voucher.value || voucher.value)}%
                                 </TableCell>
-                                <TableCell>{voucher.code || voucher.applicableCode}</TableCell>
+                                <TableCell>{voucher.code }</TableCell>
                                 <TableCell>
                                     <IconButton
                                         onClick={() => handleViewDetails(voucher)}
@@ -271,7 +271,7 @@ const VoucherManagement = () => {
                                             color="error.main" 
                                             sx={{ fontWeight: 'bold' }}
                                         >
-                                            {(selectedVoucher.discountPercent || selectedVoucher.discountRate)}%
+                                            {(selectedVoucher.value || s0)}%
                                         </Typography>
                                         <Typography variant="h6">giảm</Typography>
                                     </Box>
@@ -290,7 +290,7 @@ const VoucherManagement = () => {
                                                 fontWeight: 500
                                             }}
                                         >
-                                            Áp dụng cho: {selectedVoucher.code || selectedVoucher.applicableCode}
+                                            Mã áp dụng: {selectedVoucher.code }
                                         </Typography>
                                     </Box>
                                 </Box>
@@ -328,30 +328,30 @@ const VoucherManagement = () => {
                                     <Box className="info-item">
                                         <Typography className="label">Thời gian bắt đầu</Typography>
                                         <Typography className="value">
-                                            {format(new Date(selectedVoucher.startDate || selectedVoucher.usageDate), 'dd/MM/yyyy HH:mm')}
+                                            {format(new Date(selectedVoucher.createdAt), 'dd/MM/yyyy HH:mm')}
                                         </Typography>
                                     </Box>
 
                                     <Box className="info-item">
                                         <Typography className="label">Thời gian kết thúc</Typography>
                                         <Typography className="value">
-                                            {format(new Date(selectedVoucher.endDate || selectedVoucher.expirationDate), 'dd/MM/yyyy HH:mm')}
+                                            {format(new Date(selectedVoucher.endAt ), 'dd/MM/yyyy HH:mm')}
                                         </Typography>
                                     </Box>
 
                                     <Box className="info-item">
                                         <Typography className="label">Đơn hàng tối thiểu</Typography>
                                         <Typography className="value" color="primary">
-                                            {selectedVoucher.minOrderValue?.toLocaleString('vi-VN')} ₫
+                                            {selectedVoucher.minPrice?.toLocaleString('vi-VN')} ₫
                                         </Typography>
                                     </Box>
 
-                                    <Box className="info-item">
+                                    {/* <Box className="info-item">
                                         <Typography className="label">Giảm tối đa</Typography>
                                         <Typography className="value" color="error">
                                             {selectedVoucher.maxDiscountAmount?.toLocaleString('vi-VN')} ₫
                                         </Typography>
-                                    </Box>
+                                    </Box> */}
 
                                     <Box 
                                         sx={{ 

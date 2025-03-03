@@ -10,8 +10,9 @@ public partial class Promotion : BaseEntity
     public string Name { get; set; } = null!;
 
     public decimal Value { get; set; }
+    public decimal MinPrice { get; set; }
 
-   
+    public string Code { get; set; } = null!;
 
     public DateTime? EndAt { get; set; }
 }

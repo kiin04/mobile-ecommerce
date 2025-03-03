@@ -91,10 +91,10 @@ VALUES
 (N'14 inch', N'Mini-LED', NULL, NULL, N'Apple M3', N'Apple GPU', 0, N'16GB', N'512GB', NULL, NULL, N'3024x1964', N'Fast Charging', 2);
 
 -- Thêm dữ liệu vào bảng Promotion
-INSERT INTO Promotion (name, value, end_at) VALUES
-(N'Giảm giá Tết', 10, '2025-02-28'),
-(N'Mừng Sinh Nhật Apple', 15, '2025-03-15'),
-(N'Sale Back To School', 5, '2025-08-31'),
-(N'Khuyến mãi Black Friday', 20, '2025-11-30'),
-(N'Giảm giá VIP Member', 12, '2025-12-31');
+INSERT INTO Promotion (name, value, end_at, code, minPrice) VALUES
+(N'Giảm giá Tết', 10, '2025-02-28','VCNEWYEAR',20000000),
+(N'Mừng Sinh Nhật Apple', 15, '2025-03-15','APPLEBIRTH',20000000),
+(N'Sale Back To School', 5, '2025-08-31','GOSCHOOL',20000000),
+(N'Khuyến mãi Black Friday', 20, '2025-11-30','BACLK6DAYS',20000000),
+(N'Giảm giá VIP Member', 12, '2025-12-31','VIPMEMBER',20000000);
 
