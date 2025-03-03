@@ -11,7 +11,7 @@ namespace WebAPI.Controllers
     public class DetailsController : ControllerBase
     {
         private readonly IRepository<Detail> _DetailRepository;
-        private DetailService _detailService;
+        private readonly DetailService _detailService;
         public DetailsController(CSDLBanHang context)
         {
             _DetailRepository = RepositoryFactory.CreateRepository<Detail>(context);
