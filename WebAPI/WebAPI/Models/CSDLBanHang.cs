@@ -31,6 +31,7 @@ public partial class CSDLBanHang : DbContext
 
     public virtual DbSet<Product> Products { get; set; }
 
+    public virtual DbSet<Comment> Comments { get; set; }
     public virtual DbSet<Promotion> Promotions { get; set; }
 
     public virtual DbSet<Role> Roles { get; set; }
@@ -269,6 +270,8 @@ public partial class CSDLBanHang : DbContext
             entity.Property(e => e.Rate)
                 .HasDefaultValue(0)
                 .HasColumnName("rate");
+            entity.Property(e => e.StartRate)
+              .HasColumnName("start_rate");
             entity.Property(e => e.Sold)
                 .HasDefaultValue(0)
                 .HasColumnName("sold");
@@ -282,6 +285,30 @@ public partial class CSDLBanHang : DbContext
 
            
         });
+        modelBuilder.Entity<Comment>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Comment__3213E83F5350BA77");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.ProductId).HasColumnName("product_id");
+            entity.Property(e => e.Name).HasColumnName("name");
+            entity.Property(e => e.Start)
+                .HasColumnName("start");
+            entity.Property(e => e.UserId).HasColumnName("userID");
+
+            entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime")
+                .HasColumnName("updated_at");
+            entity.Property(e => e.CreatedAt)
+             .HasDefaultValueSql("(getdate())")
+             .HasColumnType("datetime")
+             .HasColumnName("created_at");
+
+
+        });
+
+
 
         modelBuilder.Entity<Promotion>(entity =>
         {

@@ -28,3 +28,17 @@ GO
 ALTER TABLE [Users]
 ALTER COLUMN image VARBINARY(MAX) NULL;
 GO
+-- update 03/03/2025
+alter table Products
+add start_rate INT NULL
+GO
+create table Comments(
+	id INT PRIMARY KEY IDENTITY(1,1),
+    userID NVARCHAR(255) NOT NULL,
+    name NVARCHAR(255),
+	start  INT NULL,
+	product_id  INT ,
+	created_at DATETIME DEFAULT GETDATE(),
+    updated_at DATETIME DEFAULT GETDATE()
+);
+GO
