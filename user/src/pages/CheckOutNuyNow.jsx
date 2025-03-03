@@ -122,6 +122,7 @@ const CheckoutBuyNow = () => {
                     colorSizeId:productBuyNow.colorSizeId,
                     quantity:productBuyNow.quantity,
                     price:productBuyNow.price,
+                    productId: productBuyNow.productId,
                 }
                 const orderDetailResponse = await fetch(`${API_URL}/api/OrderDetails`, {
                     method: "POST",

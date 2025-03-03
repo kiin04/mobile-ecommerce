@@ -25,20 +25,15 @@ const MyOrders = () => {
         setUderId(  user?.id )
     },user)
     const fetchOrders = async (id) => {
-        // if (userId == "") {
-        //     setError("User is not logged in");
-        //     setLoading(false);
-        //     return;
-        // }
-        console.log('userId',id);
+        if (userId == "") {
+            setError("User is not logged in");
+            setLoading(false);
+            return;
+        }
         try {
             const response = await fetch(
                 `${API_URL}/api/Orders/User/${user.id}`
             );
-            if (!response.ok) {
-                throw new Error("Error fetching orders");
-            }
-           
             const data = await response.json();
             console.log('data', data);
             setOrders(data);
@@ -50,8 +45,6 @@ const MyOrders = () => {
     };
   
     useEffect(() => {
-       
-
         const fetchProducts = async () => {
             try {
                 const response = await axios.get(`${API_URL}/api/products`);
@@ -230,7 +223,6 @@ const MyOrders = () => {
                         {orders.length === 0 ? (
                             <p className="text-center text-lg">
                                 Bạn không có đơn hàng nào.
-                              
                             </p>
                         ) : (
                             <>
