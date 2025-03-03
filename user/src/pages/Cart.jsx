@@ -41,24 +41,64 @@ const Cart = () => {
             fetchCartItems();
         }
     }, [userId]);
-    const fetchProduct =async(id)=>{
+
+    const [productItems, setProductItems] = useState({});
+    // Hàm lấy dữ liệu sản phẩm
+    const fetchProducts = async () => {
         try {
-            const response = await fetch(`${API_URL}/api/Products/${id}`);
-            if (!response.ok) {
-                throw new Error("Failed to fetch cart items");
-            }
-            const data = await response.json();
-            console.log('data product', data);
-            return data
+            const promises = cartItems.map(async (item) => {
+                const response = await fetch(`${API_URL}/api/Products/${item.productId}`);
+                if (!response.ok) {
+                    throw new Error("Failed to fetch product");
+                }
+                const data = await response.json();
+                return { productId: item.productId, product: data };
+            });
+
+            const results = await Promise.all(promises);
+            const productsMap = results.reduce((acc, { productId, product }) => {
+                acc[productId] = product;
+                return acc;
+            }, {});
+
+            setProductItems(productsMap);
         } catch (error) {
-            console.error("Error fetching cart items:", error);
+            console.error("Error fetching products:", error);
             setError(error.message);
-           
         }
-    }
-    const getProduct = async (id)=>{
-        await fetchProduct(id)  ;
-    }
+    };
+    const [colorSizes, setColorSizes] = useState({});
+     // Hàm lấy dữ liệu color
+     const fetchColorSizes = async () => {
+        try {
+            const promises = cartItems.map(async (item) => {
+                const response = await fetch(`${API_URL}/api/ColorSizes/${item.colorSizeId}`);
+                if (!response.ok) {
+                    throw new Error("Failed to fetch product");
+                }
+                const data = await response.json();
+                return { colorSizeId: item.colorSizeId, color: data };
+            });
+
+            const results = await Promise.all(promises);
+            const colorsMap = results.reduce((acc, { colorSizeId, color }) => {
+                acc[colorSizeId] = color;
+                return acc;
+            }, {});
+
+            setColorSizes(colorsMap);
+        } catch (error) {
+            console.error("Error fetching products:", error);
+            setError(error.message);
+        }
+    };
+    // Gọi API khi cartItems thay đổi
+    useEffect(() => {
+        if (cartItems.length > 0) {
+            fetchProducts();
+            fetchColorSizes();
+        }
+    }, [cartItems]);
     // Tính tổng giá tiền
     const calculateTotal = () => {
         return cartItems.reduce(
@@ -204,9 +244,7 @@ const Cart = () => {
                 total: calculateSelectedTotal(),
             },
         });
-    };
-    console.log('test get pro', getProduct(1));
-
+    };  
     // Giao diện khi giỏ hàng trống
     // if (loading) {
     //     return <div>Đang tải...</div>;
@@ -232,83 +270,79 @@ const Cart = () => {
             </div>
         );
     }
-
+   
+   
     return (
         <div className="container p-6 mx-auto">
             <h2 className="mb-4 text-2xl font-semibold">Giỏ hàng của bạn</h2>
             <div className="grid grid-cols-1 gap-4">
-                {cartItems.map((item) => (
-                    <div
-                        key={`${item.productId}-${item.color}`}
-                        className="flex justify-between items-center p-4 border rounded-lg"
-                    >
-                        <div className="flex items-center">
-                            <div
-                                onClick={() => handleSelectItem(item.productId)}
-                                className={`w-6 h-6 rounded-full border-2 cursor-pointer mr-4 flex items-center justify-center
-                                ${
-                                    selectedItems.includes(item.productId)
-                                        ? "border-blue-500 bg-blue-500"
-                                        : "border-gray-400"
-                                }`}
-                            >
-                                {selectedItems.includes(item.productId) && (
-                                    <div className="w-3 h-3 bg-white rounded-full"></div>
+            {cartItems.map((item) => {
+                    const product = productItems[item.productId];
+                    const color = colorSizes[item.colorSizeId];
+                    return (
+                        <div
+                            key={`${item.productId}-${item.color}`}
+                            className="flex justify-between items-center p-4 border rounded-lg"
+                        >
+                            <div className="flex items-center">
+                                <div
+                                    onClick={() => handleSelectItem(item.productId)}
+                                    className={`w-6 h-6 rounded-full border-2 cursor-pointer mr-4 flex items-center justify-center
+                                    ${
+                                        selectedItems.includes(item.productId)
+                                            ? "border-blue-500 bg-blue-500"
+                                            : "border-gray-400"
+                                    }`}
+                                >
+                                    {selectedItems.includes(item.productId) && (
+                                        <div className="w-3 h-3 bg-white rounded-full"></div>
+                                    )}
+                                </div>
+                                {product ? (
+                                    <img
+                                        src={`data:image/jpeg;base64,${product?.image}`}
+                                        alt={product?.name}
+                                        className="object-cover w-20 h-20"
+                                    />
+                                ) : (
+                                    <p>Đang tải...</p>
                                 )}
+                                <div className="ml-4">
+                                    <h3 className="text-lg font-semibold">
+                                        Tên sản phẩm: {product?.name || "Chưa rõ"}
+                                    </h3>
+                                    <p className="text-sm font-semibold">Màu: {color?.color} - {color?.size} </p>
+                                    <p className="text-red-500">
+                                        Giá: {item.price.toLocaleString()}đ
+                                    </p>
+                                </div>
                             </div>
-                            <img
-                                src={
-                                    `data:image/jpeg;base64,${getProduct(item.productId)?.image}`
-                                }
-                                alt={item.name}
-                                className="object-cover w-20 h-20"
-                            />
-                            <div className="ml-4">
-                                <h3 className="text-lg font-semibold">
-                                    Tên sản phẩm: {getProduct(item.productId)?.name}
-                                </h3>
-                                <p className="text-sm font-semibold">
-                                    Màu: {item.color}
-                                </p>
-                                <p className="text-red-500">
-                                    Giá: {item.price.toLocaleString()}đ
-                                </p>
+                            <div className="flex items-center space-x-4">
+                                <button
+                                    onClick={() => updateQuantity(item.productId, item.quantity - 1)}
+                                    className="px-3 py-1 border rounded-md"
+                                >
+                                    -
+                                </button>
+                                <span>{item.quantity}</span>
+                                <button
+                                    onClick={() => updateQuantity(item.productId, item.quantity + 1)}
+                                    className="px-3 py-1 border rounded-md"
+                                >
+                                    +
+                                </button>
+                                <button
+                                    onClick={() => removeFromCart(item.productId)}
+                                    className="px-4 py-2 text-white bg-blue-500 rounded-lg"
+                                >
+                                    Xóa
+                                </button>
                             </div>
                         </div>
-                        <div className="flex items-center space-x-4">
-                            <button
-                                onClick={() =>
-                                    updateQuantity(
-                                        item.productId,
-                                        item.quantity - 1
-                                    )
-                                }
-                                className="px-3 py-1 border rounded-md"
-                            >
-                                -
-                            </button>
-                            <span>{item.quantity}</span>
-                            <button
-                                onClick={() =>
-                                    updateQuantity(
-                                        item.productId,
-                                        item.quantity + 1
-                                    )
-                                }
-                                className="px-3 py-1 border rounded-md"
-                            >
-                                +
-                            </button>
-                            <button
-                                onClick={() => removeFromCart(item.productId)}
-                                className="px-4 py-2 text-white bg-blue-500 rounded-lg"
-                            >
-                                Xóa
-                            </button>
-                        </div>
-                    </div>
-                ))}
+                    );
+            })}
             </div>
+           
 
             {/* Hiển thị thông báo lỗi vượt quá tồn kho */}
             {overStockError && (

@@ -14,6 +14,8 @@ const Shop = () => {
     const [brands, setBrands] = useState(["Apple", "Xiaomi","Huawei"]);
     const [colors, setColors] = useState([]);
 
+    const [colorSizes, setColorSizes] = useState([]);
+    const [selectedColor, setSelectedColor] = useState("");
     // Temporary states for filter changes
     const [tempSelectedBrands, setTempSelectedBrands] = useState([location.state?.brand || ""]);
     const [tempSelectedColors, setTempSelectedColors] = useState([]);
@@ -76,13 +78,12 @@ const Shop = () => {
         // fetchColors();
        
     }, []);
-    console.log('tempSelectedBrands ',tempSelectedBrands);
     useEffect(()=>{
         if (tempSelectedBrands.length > 0) {
             filtered = filtered.filter((item) =>
                 tempSelectedBrands.includes(item.brand)
             );
-            console.log("fliter: ",filtered);
+           // console.log("fliter: ",filtered);
         }
     },[tempSelectedBrands])
     const toggleBrandFilter = () => {
@@ -171,22 +172,53 @@ const Shop = () => {
     const handleLoadMore = () => {
         setCurrentPage((prevPage) => prevPage + 1);
     };
+    const fetchColorSize = async (productId) => {
+        try {
+            const response = await fetch(
+                `${API_URL}/api/ColorSizes/ProductColorSize/${productId}`
+            );
 
-    const handleBuyNow = (e, productId) => {
-        e.stopPropagation(); // Ngăn chặn sự kiện click lan ra thẻ cha
-        const userId = sessionStorage.getItem("userId");
-        if (!userId) {
-            notification.warning({
-                message: "Lưu Ý",
-                description: "Vui lòng đăng nhập để sử dụng tính năng này",
+            if (response.ok) {
+                const data = await response.json();
+                console.log('data color', data);
+                setColorSizes(data);
+            } else {
+                throw new Error("Failed to fetch product");
+            }
+        } catch (error) {
+            console.error("Error fetching product:", error);
+            setError("Failed to load product data. Please try again.");
+        } finally {
+           
+        }
+    };
+    const handleBuyNow = (product) => {
+        const colors =  fetchColorSize(product?.id);
+        console.log('color', colors);
+       
+        if (colorSizes.length > 0) {
+            setSelectedColor(colorSizes[0]);
+            const productBuyNow = {
+                productId: product.id,
+                image: product.image,
+                name: product.name,
+                quantity: 1,
+                colorSizeId: selectedColor.id,
+                color: selectedColor.color,
+                size: selectedColor.size,
+                price: product?.price,
+            };
+           // console.log('product buy now ',productBuyNow);
+              navigate("/checkout-buynow", { state: { product: productBuyNow } });
+        } else {
+            notification.error({
+                message: "Lỗi",
+                description: "Vui lòng chọn màu trước khi mua",
                 duration: 4,
                 placement: "bottomRight",
                 showProgress: true,
                 pauseOnHover: true,
             });
-            return;
-        } else {
-            navigate(`${PathNames.CHECKOUT}/${productId}`);
         }
     };
 
@@ -377,7 +409,7 @@ const Shop = () => {
                                 </div>
 
                                 <button
-                                    onClick={(e) => handleBuyNow(e, item.id)}
+                                    onClick={() => handleBuyNow(item)}
                                     className="absolute bottom-4 right-4 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"
                                 >
                                     Mua ngay

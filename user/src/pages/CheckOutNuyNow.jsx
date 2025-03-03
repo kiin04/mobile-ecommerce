@@ -123,20 +123,21 @@ const CheckoutBuyNow = () => {
                     quantity:productBuyNow.quantity,
                     price:productBuyNow.price,
                 }
-                const orderDetailResponse = await fetch(`${API_URL}/api/Orders`, {
+                const orderDetailResponse = await fetch(`${API_URL}/api/OrderDetails`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify(orderDetail),
                 });
-                if (orderResponse.status === 201) {
+                if (orderDetailResponse.status === 201) {
                     notification.success({
                         message: 'Đơn hàng mới đã được tạo',
                         description: 'Đơn hàng mới đã được tạo',
                         duration: 4,
                         placement: "bottomRight",
                     });
+                    navigate('/my-orders')
                 }
                
             } else {
