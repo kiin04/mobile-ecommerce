@@ -30,7 +30,7 @@ const Hero = () => {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const response = await axios.get( ` ${API_URL}/api/Products`  );
+                const response = await axios.get(`${API_URL}/api/Products`);
                 const productsData = response.data;
                 setProducts(productsData);
             } catch (error) {
@@ -43,15 +43,16 @@ const Hero = () => {
     const getProductsById = (ids) => {
         return products.filter((product) => ids.includes(product.id));
     };
-    const heroProducts = getProductsById(["1", "5"]);
+    const heroProducts = getProductsById([1, 5]);
+    console.log("Hero products:", heroProducts);
 
     const handleHeroClick = (productId) => {
         navigate(`${PathNames.PRODUCT_DETAILS}/${productId}`);
     };
 
-    useEffect(() => {
-        console.log("Logged hero products id" + handleHeroClick.productId);
-    }, [handleHeroClick.productId]);
+    // useEffect(() => {
+    //     console.log("Logged hero products id" + handleHeroClick.productId);
+    // }, [handleHeroClick.productId]);
 
     return (
         <div className="container">

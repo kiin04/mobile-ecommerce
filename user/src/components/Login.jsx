@@ -29,7 +29,8 @@ const Login = ({ onSwitchToRegister }) => {
                 email,
                 password,
             });
-            return response.data.userId; // Trả về userId từ API
+            console.log(response)
+            return response.data // Trả về userId từ API
         } catch (error) {
             throw new Error(error.response?.data?.message || "Đăng nhập thất bại");
         }
@@ -59,9 +60,8 @@ const Login = ({ onSwitchToRegister }) => {
             localStorage.setItem("email", formData.email);
             //localStorage.setItem("password", formData.password);
 
-            // Điều hướng về trang chính
-            navigate("/");
             message.success("Đăng nhập thành công");
+            window.location.reload();
         } catch (error) {
             console.error("Error:", error.message);
             message.warning(error.message || "Email hoặc mật khẩu không chính xác");

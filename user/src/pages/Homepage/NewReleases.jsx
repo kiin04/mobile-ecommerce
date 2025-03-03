@@ -10,7 +10,6 @@ import AddtoCartBtn from "../../shared/AddtoCartBtn.jsx";
 const NewReleases = () => {
     const userId = sessionStorage.getItem("userId");
     const [products, setProducts] = useState([]);
-   
     const [quantity, setQuantity] = useState(1);
     const [error, setError] = useState("");
     const navigate = useNavigate();

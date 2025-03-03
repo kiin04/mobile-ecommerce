@@ -23,7 +23,6 @@ const AdminLogin = ({ onLoginSuccess }) => {
             })
             console.log('response login',response.data);
             if (response.data) {
-           
                 alert("Đăng nhập thành công!");
                 onLoginSuccess();
             } else {

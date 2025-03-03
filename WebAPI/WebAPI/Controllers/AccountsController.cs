@@ -118,6 +118,7 @@
                     {
                         var userId = await _accountService.LoginAsync(loginRequest.Email, loginRequest.Password);
                         return Ok(userId); // Trả về ID tài khoản
+                        Console.WriteLine(userId);
                     }
                     catch (InvalidOperationException ex)
                     {
