@@ -8,32 +8,33 @@ namespace WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class RolesController : ControllerBase
+    public class PromotionsController : ControllerBase
     {
-        private readonly IRepository<Role> _RoleRepository;
-        private readonly RoleService _roleService;
+        //factory design parttern
+        private readonly IRepository<Promotion> _PromotionRepository;
+      
 
-        public RolesController(CSDLBanHang context, RoleService roleService)
+        public PromotionsController(CSDLBanHang context)
         {
-            _RoleRepository = RepositoryFactory.CreateRepository<Role>(context);
-            _roleService = roleService;
+            _PromotionRepository = RepositoryFactory.CreateRepository<Promotion>(context);
+           
         }
 
-        // GET: api/Role
+        // GET: api/Promotions
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Role>>> GetRole()
+        public async Task<ActionResult<IEnumerable<Promotion>>> GetPromotions()
         {
-            return Ok(await _RoleRepository.GetAllAsync());
+            return Ok(await _PromotionRepository.GetAllAsync());
         }
 
-        // GET: api/Role/5
+        // GET: api/Promotions/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Role>> GetRole(int id)
+        public async Task<ActionResult<Promotion>> GetPromotion(int id)
         {
             try
             {
-                var Role = await _RoleRepository.GetByIdAsync(id);
-                return Ok(Role);
+                var Promotion = await _PromotionRepository.GetByIdAsync(id);
+                return Ok(Promotion);
             }
             catch (KeyNotFoundException ex)
             {
@@ -41,15 +42,14 @@ namespace WebAPI.Controllers
             }
         }
        
-
-        // PUT: api/Role/5
+        // PUT: api/Promotions/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutRole(int id, Role Role)
+        public async Task<IActionResult> PutPromotion(int id, Promotion Promotion)
         {
             try
             {
-                Role.Id = id;
-                await _RoleRepository.UpdateAsync(Role);
+                Promotion.Id = id;
+                await _PromotionRepository.UpdateAsync(Promotion);
                 return NoContent();
             }
             catch (DbUpdateConcurrencyException ex)
@@ -62,14 +62,14 @@ namespace WebAPI.Controllers
             }
         }
 
-        // POST: api/Role
+        // POST: api/Promotions
         [HttpPost]
-        public async Task<ActionResult<Role>> PostRole(Role Role)
+        public async Task<ActionResult<Promotion>> PostPromotion(Promotion Promotion)
         {
             try
             {
-                await _RoleRepository.AddAsync(Role);
-                return CreatedAtAction(nameof(GetRole), new { id = Role.Id }, Role);
+                await _PromotionRepository.AddAsync(Promotion);
+                return CreatedAtAction(nameof(GetPromotion), new { id = Promotion.Id }, Promotion);
             }
             catch (InvalidOperationException ex)
             {
@@ -77,14 +77,14 @@ namespace WebAPI.Controllers
             }
         }
 
-        // DELETE: api/Role/5
+        // DELETE: api/Promotions/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteRole(int id)
+        public async Task<IActionResult> DeletePromotion(int id)
         {
-            
+           
             try
             {
-                await _roleService.DeleteDependencieAsync(id);
+                await _PromotionRepository.DeleteAsync(id);
                 return NoContent();
             }
             catch (KeyNotFoundException ex)
