@@ -62,6 +62,7 @@ namespace WebAPI.Controllers
                     Rate = productDto.Rate,
                     Sold = productDto.Sold,
                     Brand = productDto.Brand,
+                    StartRate = productDto.StartRate,
                 };
                 if (productDto.CreatedAt == null)
                 {
@@ -97,6 +98,7 @@ namespace WebAPI.Controllers
                     Unit = productDto.Unit,
                     CategoryId = productDto.CategoryId,
                     Rate = productDto.Rate,
+                    StartRate = productDto.StartRate,
                     Sold  = productDto.Sold,
                     Brand = productDto.Brand,
                     Promo = productDto.Promo,

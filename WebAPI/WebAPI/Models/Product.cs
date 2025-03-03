@@ -25,5 +25,6 @@ public partial class Product : BaseEntity,IHasImage
 
     public int? Rate { get; set; }
 
-    
+    public int? StartRate { get; set; }
+
 }
