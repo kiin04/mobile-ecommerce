@@ -12,17 +12,25 @@ const AddUser = () => {
         password: "",
         phoneNumber: "",
         dayOfBirth: "",
+        role: "", 
         gender: "",
         address: "",
         accountName: "",
+        totalBuy: 0,
     });
 
     const [errors, setErrors] = useState({});
 
     const genderOptions = [
         { value: 'Nam', label: 'Nam' },
-        { value: 'Nữ', label: 'Nữ' },
+        { value: 'Nữ', label:    'Nữ' },
         { value: 'Khác', label: 'Khác' }
+    ];
+
+    const roleOptions = [
+        { value: 1, label: 'Admin' },
+        { value: 0, label: 'User' },
+        
     ];
 
     const validateForm = () => {
@@ -79,6 +87,11 @@ const AddUser = () => {
             newErrors.address = 'Vui lòng nhập địa chỉ';
         }
 
+        if (user.role === "") {
+            newErrors.role = 'Vui lòng chọn vai trò';
+        }
+        
+
         // Validate tên tài khoản
         if (!user.accountName.trim()) {
             newErrors.accountName = 'Vui lòng nhập tên tài khoản';
@@ -92,25 +105,37 @@ const AddUser = () => {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setUser({ ...user, [name]: value });
-        // Xóa lỗi khi người dùng thay đổi giá trị
-        if (errors[name]) {
-            setErrors(prev => ({ ...prev, [name]: undefined }));
-        }
+        const newValue = name === "role" && value !== "" ? parseInt(value, 10) : value;
+        console.log(`Thay đổi: ${name} =`, newValue);
+        setUser((prev) => ({
+            ...prev,
+            [name]: newValue,
+        }));
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+       
 
         if (!validateForm()) {
             return;
         }
 
         try {
-            const response = await axios.post(`${API_URL}/api/addUser`, user);
+            
+            const response = await axios.post(`${API_URL}/api/Users`, user, {
+                headers: {
+                    "Content-Type": "multipart/form-data"
+                }
+            });
+            console.log("Response:", response.data);
+
+    // Kiểm tra nếu response có data hoặc message
+    const message = response.data?.message || "Tạo tài khoản thành công!";
+    alert(message);
             if (response.status === 201) {
-                alert(response.data.message);
                 navigate("/user-management");
+                
             }
         } catch (error) {
             console.error("Lỗi khi tạo tài khoản:", error);
@@ -245,6 +270,27 @@ const AddUser = () => {
                             helperText={errors.password}
                         />
                     </Grid>
+                    <Grid item xs={12}>
+                    <TextField
+    select
+    label="Vai trò"
+    name="role"
+    value={user.role}
+    onChange={handleChange}
+    fullWidth
+    required
+    margin="normal"
+    error={!!errors.role}
+    helperText={errors.role}
+>
+    {roleOptions.map((option) => (
+        <MenuItem key={option.value} value={option.value}>
+            {option.label}
+        </MenuItem>
+    ))}
+</TextField>
+                            </Grid>
+
                     <Grid item xs={12}>
                         <TextField
                             label="Địa chỉ"

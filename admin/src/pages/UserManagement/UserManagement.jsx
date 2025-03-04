@@ -32,19 +32,18 @@ const UserManagement = () => {
     const [page, setPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(10);
 
+    
+
     useEffect(() => {
         const fetchUsers = async () => {
             try {
                 const response = await axios.get(`${API_URL}/api/Users`);
-                console.log(response);
+                console.log("Dữ liệu người dùng:", response.data);
                 if (response.status === 200) {
-                    const data = response.data
-                    setUsers(data);
-                } else {
-                    console.error(`Failed to fetch users: ${response.status} ${response.statusText}`);
+                    setUsers(response.data);
                 }
             } catch (error) {
-                console.error("Error fetching users:", error);
+                console.error("Lỗi khi lấy danh sách người dùng:", error);
             }
         };
         const fetchRole = async () => {
@@ -52,13 +51,10 @@ const UserManagement = () => {
                 const response = await axios.get(`${API_URL}/api/Roles`);
                 console.log('role res',response);
                 if (response.status === 200) {
-                    const data = response.data
-                    setRoles(data);
-                } else {
-                    console.error(`Failed to fetch users: ${response.status} ${response.statusText}`);
+                    setRoles(response.data);
                 }
             } catch (error) {
-                console.error("Error fetching users:", error);
+                console.error("Lỗi khi lấy danh sách vai trò:", error);
             }
         };
         fetchRole();
@@ -66,6 +62,7 @@ const UserManagement = () => {
     }, []);
 
     const handleViewDetails = (user) => {
+        console.log("Người dùng được chọn:", user);
         setSelectedUser(user);
     };
 
@@ -74,15 +71,23 @@ const UserManagement = () => {
     };
 
     const handleDeleteUser = async (userId) => {
+        if (!userId || isNaN(userId)) {
+            console.error("Invalid userId:", userId);
+            return;
+        }
+    
+        if (!window.confirm("Bạn có chắc chắn muốn xóa người dùng này?")) {
+            return;
+        }
         try {
-            const response = await fetch(
-                `${API_URL}/api/users/${userId}`,
-                {
-                    method: "DELETE",
-                }
+            console.log(`Deleting user with ID: ${userId}`);
+            const response = await axios.delete(
+                `${API_URL}/api/Users/${userId}`,
+               
             );
-            if (response.ok) {
+            if (response.status === 204) { 
                 setUsers(users.filter((user) => user.id !== userId));
+                console.log("User deleted successfully");
             } else {
                 console.error("Failed to delete user");
             }
@@ -97,8 +102,8 @@ const UserManagement = () => {
 
     const filteredUsers = users.filter(
         (user) =>
-            user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            user.id.includes(searchTerm)
+            (user.name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+             user.id?.toString().includes(searchTerm))
     );
 
     // Tính toán số trang và dữ liệu hiển thị
@@ -112,8 +117,18 @@ const UserManagement = () => {
         setPage(newPage);
     };
     const getRoleNameById = (id) => {
-        const role = roles.find((r) => r.id === id);
-        return role ? role.name : 'Unknown Role';
+        if (!id) return "Khách hàng thường";
+        const roleId = parseInt(id, 10);
+        if (roleId === 1) return "Admin";
+        const roleIdString = id.toString().toUpperCase();
+        if (roleIdString === "ADMIN") return "Admin";
+      
+        const role = roles.find((r) => {
+            const roleValue = parseInt(r.id, 10) || r.id.toString().toUpperCase();
+            return roleValue === roleId || roleValue === roleIdString;
+        });
+        return role ? role.name : "Khách vãng lai";
+    
       };
     return (
         <Box padding={3}>
@@ -241,7 +256,7 @@ const UserManagement = () => {
                                         }}
                                     >
                                         <img 
-                                            src={`${API_URL}/${selectedUser.userAvatar.replace(/\\/g, '/')}`}
+                                            src={`${API_URL}/${selectedUser.Avatar.replace(/\\/g, '/')}`}
                                             alt={selectedUser.name}
                                         />
                                     </Box>
@@ -346,6 +361,8 @@ const UserManagement = () => {
                                         <Typography className="label">Địa chỉ giao hàng</Typography>
                                         <Typography className="value">{selectedUser.address}</Typography>
                                     </Box>
+                                    
+
                                 </Box>
                             </Box>
                         </Box>
