@@ -11,17 +11,21 @@ const Shop = () => {
     const location = useLocation();
     const [products, setProducts] = useState([]);
     const [filteredProducts, setFilteredProducts] = useState([]);
-    const [brands, setBrands] = useState(["Apple", "Xiaomi","Huawei"]);
+    const [brands, setBrands] = useState(["Apple", "Xiaomi", "Huawei"]);
     const [colors, setColors] = useState([]);
 
     const [colorSizes, setColorSizes] = useState([]);
     const [selectedColor, setSelectedColor] = useState("");
     // Temporary states for filter changes
-    const [tempSelectedBrands, setTempSelectedBrands] = useState([location.state?.brand || ""]);
+    const [tempSelectedBrands, setTempSelectedBrands] = useState([
+        location.state?.brand || "",
+    ]);
     const [tempSelectedColors, setTempSelectedColors] = useState([]);
     const [tempPriceRange, setTempPriceRange] = useState([0, 20000000]);
 
-    const [selectedBrands, setSelectedBrands] = useState([location.state?.brand || ""]);
+    const [selectedBrands, setSelectedBrands] = useState([
+        location.state?.brand || "",
+    ]);
     const [selectedColors, setSelectedColors] = useState([]);
     const [priceRange, setPriceRange] = useState([0, 20000000]);
 
@@ -32,7 +36,7 @@ const Shop = () => {
 
     const [currentPage, setCurrentPage] = useState(1);
     const productsPerPage = 20;
-    let filtered = products;    
+    let filtered = products;
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -57,7 +61,9 @@ const Shop = () => {
 
         const fetchBrands = async () => {
             try {
-                const response = await axios.get("http://localhost:7192/api/Products");
+                const response = await axios.get(
+                    "http://localhost:7192/api/Products"
+                );
                 setBrands(response.data);
             } catch (error) {
                 console.error(error);
@@ -66,7 +72,9 @@ const Shop = () => {
 
         const fetchColors = async () => {
             try {
-                const response = await axios.get("http://localhost:7192/api/colors");
+                const response = await axios.get(
+                    "http://localhost:7192/api/colors"
+                );
                 setColors(response.data);
             } catch (error) {
                 console.error(error);
@@ -76,16 +84,15 @@ const Shop = () => {
         fetchAllProducts();
         // fetchBrands();
         // fetchColors();
-       
     }, []);
-    useEffect(()=>{
+    useEffect(() => {
         if (tempSelectedBrands.length > 0) {
             filtered = filtered.filter((item) =>
                 tempSelectedBrands.includes(item.brand)
             );
-           // console.log("fliter: ",filtered);
+            // console.log("fliter: ",filtered);
         }
-    },[tempSelectedBrands])
+    }, [tempSelectedBrands]);
     const toggleBrandFilter = () => {
         setIsBrandOpen(!isBrandOpen);
         setIsPriceOpen(false);
@@ -115,7 +122,7 @@ const Shop = () => {
                 : [...prevSelectedBrands, brand];
         });
     };
-    
+
     const handleColorSelection = (color) => {
         setTempSelectedColors((prevSelectedColors) => {
             return prevSelectedColors.includes(color)
@@ -127,10 +134,8 @@ const Shop = () => {
     const handleSliderChange = (range) => {
         setTempPriceRange(range);
     };
-   
-    const applyFilters = () => {
-      
 
+    const applyFilters = () => {
         if (tempSelectedBrands.length > 0) {
             filtered = filtered.filter((item) =>
                 tempSelectedBrands.includes(item.brand)
@@ -180,22 +185,20 @@ const Shop = () => {
 
             if (response.ok) {
                 const data = await response.json();
-                console.log('data color', data);
+                console.log("data color", data);
                 setColorSizes(data);
             } else {
                 throw new Error("Failed to fetch product");
             }
         } catch (error) {
             console.error("Error fetching product:", error);
-            setError("Failed to load product data. Please try again.");
-        } finally {
-           
+            // setError("Failed to load product data. Please try again.");
         }
     };
     const handleBuyNow = (product) => {
-        const colors =  fetchColorSize(product?.id);
-        console.log('color', colors);
-       
+        const colors = fetchColorSize(product?.id);
+        console.log("color", colors);
+
         if (colorSizes.length > 0) {
             setSelectedColor(colorSizes[0]);
             const productBuyNow = {
@@ -208,8 +211,8 @@ const Shop = () => {
                 size: selectedColor.size,
                 price: product?.price,
             };
-           // console.log('product buy now ',productBuyNow);
-              navigate("/checkout-buynow", { state: { product: productBuyNow } });
+            // console.log('product buy now ',productBuyNow);
+            navigate("/checkout-buynow", { state: { product: productBuyNow } });
         } else {
             notification.error({
                 message: "Lỗi",
@@ -383,11 +386,18 @@ const Shop = () => {
                                 key={item.id}
                                 className="productcard-item group h-[21em] md:h-[23em] lg:h-[25.5em] rounded-2xl shadow p-4 cursor-pointer relative"
                             >
-                                <div onClick={() => handleProductClick(item.id)} className="cursor-pointer">
+                                <div
+                                    onClick={() => handleProductClick(item.id)}
+                                    className="cursor-pointer"
+                                >
                                     <div className="productcard-img relative">
                                         {item.image ? (
                                             <img
-                                                src={ item?.image ? `data:image/jpeg;base64,${item.image}` : "" }
+                                                src={
+                                                    item?.image
+                                                        ? `data:image/jpeg;base64,${item.image}`
+                                                        : ""
+                                                }
                                                 alt={item.name}
                                                 className="h-[13em] w-[13em] lg:h-[18em] lg:w-[18em] sm:h-[13em] sm:w-[13em] md:h-[13.5em] md:w-[16em] object-cover rounded-xl mb-3"
                                             />

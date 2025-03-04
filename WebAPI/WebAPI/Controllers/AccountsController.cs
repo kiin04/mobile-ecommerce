@@ -42,7 +42,7 @@
                         return NotFound(new { message = ex.Message });
                     }
                 }
-                // GET: api/User/CheckUser/1
+                // GET: api/Users/CheckUser/1
                 [HttpGet("CheckUser/{id}")]
                 public async Task<ActionResult<Account>> CheckUser(int id)
                 {
