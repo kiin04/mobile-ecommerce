@@ -112,7 +112,7 @@ const Cart = () => {
         const userId = localStorage.getItem("userId");
 
         try {
-            const response = await fetch(`${API_URL}/api/cart/${userId}/remove`, {
+            const response = await fetch(`${API_URL}/api/Carts/${userId}`, {
                     method: "DELETE",
                     headers: {
                         "Content-Type": "application/json",
@@ -228,12 +228,13 @@ const Cart = () => {
             console.error("Lỗi khi xóa sản phẩm khỏi giỏ hàng:", error);
         }
     };
-
+    
     // Sửa hàm navigate để thêm callback xóa giỏ hàng
     const handleCheckout = () => {
         const selectedProducts = cartItems.filter((item) =>
             selectedItems.includes(item.productId)
         );
+        
 
         // Lưu selectedItems vào localStorage để có thể xóa sau khi thanh toán thành công
         localStorage.setItem("checkoutItems", JSON.stringify(selectedItems));
