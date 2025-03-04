@@ -54,14 +54,10 @@ alter table Promotion
 add minPrice  DECIMAL(18, 2) NULL;
 GO
 
-alter table Users
-DROP CONSTRAINT  email;
-GO
-
-alter table colorSize
+alter table colorSizes
 add code VARCHAR(10);
 GO
 
-Update  ColorSize
-set code = '#000000'
-
+Update  ColorSizes
+set code = '#000000';
+GO
