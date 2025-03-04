@@ -57,4 +57,4 @@ GO
 alter table Users
 DROP CONSTRAINT  email;
 GO
-update Users set total_buy = 0
+
