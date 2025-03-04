@@ -21,14 +21,14 @@ namespace WebAPI.Controllers
             _UserService = userService;
         }
 
-        // GET: api/User
+        // GET: api/Users
         [HttpGet]
         public async Task<ActionResult<IEnumerable<User>>> GetUser()
         {
             return Ok(await _UserRepository.GetAllAsync());
         }
 
-        // GET: api/User/5
+        // GET: api/Users/5
         [HttpGet("{id}")]
         public async Task<ActionResult<User>> GetUser(int id)
         {
@@ -43,7 +43,7 @@ namespace WebAPI.Controllers
             }
         }
 
-        // GET: api/User/CheckUser/1
+        // GET: api/Users/CheckUser/1
         [HttpGet("CheckUser/{phone}")]
         public async Task<ActionResult<User>> CheckUser(string phone)
         {
@@ -65,7 +65,7 @@ namespace WebAPI.Controllers
         }
 
 
-        // PUT: api/User/5
+        // PUT: api/Users/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutUser(int id, [FromForm] UserDTO userDTO, IFormFile? image)
         {
@@ -98,7 +98,7 @@ namespace WebAPI.Controllers
             }
         }
 
-        // POST: api/User
+        // POST: api/Users
         [HttpPost]
         public async Task<ActionResult<User>> PostUser([FromForm] UserDTO userDTO, IFormFile? image)
         {
@@ -111,7 +111,7 @@ namespace WebAPI.Controllers
                     Address = userDTO.Address,
                     Role = userDTO.Role,
                     TotalBuy = userDTO.TotalBuy,
-                    Account = userDTO.Account,
+                    Account = 0,
                 };
                 if (image == null)
                 {
@@ -129,7 +129,7 @@ namespace WebAPI.Controllers
             }
         }
 
-        // DELETE: api/User/5
+        // DELETE: api/Users/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id)
         {

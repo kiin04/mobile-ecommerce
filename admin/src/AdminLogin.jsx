@@ -22,14 +22,29 @@ const AdminLogin = ({ onLoginSuccess }) => {
                 password,
             })
             console.log('response login',response.data);
+            const userId = response.data
             if (response.data) {
-                alert("Đăng nhập thành công!");
-                onLoginSuccess();
+                try {
+                    const responseUser = await axios.get(`${API_URL}/api/Users/${userId}`);
+                    const user = responseUser.data;
+                    if (user.role == 2) {
+                        alert("Đăng nhập thành công!");
+                         onLoginSuccess();
+                    }
+                    else{
+                        setLoginError("Bạn không có quyền truy cập !")
+                    }
+                } catch (error) {
+                    setLoginError("Tài khoản hoặc mật khẩu không chính xác !")
+                    console.error("Error fetching user details:", error);
+                    throw new Error("Không thể lấy thông tin người dùng");
+                }
+                
             } else {
                 setLoginError( "Đăng nhập không thành công");
             }
         } catch (err) {
-            setLoginError("Lỗi server");
+            setLoginError("Tài khoản hoặc mật khẩu không chính xác !");
             console.error(err);
         }
     };

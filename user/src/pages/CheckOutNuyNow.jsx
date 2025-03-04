@@ -8,12 +8,12 @@ const CheckoutBuyNow = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const user = useSelector((state) => state.user);
-    console.log('user', user);
-    const userId = user?.id
+    console.log("user", user);
+    const userId = user?.id;
     const productBuyNow = location.state?.product;
     const [paymentMethod, setPaymentMethod] = useState("Tiền mặt");
     const [accounts, setAccount] = useState([]);
-    console.log('productBuyNow',productBuyNow);
+    console.log("productBuyNow", productBuyNow);
     const [customerInfo, setCustomerInfo] = useState({
         name: user.name || "",
         email: localStorage.getItem("email"),
@@ -26,60 +26,61 @@ const CheckoutBuyNow = () => {
 
     const handleContinue = async () => {
         const finalAmount = totalAmount;
-    
+
         try {
             let userIdToUse = userId;
-    
+
             if (userIdToUse == null) {
                 // Gửi yêu cầu kiểm tra số điện thoại
-                const response = await fetch(`${API_URL}/api/Users/CheckUser/${customerInfo.phone}`);
-                
+                const response = await fetch(
+                    `${API_URL}/api/Users/CheckUser/${customerInfo.phone}`
+                );
+
                 if (response.status === 404) {
                     // Không tìm thấy người dùng, tạo mới
-                    const newUser = {
-                        name: customerInfo.name,
-                        phone: customerInfo.phone,
-                        address: customerInfo.address,
-                        role: 1,
-                        totalBuy: 0,
-                    };
-    
+                    const formData = new FormData();
+                    formData.append("Name", customerInfo.name);
+                    formData.append("Phone", customerInfo.phone);
+                    formData.append("Address", customerInfo.address || storeAddress);
+                    formData.append("Role", "1"); 
+                    formData.append("TotalBuy", "0"); 
+                
                     const createUserResponse = await fetch(`${API_URL}/api/Users`, {
                         method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify(newUser),
+                        body: formData, 
                     });
-    
                     if (createUserResponse.status === 201) {
                         const createdUser = await createUserResponse.json();
                         userIdToUse = createdUser.id; // Lấy id của người dùng vừa tạo
-    
+
                         notification.success({
-                            message: 'Người dùng mới đã được tạo',
-                            description: 'Người dùng mới đã được tạo',
+                            message: "Người dùng mới đã được tạo",
+                            description: "Người dùng mới đã được tạo",
                             duration: 4,
                             placement: "bottomRight",
                         });
                     } else {
-                        alert("Đã xảy ra lỗi khi tạo người dùng. Vui lòng thử lại.");
+                        alert(
+                            "Đã xảy ra lỗi khi tạo người dùng. Vui lòng thử lại."
+                        );
                         return; // Dừng quá trình nếu không tạo được user
                     }
                 } else if (response.status === 200) {
                     // Người dùng đã tồn tại trong hệ thống và có tài khoản
                     const userCheck = await response.json();
-                    const responseAccount = await fetch(`${API_URL}/api/Accounts/CheckUser/${userCheck.id}`);
-                    if(responseAccount.status === 200){
+                    const responseAccount = await fetch(
+                        `${API_URL}/api/Accounts/CheckUser/${userCheck.id}`
+                    );
+                    if (responseAccount.status === 200) {
                         notification.success({
-                            message: 'Người dùng đã tồn tại trong hệ thống',
-                            description: 'Bạn hãy đăng nhập để hưởng ưu dãi của chúng tôi',
+                            message: "Người dùng đã tồn tại trong hệ thống",
+                            description:
+                                "Bạn hãy đăng nhập để hưởng ưu dãi của chúng tôi",
                             duration: 4,
                             placement: "bottomRight",
                         });
-                    }
-                    else{
-                         // Người dùng chưa có tài khoản
+                    } else {
+                        // Người dùng chưa có tài khoản
                         const createAccount = confirm(
                             "Bạn đã từng mua hàng nhưng chưa có tài khoản. Bạn có muốn tạo tài khoản để hưởng ưu đãi không?"
                         );
@@ -93,7 +94,7 @@ const CheckoutBuyNow = () => {
                     userIdToUse = userCheck.id; // Lấy id của người dùng đã tồn tại
                 }
             }
-    
+
             // Tạo dữ liệu đơn hàng
             const paymentData = {
                 userId: userIdToUse,
@@ -103,9 +104,12 @@ const CheckoutBuyNow = () => {
                 phone: customerInfo.phone,
                 paymentStatus: "Chưa thanh toán",
                 status: "Chờ xác nhận",
-                address: shippingOption === "store" ? storeAddress : customerInfo.address,
+                address:
+                    shippingOption === "store"
+                        ? storeAddress
+                        : customerInfo.address,
             };
-    
+
             // Gửi yêu cầu tạo đơn hàng
             const orderResponse = await fetch(`${API_URL}/api/Orders`, {
                 method: "POST",
@@ -114,32 +118,35 @@ const CheckoutBuyNow = () => {
                 },
                 body: JSON.stringify(paymentData),
             });
-    
+
             if (orderResponse.status === 201) {
-                const orderRes =  await orderResponse.json();
-                const orderDetail ={
-                    orderId : orderRes.id,
-                    colorSizeId:productBuyNow.colorSizeId,
-                    quantity:productBuyNow.quantity,
-                    price:productBuyNow.price,
-                }
-                const orderDetailResponse = await fetch(`${API_URL}/api/OrderDetails`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(orderDetail),
-                });
+                const orderRes = await orderResponse.json();
+                const orderDetail = {
+                    orderId: orderRes.id,
+                    colorSizeId: productBuyNow.colorSizeId,
+                    quantity: productBuyNow.quantity,
+                    price: productBuyNow.price,
+                    productId: productBuyNow.productId,
+                };
+                const orderDetailResponse = await fetch(
+                    `${API_URL}/api/OrderDetails`,
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(orderDetail),
+                    }
+                );
                 if (orderDetailResponse.status === 201) {
                     notification.success({
-                        message: 'Đơn hàng mới đã được tạo',
-                        description: 'Đơn hàng mới đã được tạo',
+                        message: "Đơn hàng mới đã được tạo",
+                        description: "Đơn hàng mới đã được tạo",
                         duration: 4,
                         placement: "bottomRight",
                     });
-                    navigate('/my-orders')
+                    navigate("/my-orders");
                 }
-               
             } else {
                 alert("Đã xảy ra lỗi khi tạo đơn hàng. Vui lòng thử lại.");
             }
@@ -148,8 +155,7 @@ const CheckoutBuyNow = () => {
             alert("Đã xảy ra lỗi. Vui lòng thử lại sau.");
         }
     };
-    
-   
+
     const storeAddress = "806 QL22, ấp Mỹ Hoà 3, Hóc Môn, Hồ Chí Minh";
 
     return (
@@ -158,51 +164,59 @@ const CheckoutBuyNow = () => {
 
             {/* Hiển thị thông tin khách hàng */}
             <div className="bg-white p-4 rounded-lg shadow mb-4">
-                    <h3 className="text-lg font-semibold mb-2">Thông tin khách hàng</h3>
-                    {userId ? (
-                        <>
-                            <p>Tên: {customerInfo.name}</p>
-                            <p>Email: {customerInfo.email}</p>
-                            <p>Số điện thoại: {customerInfo.phone}</p>
-                        </>
-                    ) : (
-                        <div className="space-y-4">
-                            <div>
-                                <label className="block mb-2">Tên:</label>
-                                <input
-                                    type="text"
-                                    className="w-full p-2 border rounded-lg"
-                                    value={customerInfo.name}
-                                    onChange={(e) =>
-                                        setCustomerInfo({ ...customerInfo, name: e.target.value })
-                                    }
-                                    placeholder="Nhập tên của bạn"
-                                />
-                            </div>
-                            
-                            <div>
-                                <label className="block mb-2">Số điện thoại:</label>
-                                <input
-                                    type="text"
-                                    className="w-full p-2 border rounded-lg"
-                                    value={customerInfo.phone}
-                                    onChange={(e) =>
-                                        setCustomerInfo({ ...customerInfo, phone: e.target.value })
-                                    }
-                                    placeholder="Nhập số điện thoại của bạn"
-                                />
-                            </div>
-                          
+                <h3 className="text-lg font-semibold mb-2">
+                    Thông tin khách hàng
+                </h3>
+                {userId ? (
+                    <>
+                        <p>Tên: {customerInfo.name}</p>
+                        <p>Email: {customerInfo.email}</p>
+                        <p>Số điện thoại: {customerInfo.phone}</p>
+                    </>
+                ) : (
+                    <div className="space-y-4">
+                        <div>
+                            <label className="block mb-2">Tên:</label>
+                            <input
+                                type="text"
+                                className="w-full p-2 border rounded-lg"
+                                value={customerInfo.name}
+                                onChange={(e) =>
+                                    setCustomerInfo({
+                                        ...customerInfo,
+                                        name: e.target.value,
+                                    })
+                                }
+                                placeholder="Nhập tên của bạn"
+                            />
                         </div>
-                    )}
-                </div>
 
- 
+                        <div>
+                            <label className="block mb-2">Số điện thoại:</label>
+                            <input
+                                type="text"
+                                className="w-full p-2 border rounded-lg"
+                                value={customerInfo.phone}
+                                onChange={(e) =>
+                                    setCustomerInfo({
+                                        ...customerInfo,
+                                        phone: e.target.value,
+                                    })
+                                }
+                                placeholder="Nhập số điện thoại của bạn"
+                            />
+                        </div>
+                    </div>
+                )}
+            </div>
+
             <div className="flex items-center">
                 <img
-                    src={productBuyNow?.image
-                    ? `data:image/jpeg;base64,${productBuyNow.image}` 
-                    : "/default-image.jpg"}
+                    src={
+                        productBuyNow?.image
+                            ? `data:image/jpeg;base64,${productBuyNow.image}`
+                            : "/default-image.jpg"
+                    }
                     alt={productBuyNow.name}
                     className="w-20 h-20 object-cover"
                 />
@@ -212,10 +226,10 @@ const CheckoutBuyNow = () => {
                             {productBuyNow.name}
                         </h3>
                         <p className="text-lg">
-                            {productBuyNow?.color} -  {productBuyNow?.size}
-                    </p>
+                            {productBuyNow?.color} - {productBuyNow?.size}
+                        </p>
                     </div>
-                   
+
                     <p className="text-red-500">
                         {productBuyNow.price.toLocaleString()}{" "}
                         {/* <span className="line-through text-gray-500">
@@ -226,8 +240,7 @@ const CheckoutBuyNow = () => {
                     <p>Số lượng: {productBuyNow.quantity}</p>
                 </div>
             </div>
-          
-                
+
             {/* Thông tin giao / nhận hàng */}
             <div className="bg-white p-4 rounded-lg shadow mb-4">
                 <h3 className="text-lg font-semibold mb-2">
@@ -246,8 +259,7 @@ const CheckoutBuyNow = () => {
                             } mr-2 flex items-center justify-center`}
                         >
                             {shippingOption === "store" && (
-                                <div className="w-2.5 h-2.5 bg-white rounded-full">
-                                </div>
+                                <div className="w-2.5 h-2.5 bg-white rounded-full"></div>
                             )}
                         </div>
                         <label className="text-gray-800">
@@ -266,8 +278,7 @@ const CheckoutBuyNow = () => {
                             } mr-2 flex items-center justify-center`}
                         >
                             {shippingOption === "delivery" && (
-                                <div className="w-2.5 h-2.5 bg-white rounded-full">
-                                </div>
+                                <div className="w-2.5 h-2.5 bg-white rounded-full"></div>
                             )}
                         </div>
                         <label className="text-gray-800">
@@ -275,69 +286,67 @@ const CheckoutBuyNow = () => {
                         </label>
                     </div>
                 </div>
-                {shippingOption === "store"
-                    ? (
-                        <>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block mb-2">
-                                        Tỉnh / Thành phố
-                                    </label>
-                                    <select
-                                        className="w-full p-2 border rounded-lg"
-                                        disabled
-                                    >
-                                        <option value="Ho Chi Minh">
-                                            Hồ Chí Minh
-                                        </option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="block mb-2">
-                                        Quận/huyện
-                                    </label>
-                                    <select
-                                        className="w-full p-2 border rounded-lg"
-                                        disabled
-                                    >
-                                        <option value="Hoc Mon">Hóc Môn</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div className="mt-4">
+                {shippingOption === "store" ? (
+                    <>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
                                 <label className="block mb-2">
-                                    Địa chỉ cửa hàng
+                                    Tỉnh / Thành phố
                                 </label>
-                                <p className="bg-gray-100 p-2 rounded-lg">
-                                    {storeAddress}
-                                </p>
+                                <select
+                                    className="w-full p-2 border rounded-lg"
+                                    disabled
+                                >
+                                    <option value="Ho Chi Minh">
+                                        Hồ Chí Minh
+                                    </option>
+                                </select>
                             </div>
-                        </>
-                    )
-                    : (
-                        <>
+                            <div>
+                                <label className="block mb-2">Quận/huyện</label>
+                                <select
+                                    className="w-full p-2 border rounded-lg"
+                                    disabled
+                                >
+                                    <option value="Hoc Mon">Hóc Môn</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div className="mt-4">
                             <label className="block mb-2">
-                                Địa chỉ nhận hàng
+                                Địa chỉ cửa hàng
                             </label>
-                        {userId ? <input
-                            type="text"
-                            className="w-full p-2 border rounded-lg mb-4"
-                            value={customerInfo.address}
-                            readOnly
-                             /> :
+                            <p className="bg-gray-100 p-2 rounded-lg">
+                                {storeAddress}
+                            </p>
+                        </div>
+                    </>
+                ) : (
+                    <>
+                        <label className="block mb-2">Địa chỉ nhận hàng</label>
+                        {userId ? (
+                            <input
+                                type="text"
+                                className="w-full p-2 border rounded-lg mb-4"
+                                value={customerInfo.address}
+                                readOnly
+                            />
+                        ) : (
                             <input
                                 type="text"
                                 className="w-full p-2 border rounded-lg"
                                 value={customerInfo.address}
                                 onChange={(e) =>
-                                    setCustomerInfo({ ...customerInfo, address: e.target.value })
+                                    setCustomerInfo({
+                                        ...customerInfo,
+                                        address: e.target.value,
+                                    })
                                 }
                                 placeholder="Nhập địa chỉ của bạn"
                             />
-                        }
-                            
-                        </>
-                    )}
+                        )}
+                    </>
+                )}
             </div>
 
             {/* Thêm ghi chú */}
@@ -363,12 +372,9 @@ const CheckoutBuyNow = () => {
                     value={paymentMethod}
                     onChange={(e) => setPaymentMethod(e.target.value)}
                 >
-                   
                     <option value="Tiền mặt">Tiền mặt</option>
-                
-                    <option value="MoMo">
-                        Thanh toán qua MOMO
-                    </option>
+
+                    <option value="MoMo">Thanh toán qua MOMO</option>
                     <option value="Thanh toán qua VNpay">
                         Thanh toán qua VNpay
                     </option>
@@ -383,11 +389,11 @@ const CheckoutBuyNow = () => {
                         <span>Tạm tính:</span>
                         <span>{totalAmount.toLocaleString()}đ</span>
                     </div>
-                   
+
                     <div className="flex justify-between font-semibold text-xl">
                         <span>Tổng cộng:</span>
                         <span className="text-red-500">
-                            {(totalAmount ).toLocaleString()}đ
+                            {totalAmount.toLocaleString()}đ
                         </span>
                     </div>
                 </div>

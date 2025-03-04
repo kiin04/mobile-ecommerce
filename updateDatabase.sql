@@ -28,10 +28,12 @@ GO
 ALTER TABLE [Users]
 ALTER COLUMN image VARBINARY(MAX) NULL;
 GO
+
 -- update 03/03/2025
 alter table Products
-add start_rate INT NULL
+add start_rate INT NULL;
 GO
+
 create table Comments(
 	id INT PRIMARY KEY IDENTITY(1,1),
     userID NVARCHAR(255) NOT NULL,
@@ -41,4 +43,21 @@ create table Comments(
 	created_at DATETIME DEFAULT GETDATE(),
     updated_at DATETIME DEFAULT GETDATE()
 );
+
+
+-- update 04/03/2025
+alter table Promotion
+add code VARCHAR(10) NULL;
+GO
+
+alter table Promotion
+add minPrice  DECIMAL(18, 2) NULL;
+GO
+
+alter table colorSizes
+add code VARCHAR(10);
+GO
+
+Update  ColorSizes
+set code = '#000000';
 GO

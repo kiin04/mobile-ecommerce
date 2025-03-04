@@ -121,6 +121,9 @@ public partial class CSDLBanHang : DbContext
             entity.Property(e => e.Color)
                 .HasMaxLength(50)
                 .HasColumnName("color");
+            entity.Property(e => e.Code)
+                .HasMaxLength(50)
+                .HasColumnName("code");
             entity.Property(e => e.Price)
               .HasColumnType("decimal(18, 2)")
               .HasColumnName("price");
@@ -327,6 +330,9 @@ public partial class CSDLBanHang : DbContext
             entity.Property(e => e.Name)
                 .HasMaxLength(255)
                 .HasColumnName("name");
+            entity.Property(e => e.Code)
+             .HasMaxLength(10)
+             .HasColumnName("code");
             entity.Property(e => e.UpdatedAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime")
@@ -334,6 +340,8 @@ public partial class CSDLBanHang : DbContext
             entity.Property(e => e.Value)
                 .HasColumnType("decimal(18, 2)")
                 .HasColumnName("value");
+            entity.Property(e => e.MinPrice)
+             .HasColumnName("minPrice");
         });
 
         modelBuilder.Entity<Role>(entity =>

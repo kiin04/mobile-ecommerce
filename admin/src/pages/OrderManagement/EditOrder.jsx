@@ -7,9 +7,9 @@ const API_URL = apiConfigInstance.getApiUrl();
 
 const EditOrder = () => {
   const { orderId } = useParams();
-  console.log('orderId',orderId );
   const navigate = useNavigate();
   const [order, setOrder] = useState(null);
+  const [colorSizes, setColorSizes] = useState(null);
   const [orderDetails, setOrderDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -41,61 +41,86 @@ const EditOrder = () => {
     // Format thành YYYY-MM-DDThh:mm
     return date.toISOString().slice(0, 16);
   };
-
+  const fetchOrder = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/Orders/${orderId}`);
+      if (response.status == 200) {
+        const data = await response.json();
+        setOrder(data);
+      } else {
+        throw new Error('Failed to fetch order');
+      }
+    } catch (error) {
+      console.error('Error fetching order:', error);
+      setError('Failed to load order data');
+    } finally {
+      setLoading(false);
+    }
+  }; 
+  const fetchColorSize = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/ColorSizes`);
+      if (response.status == 200) {
+        const data = await response.json();
+        setColorSizes(data);
+      } else {
+        throw new Error('Failed to fetch order');
+      }
+    } catch (error) {
+      console.error('Error fetching order:', error);
+      setError('Failed to load order data');
+    } finally {
+      setLoading(false);
+    }
+  };
+  const fetchOrderDetails = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/OrderDetails/ByOrder/${orderId}`);
+     
+      if (response.status == 200) {
+        const data = await response.json();
+        setOrderDetails(data);
+      } else {
+        throw new Error('Failed to fetch order detail');
+      }
+    } catch (error) {
+      console.error('Error fetching order detail:', error);
+      setError('Failed to load order data');
+    } finally {
+      setLoading(false);
+    }
+  };
+  const fetchProducts = async () => {
+    try {
+      const response = await fetch(` ${API_URL}/api/Products `);
+      if (response.ok) {
+        const data = await response.json();
+        setProducts(data);
+      }
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    }
+  };
   // Fetch order data
   useEffect(() => {
-    const fetchOrder = async () => {
-      try {
-        const response = await fetch(`${API_URL}/api/Orders/${orderId}`);
-        console.log('order', response);
-        if (response.status == 200) {
-          const data = await response.json();
-          console.log('data order', data);
-          setOrder(data);
-        } else {
-          throw new Error('Failed to fetch order');
-        }
-      } catch (error) {
-        console.error('Error fetching order:', error);
-        setError('Failed to load order data');
-      } finally {
-        setLoading(false);
-      }
-    };
-    const fetchOrderDetails = async () => {
-      try {
-        const response = await fetch(`${API_URL}/api/OrderDetails/${orderId}`);
-        console.log('order detail', response);
-        if (response.status == 200) {
-          const data = await response.json();
-          console.log('data order', data);
-          setOrderDetails(data);
-        } else {
-          throw new Error('Failed to fetch order');
-        }
-      } catch (error) {
-        console.error('Error fetching order:', error);
-        setError('Failed to load order data');
-      } finally {
-        setLoading(false);
-      }
-    };
-    const fetchProducts = async () => {
-      try {
-        const response = await fetch(`${API_URL}/api/Products`);
-        if (response.ok) {
-          const data = await response.json();
-          setProducts(data);
-        }
-      } catch (error) {
-        console.error('Error fetching products:', error);
-      }
-    };
     fetchOrderDetails();
     fetchOrder();
+    fetchColorSize();
     fetchProducts();
   }, [orderId]);
 
+  const [orderProducts, setOrderProduct] = useState([])
+  useEffect(() => {
+    if (orderDetails && products.length > 0) {
+      const matchedProducts = orderDetails
+        .map((order) => products.find((product) => product.id === order.productId))
+      setOrderProduct(matchedProducts); 
+    }
+  }, [orderDetails, products]);
+  const getColors = (colorSizeId) => {
+    if (colorSizes)
+      return colorSizes.find(item => item.id === colorSizeId) 
+  };
   // Validate form
   const validateForm = () => {
     const newErrors = {};
@@ -179,14 +204,14 @@ const EditOrder = () => {
     }
 
     try {
-      const response = await fetch(`${API_URL}/api/Oders/${orderId}`, {
+      const response = await fetch(`${API_URL}/api/Orders/${orderId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(order) ,
       });
-
+      console.log('response update order',response );
       if (response.ok) {
         alert('Đơn hàng đã được cập nhật thành công');
         navigate('/order-management');
@@ -228,11 +253,11 @@ const EditOrder = () => {
             <TextField
               label="Tên khách hàng"
               name="customerName"
-              value={order.name || ''}
+              value={order?.name || ''}
               onChange={handleChange}
               fullWidth
               required
-              error={!!order.name}
+             // error={!!order?.name}
               helperText={errors.name}
               margin="normal"
             />
@@ -257,44 +282,49 @@ const EditOrder = () => {
           {/* Order Items */}
           <Grid item xs={12}>
             <Typography variant="h6" gutterBottom>Sản phẩm</Typography>
-            {order.items && order.items.map((item, index) => (
-              <Grid container spacing={2} key={index}>
-                <Grid item xs={6}>
-                  <Autocomplete
-                    options={products}
-                    getOptionLabel={(option) => `${option.name} - Còn ${option.quantity} sản phẩm`}
-                    value={products.find(p => p.id === item.productId) || null}
-                    onChange={(event, newValue) => {
-                      handleItemChange(index, 'productId', newValue ? newValue.id : '');
-                    }}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        label="Chọn sản phẩm"
-                        required
-                        margin="normal"
-                        error={!!errors[`items[${index}].productId`]}
-                        helperText={errors[`items[${index}].productId`]}
+            {orderDetails && orderDetails.map((item, index) =>
+              {
+                const  colorSize = getColors(item.colorSizeId)
+                return  (
+                  <Grid container spacing={2} key={index}>
+                    <Grid item xs={6}>
+                      <Autocomplete
+                        options={orderProducts}
+                        getOptionLabel={(option) => `${option.name} - ${colorSize.color} - Còn ${colorSize.quantity} sản phẩm`}
+                        value={orderProducts.find(p => p.id === item.productId) || null}
+                        onChange={(event, newValue) => {
+                          handleItemChange(index, 'productId', newValue ? newValue.id : '');
+                        }}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            label="Chọn sản phẩm"
+                            required
+                            margin="normal"
+                            error={!!errors[`items[${index}].productId`]}
+                            helperText={errors[`items[${index}].productId`]}
+                          />
+                        )}
                       />
-                    )}
-                  />
-                </Grid>
-                <Grid item xs={6}>
-                  <TextField
-                    label="Số lượng"
-                    type="number"
-                    value={item.quantity || ''}
-                    onChange={(e) => handleItemChange(index, 'quantity', e.target.value)}
-                    fullWidth
-                    required
-                    error={!!errors[`items[${index}].quantity`]}
-                    helperText={errors[`items[${index}].quantity`]}
-                    margin="normal"
-                    inputProps={{ min: 1 }}
-                  />
-                </Grid>
-              </Grid>
-            ))}
+                    </Grid>
+                    <Grid item xs={6}>
+                      <TextField
+                        label="Số lượng"
+                        type="number"
+                        value={item.quantity || ''}
+                        onChange={(e) => handleItemChange(index, 'quantity', e.target.value)}
+                        fullWidth
+                        required
+                        error={!!errors[`items[${index}].quantity`]}
+                        helperText={errors[`items[${index}].quantity`]}
+                        margin="normal"
+                        inputProps={{ min: 1 }}
+                      />
+                    </Grid>
+                  </Grid>
+                )
+              }
+             )}
           </Grid>
 
           {/* Order Status and Payment */}
@@ -343,7 +373,7 @@ const EditOrder = () => {
           </Grid>
 
           {/* Notes */}
-          <Grid item xs={12}>
+          {/* <Grid item xs={12}>
             <TextField
               label="Ghi chú"
               name="notes"
@@ -354,7 +384,7 @@ const EditOrder = () => {
               rows={3}
               margin="normal"
             />
-          </Grid>
+          </Grid> */}
 
           {/* Ngày đặt hàng */}
           <Grid item xs={12} sm={6}>

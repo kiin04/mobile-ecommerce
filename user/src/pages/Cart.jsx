@@ -109,10 +109,10 @@ const Cart = () => {
 
     // Xóa sản phẩm khỏi giỏ hàng
     const removeFromCart = async (productId) => {
-        const userId = sessionStorage.getItem("userId");
+        const userId = localStorage.getItem("userId");
 
         try {
-            const response = await fetch(`${API_URL}/api/cart/${userId}/remove`, {
+            const response = await fetch(`${API_URL}/api/Carts/${userId}`, {
                     method: "DELETE",
                     headers: {
                         "Content-Type": "application/json",
@@ -133,7 +133,7 @@ const Cart = () => {
 
     // Cập nhật số lượng sản phẩm trong giỏ hàng và kiểm tra tồn kho
     const updateQuantity = async (productId, newQuantity) => {
-        const userId = sessionStorage.getItem("userId");
+        const userId = localStorage.getItem("userId");
         const productInCart = cartItems.find(
             (item) => item.productId === productId
         );
@@ -200,7 +200,7 @@ const Cart = () => {
 
     // Thêm hàm xóa nhiều sản phẩm
     const removeMultipleFromCart = async (productIds) => {
-        const userId = sessionStorage.getItem("userId");
+        const userId = localStorage.getItem("userId");
 
         try {
             const response = await fetch(
@@ -228,15 +228,16 @@ const Cart = () => {
             console.error("Lỗi khi xóa sản phẩm khỏi giỏ hàng:", error);
         }
     };
-
+    
     // Sửa hàm navigate để thêm callback xóa giỏ hàng
     const handleCheckout = () => {
         const selectedProducts = cartItems.filter((item) =>
             selectedItems.includes(item.productId)
         );
+        
 
-        // Lưu selectedItems vào sessionStorage để có thể xóa sau khi thanh toán thành công
-        sessionStorage.setItem("checkoutItems", JSON.stringify(selectedItems));
+        // Lưu selectedItems vào localStorage để có thể xóa sau khi thanh toán thành công
+        localStorage.setItem("checkoutItems", JSON.stringify(selectedItems));
 
         navigate(PathNames.CHECKOUT, {
             state: {
