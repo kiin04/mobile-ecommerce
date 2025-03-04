@@ -54,7 +54,7 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
 
     // Xóa sản phẩm khỏi giỏ hàng
     const removeFromCart = async (productId) => {
-        const userId = sessionStorage.getItem("userId"); // Lấy userId từ sessionStorage
+        const userId = localStorage.getItem("userId"); // Lấy userId từ localStorage
 
         try {
             await fetch(`${API_URL}/api/cart/${userId}/remove`, {
@@ -75,7 +75,7 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
 
     // Cập nhật số lượng sản phẩm trong giỏ hàng và kiểm tra tồn kho
     const updateQuantity = async (productId, newQuantity) => {
-        const userId = sessionStorage.getItem("userId");
+        const userId = localStorage.getItem("userId");
         const productInCart = cartItems.find(
             (item) => item.productId === productId
         );
@@ -145,8 +145,8 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
         // Lấy tất cả sản phẩm trong giỏ hàng
         const selectedProducts = cartItems;
 
-        // Lưu selectedItems vào sessionStorage để có thể xóa sau khi thanh toán thành công
-        sessionStorage.setItem(
+        // Lưu selectedItems vào localStorage để có thể xóa sau khi thanh toán thành công
+        localStorage.setItem(
             "checkoutItems",
             JSON.stringify(selectedProducts)
         );

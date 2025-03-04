@@ -8,7 +8,7 @@ import PathNames from "../../PathNames.js";
 import AddtoCartBtn from "../../shared/AddtoCartBtn.jsx";
 
 const NewReleases = () => {
-    const userId = sessionStorage.getItem("userId");
+    const userId = localStorage.getItem("userId");
     const [products, setProducts] = useState([]);
     const [quantity, setQuantity] = useState(1);
     const [error, setError] = useState("");
@@ -34,24 +34,24 @@ const NewReleases = () => {
     const NReleaseProducts = getProductsById();
     console.log("NReleaseProducts: ",NReleaseProducts);
 
-    const handleQuantityChange = (e) => {
-        const value = parseInt(e.target.value, 10);
-        if (value > product.quantity) {
-            setError("Số lượng bạn chọn đã đạt mức tối đa của sản phẩm này");
-            notification.warning({
-                message: "Lưu ý",
-                description:
-                    "Số lượng bạn chọn đã đạt mức tối đa của sản phẩm này",
-                duration: 4,
-                placement: "bottomRight",
-                showProgress: true,
-                pauseOnHover: true,
-            });
-        } else {
-            setError("");
-        }
-        setQuantity(value);
-    };
+    // const handleQuantityChange = (e) => {
+    //     const value = parseInt(e.target.value, 10);
+    //     if (value > product.quantity) {
+    //         setError("Số lượng bạn chọn đã đạt mức tối đa của sản phẩm này");
+    //         notification.warning({
+    //             message: "Lưu ý",
+    //             description:
+    //                 "Số lượng bạn chọn đã đạt mức tối đa của sản phẩm này",
+    //             duration: 4,
+    //             placement: "bottomRight",
+    //             showProgress: true,
+    //             pauseOnHover: true,
+    //         });
+    //     } else {
+    //         setError("");
+    //     }
+    //     setQuantity(value);
+    // };
 
     const handleAddtoCart = async (selectedProduct) => {
         if (!userId) {
@@ -223,7 +223,7 @@ export default NewReleases;
 // import AddtoCartBtn from "../../shared/AddtoCartBtn.jsx";
 
 // const NewReleases = () => {
-//     const userId = sessionStorage.getItem("userId");
+//     const userId = localStorage.getItem("userId");
 //     const [products, setProducts] = useState([]);
 //     const [loading, setLoading] = useState(false);
 //     const navigate = useNavigate();

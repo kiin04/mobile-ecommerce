@@ -148,7 +148,7 @@ const Profile = () => {
             return;
         }
 
-        const userId = sessionStorage.getItem("userId");
+        const userId = localStorage.getItem("userId");
 
         const formData = new FormData(); // Create FormData to handle file uploads
         formData.append("name", userData.name);

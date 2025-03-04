@@ -18,7 +18,6 @@ namespace WebAPI.Controllers
         {
             _CartRepository = RepositoryFactory.CreateRepository<Cart>(context);
             _cartService = cartService;
-           
         }
 
         // GET: api/Carts
@@ -100,7 +99,6 @@ namespace WebAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCart(int id)
         {
-           
             try
             {
                 await _CartRepository.DeleteAsync(id);
