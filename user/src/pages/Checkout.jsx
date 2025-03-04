@@ -46,6 +46,7 @@ const Checkout = () => {
 
         if (location.state?.cartItems) {
             setCartItems(location.state.cartItems);
+            console.log('cartItem', location.state.cartItems);
             setTotalAmount(location.state.total);
         } else {
             navigate(PathNames.CART);
@@ -252,12 +253,12 @@ const Checkout = () => {
                             />
                             <div className="ml-4">
                                 <h3 className="text-lg font-semibold">
-                                    {item.name}
+                                    {item?.name}
                                 </h3>
                                 <p className="text-red-500">
                                     {item.price.toLocaleString()}{" "}
                                     <span className="line-through text-gray-500">
-                                        {item.originalPrice?.toLocaleString()}
+                                        {item.price?.toLocaleString()}
                                     </span>
                                 </p>
                                 <p>Số lượng: {item.quantity}</p>

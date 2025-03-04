@@ -55,5 +55,6 @@ add minPrice  DECIMAL(18, 2) NULL;
 GO
 
 alter table Users
-add FOREIGN KEY (email) REFERENCES Accounts(email);
+DROP CONSTRAINT  email;
 GO
+update Users set total_buy = 0

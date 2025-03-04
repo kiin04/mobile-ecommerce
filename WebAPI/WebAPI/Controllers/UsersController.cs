@@ -111,7 +111,7 @@ namespace WebAPI.Controllers
                     Address = userDTO.Address,
                     Role = userDTO.Role,
                     TotalBuy = userDTO.TotalBuy,
-                    Account = userDTO.Account,
+                    Account = 0,
                 };
                 if (image == null)
                 {

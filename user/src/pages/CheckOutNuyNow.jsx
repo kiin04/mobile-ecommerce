@@ -38,25 +38,17 @@ const CheckoutBuyNow = () => {
 
                 if (response.status === 404) {
                     // Không tìm thấy người dùng, tạo mới
-                    const newUser = {
-                        name: customerInfo.name,
-                        phone: customerInfo.phone,
-                        address: customerInfo.address,
-                        role: 1,
-                        totalBuy: 0,
-                    };
-
-                    const createUserResponse = await fetch(
-                        `${API_URL}/api/Users`,
-                        {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json",
-                            },
-                            body: JSON.stringify(newUser),
-                        }
-                    );
-
+                    const formData = new FormData();
+                    formData.append("Name", customerInfo.name);
+                    formData.append("Phone", customerInfo.phone);
+                    formData.append("Address", customerInfo.address || storeAddress);
+                    formData.append("Role", "1"); 
+                    formData.append("TotalBuy", "0"); 
+                
+                    const createUserResponse = await fetch(`${API_URL}/api/Users`, {
+                        method: "POST",
+                        body: formData, 
+                    });
                     if (createUserResponse.status === 201) {
                         const createdUser = await createUserResponse.json();
                         userIdToUse = createdUser.id; // Lấy id của người dùng vừa tạo
