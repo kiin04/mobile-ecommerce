@@ -11,6 +11,7 @@ const OrderManagement = () => {
   const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
   const [products, setProducts] = useState([]);
+  const [colorSizes, setColorsizes] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [orderDetails, setOrderDetails] = useState([]);
   const [selectedOrderDetails, setSelectedOrderDetails] = useState([]);
@@ -58,11 +59,25 @@ const OrderManagement = () => {
       console.error('Error fetching products:', error);
     }
   };
+  const fetchColorSizes = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/api/ColorSizes`);
+      if (response.status === 200) {
+        const data = response.data;
+        setColorsizes(data);
+      } else {
+        console.error(`Failed to fetch products: ${response.status} ${response.statusText}`);
+      }
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    }
+  };
   useEffect(() => {
     
     fetchProducts()
     fetchOrderDetail();
     fetchOrders();
+    fetchColorSizes();
   }, []);
  
 
@@ -77,7 +92,7 @@ const OrderManagement = () => {
 
   const handleDeleteOrder = async (orderId) => {
     try {
-      const response = await fetch(`${API_URL}/api/orders/${orderId}`, {
+      const response = await fetch(`${API_URL}/api/Orders/${orderId}`, {
         method: 'DELETE',
       });
       if (response.ok) {
@@ -144,7 +159,9 @@ const OrderManagement = () => {
     console.log("product of order detail",products.filter(item => item.id === proId) );
     return products.filter(item => item.id === proId) 
   };
-
+  const getColors = (colorId) => {
+    return colorSizes.filter(item => item.id === colorId) 
+  };
   return (
     <Box padding={3}>
       <Typography variant="h4" gutterBottom>Quản lý đơn hàng</Typography>
@@ -291,10 +308,10 @@ const OrderManagement = () => {
                     {selectedOrderDetails.map((item, key) => {
                       // Lấy sản phẩm tương ứng với productId
                       const product = getProduct(item.productId)[0];
-                      console.log(getProduct(item.productId)); 
+                      const colorSize = getColors(item.colorSizeId)[0];
                       return (
                         <TableRow key={key}>
-                          <TableCell>{item.productId} {product ? product.name : 'Không tìm thấy sản phẩm'}</TableCell>
+                          <TableCell>{item.productId} {product ? product.name : 'Không tìm thấy sản phẩm'} - {colorSize.color} - {colorSize.size}</TableCell>
                           <TableCell>{item?.quantity}</TableCell>
                         </TableRow>
                       );
