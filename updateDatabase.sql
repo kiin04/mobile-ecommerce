@@ -58,3 +58,10 @@ alter table Users
 DROP CONSTRAINT  email;
 GO
 
+alter table colorSize
+add code VARCHAR(10);
+GO
+
+Update  ColorSize
+set code = '#000000'
+
