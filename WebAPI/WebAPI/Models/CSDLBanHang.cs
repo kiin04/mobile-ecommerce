@@ -121,6 +121,9 @@ public partial class CSDLBanHang : DbContext
             entity.Property(e => e.Color)
                 .HasMaxLength(50)
                 .HasColumnName("color");
+            entity.Property(e => e.Code)
+                .HasMaxLength(50)
+                .HasColumnName("code");
             entity.Property(e => e.Price)
               .HasColumnType("decimal(18, 2)")
               .HasColumnName("price");

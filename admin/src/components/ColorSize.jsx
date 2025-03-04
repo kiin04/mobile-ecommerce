@@ -3,10 +3,12 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from 'axios';
 import { 
   Grid, Typography, Button, Card, CardContent, Dialog, 
-  DialogTitle, DialogContent, TextField, Box 
+  DialogTitle, DialogContent, TextField, Box, 
+  Input
 } from '@mui/material';
 
 import { API_URL } from '../config';
+import { Label } from '@mui/icons-material';
 
 // Fetch danh sách màu từ API
 const fetchColorSize = async (productId) => {
@@ -171,6 +173,21 @@ const updateMutation = useMutation({
       onChange={(e) => setSelectedColor({ ...selectedColor, price: e.target.value })}
       fullWidth margin="normal" 
     />
+    <label style={{marginLeft:"4px"}}>Mã màu </label>
+    <TextField 
+      label="Mã màu" 
+      type="code" 
+      value={selectedColor?.code || ''} 
+      onChange={(e) => setSelectedColor({ ...selectedColor, code: e.target.value })}
+      fullWidth margin="normal" 
+    />
+    <Input 
+      label="Mã màu" 
+      type="color" 
+      value={selectedColor?.code || ''} 
+      onChange={(e) => setSelectedColor({ ...selectedColor, code: e.target.value })}
+      fullWidth margin="normal" 
+    />
     <Box display="flex" justifyContent="center" alignItems="center" gap={2} mt={2}>
       <Button variant="contained" onClick={handleUpdateColor} disabled={updateMutation.isLoading}>
         {updateMutation.isLoading ? "Đang cập nhật..." : "Cập nhật"}
@@ -194,6 +211,21 @@ const updateMutation = useMutation({
             onChange={(e) => setNewColorSize({ ...newColorSize, color: e.target.value })}
             fullWidth
             margin="normal"
+          />
+          <label style={{marginLeft:"4px"}}>Mã màu </label>
+          <TextField 
+            label="Mã màu" 
+            type="code" 
+            value={newColorSize?.code || ''} 
+            onChange={(e) => setNewColorSize({ ...newColorSize, code: e.target.value })}
+            fullWidth margin="normal" 
+          />
+          <Input 
+            label="Mã màu" 
+            type="color" 
+            value={selectedColor?.code || ''} 
+            onChange={(e) => setNewColorSize({ ...newColorSize, code: e.target.value })}
+            fullWidth margin="normal" 
           />
           <TextField
             label="Phiên bản"

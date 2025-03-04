@@ -185,7 +185,6 @@ const Profile = () => {
             if (response.ok) {
                 dispatch(setUser({
                     ...userData,
-                    email: formData.email,
                 }));
                 setIsEditing(false);
                 setUserAvatar(null); // Reset userAvatar after successful update
