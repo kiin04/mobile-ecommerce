@@ -62,8 +62,17 @@ const UserManagement = () => {
     }, []);
 
     const handleViewDetails = (user) => {
-        console.log("Người dùng được chọn:", user);
-        setSelectedUser(user);
+        console.log("Chi tiết người dùng:", user);
+    // Kiểm tra từng trường dữ liệu
+    console.log("ID:", user.id);
+    console.log("Name:", user.name);
+    console.log("Email:", user.email);
+    console.log("Phone:", user.phone);
+    console.log("Address:", user.address);
+    console.log("Day of Birth:", user.dayOfBirth);
+    console.log("Avatar:", user.Avatar);
+    console.log("Role:", user.role);
+    setSelectedUser(user);
     };
 
     const handleCloseDialog = () => {
@@ -130,7 +139,7 @@ const UserManagement = () => {
         return role ? role.name : "Khách vãng lai";
     
       };
-    return (
+      return (
         <Box padding={3}>
             <Typography variant="h4" gutterBottom>
                 Quản lý người dùng
@@ -160,7 +169,7 @@ const UserManagement = () => {
                         <TableRow>
                             <TableCell>ID</TableCell>
                             <TableCell>Họ tên</TableCell>
-                            <TableCell>Số điện thoại liên lạc</TableCell>
+                            <TableCell>Số điện thoại liên lạc</TableCell> {/* Luôn hiển thị cột này */}
                             <TableCell>Địa chỉ giao hàng</TableCell>
                             <TableCell>Quyền truy cập</TableCell>
                             <TableCell>Hành động</TableCell>
@@ -171,7 +180,7 @@ const UserManagement = () => {
                             <TableRow key={user.id}>
                                 <TableCell>{user.id}</TableCell>
                                 <TableCell>{user.name}</TableCell>
-                                <TableCell>{user.phone}</TableCell>
+                                <TableCell>{user.phone || "Không có"}</TableCell> {/* Hiển thị "Không có" nếu phone là null hoặc undefined */}
                                 <TableCell>{user.address}</TableCell>
                                 <TableCell>{getRoleNameById(user.role)}</TableCell>
                                 <TableCell>
@@ -256,7 +265,7 @@ const UserManagement = () => {
                                         }}
                                     >
                                         <img 
-                                            src={`${API_URL}/${selectedUser.Avatar.replace(/\\/g, '/')}`}
+                                            src={`${API_URL}/${selectedUser.Avatar.replace(/\\/g, '/')}`} 
                                             alt={selectedUser.name}
                                         />
                                     </Box>
@@ -333,8 +342,6 @@ const UserManagement = () => {
                                         }
                                     }}
                                 >
-                                  
-
                                     <Box className="info-item">
                                         <Typography className="label">Ngày sinh</Typography>
                                         <Typography className="value">
@@ -354,15 +361,13 @@ const UserManagement = () => {
 
                                     <Box className="info-item">
                                         <Typography className="label">Số điện thoại</Typography>
-                                        <Typography className="value">{selectedUser.phone}</Typography>
+                                        <Typography className="value">{selectedUser.phone || "Không có"}</Typography>
                                     </Box>
 
                                     <Box className="info-item">
                                         <Typography className="label">Địa chỉ giao hàng</Typography>
                                         <Typography className="value">{selectedUser.address}</Typography>
                                     </Box>
-                                    
-
                                 </Box>
                             </Box>
                         </Box>

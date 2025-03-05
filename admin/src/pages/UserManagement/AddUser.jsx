@@ -10,7 +10,7 @@ const AddUser = () => {
         name: "",
         email: "",
         password: "",
-        phoneNumber: "",
+       phone: "",
         dayOfBirth: "",
         role: "", 
         gender: "",
@@ -60,10 +60,10 @@ const AddUser = () => {
 
         // Validate số điện thoại
         const phoneRegex = /(84|0[3|5|7|8|9])+([0-9]{8})\b/;
-        if (!user.phoneNumber) {
-            newErrors.phoneNumber = 'Vui lòng nhập số điện thoại';
-        } else if (!phoneRegex.test(user.phoneNumber)) {
-            newErrors.phoneNumber = 'Số điện thoại không hợp lệ';
+        if (!user.phone) {
+            newErrors.phone = 'Vui lòng nhập số điện thoại';
+        } else if (!phoneRegex.test(user.phone)) {
+            newErrors.phone = 'Số điện thoại không hợp lệ';
         }
 
         // Validate ngày sinh
@@ -148,7 +148,7 @@ const AddUser = () => {
                     setErrors(prev => ({ ...prev, email: 'Email đã tồn tại' }));
                 }
                 if (error.response.data.phoneExists) {
-                    setErrors(prev => ({ ...prev, phoneNumber: 'Số điện thoại đã tồn tại' }));
+                    setErrors(prev => ({ ...prev, phone: 'Số điện thoại đã tồn tại' }));
                 }
                 if (error.response.data.accountNameExists) {
                     setErrors(prev => ({ ...prev, accountName: 'Tên tài khoản đã tồn tại' }));
@@ -233,14 +233,14 @@ const AddUser = () => {
                     <Grid item xs={6}>
                         <TextField
                             label="Số điện thoại"
-                            name="phoneNumber"
-                            value={user.phoneNumber}
+                            name="phone"
+                            value={user.phone}
                             onChange={handleChange}
                             fullWidth
                             required
                             margin="normal"
-                            error={!!errors.phoneNumber}
-                            helperText={errors.phoneNumber}
+                            error={!!errors.phone}
+                            helperText={errors.phone}
                         />
                     </Grid>
                     <Grid item xs={6}>
