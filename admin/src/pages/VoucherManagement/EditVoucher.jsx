@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { message, notification } from "antd";
 import { Box, TextField, Button, CircularProgress, Grid, Typography } from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -38,7 +39,7 @@ const EditVoucher = () => {
                 }
             } catch (error) {
                 console.error("Lỗi khi tải voucher:", error);
-                alert("Không thể tải thông tin voucher");
+                message.error("Không thể tải thông tin voucher");
             } finally {
                 setLoading(false);
             }
@@ -143,13 +144,26 @@ const EditVoucher = () => {
             );
             console.log('response update', response);
             if (response.status == 204) {
-                alert("Cập nhật voucher thành công");
+                notification.success({
+                    message: 'Thành công',
+                    description: 'Cập nhật voucher thành công.',
+                    duration: 4,
+                    placement: "bottomRight",
+                    showProgress: true,
+                    pauseOnHover: true
+                });
                 navigate("/voucher-management");
             }
         } catch (error) {
             console.error("Lỗi khi cập nhật voucher:", error);
-            const errorMessage = error.response?.data?.message || "Đã xảy ra lỗi khi cập nhật voucher";
-            alert(errorMessage);
+            notification.error({
+                message: 'Thất bại',
+                description: error.response?.data?.message || "Đã xảy ra lỗi khi cập nhật voucher",
+                duration: 4,
+                placement: "bottomRight",
+                showProgress: true,
+                pauseOnHover: true
+            });
         }
     };
 

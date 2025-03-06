@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { API_URL } from "../config.js";
 import { useLocation, useNavigate } from "react-router-dom";
-import { notification } from "antd";
+import { notification, message } from "antd";
 import PathNames from "../PathNames.js";
 import { useDispatch, useSelector } from "react-redux";
 const CheckoutBuyNow = () => {
@@ -60,15 +60,20 @@ const CheckoutBuyNow = () => {
                         userIdToUse = createdUser.id; // Lấy id của người dùng vừa tạo
 
                         notification.success({
-                            message: "Người dùng mới đã được tạo",
-                            description: "Người dùng mới đã được tạo",
+                            message: "Thành công!",
+                            description: "Người dùng mới đã được tạo.",
                             duration: 4,
                             placement: "bottomRight",
                         });
                     } else {
-                        alert(
-                            "Đã xảy ra lỗi khi tạo người dùng. Vui lòng thử lại."
-                        );
+                        notification.error({
+                            message: 'Thất bại',
+                            description: 'Đã xảy ra lỗi khi tạo người dùng. Vui lòng thử lại.',
+                            duration: 4,
+                            placement: "bottomRight",
+                            showProgress: true,
+                            pauseOnHover: true
+                        });
                         return; // Dừng quá trình nếu không tạo được user
                     }
                 } else if (response.status === 200) {
@@ -78,10 +83,10 @@ const CheckoutBuyNow = () => {
                         `${API_URL}/api/Accounts/CheckUser/${userCheck.id}`
                     );
                     if (responseAccount.status === 200) {
-                        notification.success({
-                            message: "Người dùng đã tồn tại trong hệ thống",
+                        notification.warning({
+                            message: "Lỗi",
                             description:
-                                "Bạn hãy đăng nhập để hưởng ưu dãi của chúng tôi",
+                                "Người dùng đã tồn tại, vui lòng đăng nhập",
                             duration: 4,
                             placement: "bottomRight",
                         });
@@ -146,7 +151,7 @@ const CheckoutBuyNow = () => {
                 );
                 if (orderDetailResponse.status === 201) {
                     notification.success({
-                        message: "Đơn hàng mới đã được tạo",
+                        message: "Thành công!",
                         description: "Đơn hàng mới đã được tạo",
                         duration: 4,
                         placement: "bottomRight",
@@ -154,11 +159,18 @@ const CheckoutBuyNow = () => {
                     navigate("/my-orders");
                 }
             } else {
-                alert("Đã xảy ra lỗi khi tạo đơn hàng. Vui lòng thử lại.");
+                notification.error({
+                    message: 'Thất bại',
+                    description: 'Đã xảy ra lỗi khi tạo đơn hàng. Vui lòng thử lại.',
+                    duration: 4,
+                    placement: "bottomRight",
+                    showProgress: true,
+                    pauseOnHover: true
+                });
             }
         } catch (error) {
             console.error("Lỗi trong quá trình xử lý:", error);
-            alert("Đã xảy ra lỗi. Vui lòng thử lại sau.");
+            message.error("Đã xảy ra lỗi. Vui lòng thử lại sau.");
         }
     };
 

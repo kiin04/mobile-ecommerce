@@ -21,6 +21,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import apiConfigInstance from "../../../SingletonParttern.js";
+import { message, notification } from "antd";
 const API_URL = apiConfigInstance.getApiUrl();
 
 const ProductManagement = () => {
@@ -104,7 +105,6 @@ const ProductManagement = () => {
             //   if (checkData.inOrders) message += '\n- Đơn hàng';
             //   if (checkData.inKho) message += '\n- Phiếu kho';
 
-            //   alert(message);
             //   return;
             // }
 
@@ -120,14 +120,21 @@ const ProductManagement = () => {
                 setProducts(
                     products.filter((product) => product.id !== productId)
                 );
-                alert("Sản phẩm đã được xóa thành công");
+                ("Sản phẩm đã được xóa thành công");
             } else {
                 const data = await response.json();
-                alert(data.message || "Lỗi khi xóa sản phẩm");
+                notification.error({
+                    message: 'Thất bại',
+                    description: data.message || "Lỗi khi xóa sản phẩm",
+                    duration: 4,
+                    placement: "bottomRight",
+                    showProgress: true,
+                    pauseOnHover: true
+                });
             }
         } catch (error) {
             console.error("Error:", error);
-            alert("Đã xảy ra lỗi khi xóa sản phẩm");
+            message.error("Lỗi kết nối đến server");
         }
     };
 

@@ -10,6 +10,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { API_URL } from "../../config.js";
+import { message, notification } from "antd";
 
 const AddUser = () => {
     const navigate = useNavigate();
@@ -135,9 +136,14 @@ const AddUser = () => {
             console.log("Response:", response.data);
 
             // Kiểm tra nếu response có data hoặc message
-            const message =
-                response.data?.message || "Tạo tài khoản thành công!";
-            alert(message);
+            notification.success({
+                message: 'Thành công',
+                description: response.data?.message || "Tạo tài khoản thành công!",
+                duration: 4,
+                placement: "bottomRight",
+                showProgress: true,
+                pauseOnHover: true
+            });
             if (response.status === 201) {
                 navigate("/user-management");
             }
@@ -145,7 +151,7 @@ const AddUser = () => {
             console.error("Lỗi khi tạo tài khoản:", error);
             if (error.response?.data?.message) {
                 // Hiển thị thông báo lỗi cụ thể từ server
-                alert(error.response.data.message);
+                message.error(error.response.data.message);
 
                 // Nếu có lỗi về trùng lặp, cập nhật trạng thái lỗi
                 if (error.response.data.emailExists) {
@@ -167,7 +173,14 @@ const AddUser = () => {
                     }));
                 }
             } else {
-                alert("Đã xảy ra lỗi khi tạo tài khoản");
+                notification.error({
+                    message: 'Thất bại',
+                    description: "Đã xảy ra lỗi khi tạo tài khoản",
+                    duration: 4,
+                    placement: "bottomRight",
+                    showProgress: true,
+                    pauseOnHover: true
+                });
             }
         }
     };

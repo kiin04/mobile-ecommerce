@@ -18,6 +18,7 @@ import { useQuery } from "@tanstack/react-query";
 import ColorSize from "../../components/ColorSize.jsx";
 import Detail from "../../components/Detail.jsx";
 import axios from "axios";
+import { notification } from "antd";
 const EditProduct = () => {
     const { productId } = useParams();
     const navigate = useNavigate();
@@ -156,12 +157,26 @@ const EditProduct = () => {
             console.log("update response", response);
             console.log(response);
             if (response.ok) {
-                alert("Sản phẩm đã được cập nhật thành công");
+                notification.success({
+                    message: 'Thành công',
+                    description: "Sản phẩm đã được cập nhật thành công",
+                    duration: 4,
+                    placement: "bottomRight",
+                    showProgress: true,
+                    pauseOnHover: true
+                });
                 navigate("/product-management");
             }
         } catch (error) {
             console.error("Lỗi khi cập nhật sản phẩm:", error);
-            alert("Lỗi khi cập nhật sản phẩm: " + error.message);
+            notification.error({
+                message: 'Thất bại',
+                description: "Lỗi khi cập nhật sản phẩm: " + error.message,
+                duration: 4,
+                placement: "bottomRight",
+                showProgress: true,
+                pauseOnHover: true
+            });
         }
     };
 

@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import { notification, message } from 'antd';
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import {
@@ -104,7 +105,7 @@ const ColorSize = ({ productId }) => {
             !selectedColor.quantity ||
             !selectedColor.price
         ) {
-            alert("Vui lòng nhập đầy đủ thông tin!");
+            message.warning("Vui lòng nhập đầy đủ thông tin!");
             return;
         }
         updateMutation.mutate(selectedColor);
@@ -133,7 +134,7 @@ const ColorSize = ({ productId }) => {
             !newColorSize.size ||
             !newColorSize.quantity
         ) {
-            alert("Vui lòng nhập đầy đủ thông tin!");
+            message.warning("Vui lòng nhập đầy đủ thông tin!");
             return;
         }
         mutation.mutate({ ...newColorSize, productId });

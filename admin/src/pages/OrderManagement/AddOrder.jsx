@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
+import { message, notification } from "antd";
 import {
     Box,
     TextField,
@@ -255,12 +256,25 @@ const AddOrder = () => {
                     data.error || data.message || "Không thể tạo đơn hàng"
                 );
             }
-
-            alert("Đơn hàng đã được tạo thành công");
+            notification.success({
+                message: 'Thành công',
+                description: 'Đơn hàng đã được tạo thành công.',
+                duration: 4,
+                placement: "bottomRight",
+                showProgress: true,
+                pauseOnHover: true
+            });
             navigate("/order-management");
         } catch (error) {
             console.error("Error details:", error);
-            alert(`Lỗi khi tạo đơn hàng: ${error.message}`);
+            notification.error({
+                message: 'Thất bại',
+                description: `Lỗi xảy ra khi tạo đơn hàng: ${error.message}`,
+                duration: 4,
+                placement: "bottomRight",
+                showProgress: true,
+                pauseOnHover: true
+            });
         }
     };
 

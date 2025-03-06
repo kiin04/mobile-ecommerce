@@ -3,17 +3,18 @@ import { Box, TextField, Button, Grid, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { API_URL } from "../../config";
+import { notification } from "antd";
 
 const AddVoucher = () => {
     const navigate = useNavigate();
     const [voucher, setVoucher] = useState({
-        name: '',
-        startDate: '',
-        endDate: '',
-        discountPercent: '',
-        code: '',
-        minOrderValue: '',
-        maxDiscountAmount: ''
+        name: "",
+        startDate: "",
+        endDate: "",
+        discountPercent: "",
+        code: "",
+        minOrderValue: "",
+        maxDiscountAmount: "",
     });
 
     const [errors, setErrors] = useState({});
@@ -23,50 +24,59 @@ const AddVoucher = () => {
 
         // Validate tên voucher
         if (!voucher.name.trim()) {
-            newErrors.name = 'Vui lòng nhập tên voucher';
+            newErrors.name = "Vui lòng nhập tên voucher";
         } else if (voucher.name.length < 3) {
-            newErrors.name = 'Tên voucher phải có ít nhất 3 ký tự';
+            newErrors.name = "Tên voucher phải có ít nhất 3 ký tự";
         }
 
         // Validate ngày bắt đầu
-        if (!voucher.startDate) { // Đổi tên field
-            newErrors.startDate = 'Vui lòng chọn ngày bắt đầu';
+        if (!voucher.startDate) {
+            // Đổi tên field
+            newErrors.startDate = "Vui lòng chọn ngày bắt đầu";
         }
 
         // Validate ngày kết thúc
-        if (!voucher.endDate) { // Đổi tên field
-            newErrors.endDate = 'Vui lòng chọn ngày kết thúc';
+        if (!voucher.endDate) {
+            // Đổi tên field
+            newErrors.endDate = "Vui lòng chọn ngày kết thúc";
         } else if (new Date(voucher.endDate) <= new Date(voucher.startDate)) {
-            newErrors.endDate = 'Ngày kết thúc phải sau ngày bắt đầu';
+            newErrors.endDate = "Ngày kết thúc phải sau ngày bắt đầu";
         }
 
         // Validate tỷ lệ giảm giá
         const discountPercent = Number(voucher.discountPercent);
         if (!voucher.discountPercent) {
-            newErrors.discountPercent = 'Vui lòng nhập tỷ lệ giảm giá';
-        } else if (isNaN(discountPercent) || discountPercent <= 0 || discountPercent > 100) {
-            newErrors.discountPercent = 'Tỷ lệ giảm giá phải từ 1% đến 100%';
+            newErrors.discountPercent = "Vui lòng nhập tỷ lệ giảm giá";
+        } else if (
+            isNaN(discountPercent) ||
+            discountPercent <= 0 ||
+            discountPercent > 100
+        ) {
+            newErrors.discountPercent = "Tỷ lệ giảm giá phải từ 1% đến 100%";
         }
 
         // Validate mã áp dụng
-        if (!voucher.code.trim()) { // Đổi tên field
-            newErrors.code = 'Vui lòng nhập mã voucher';
+        if (!voucher.code.trim()) {
+            // Đổi tên field
+            newErrors.code = "Vui lòng nhập mã voucher";
         } else if (!/^[A-Z0-9]{3,20}$/.test(voucher.code)) {
-            newErrors.code = 'Mã voucher chỉ được chứa chữ hoa và số, độ dài 3-20 ký tự';
+            newErrors.code =
+                "Mã voucher chỉ được chứa chữ hoa và số, độ dài 3-20 ký tự";
         }
 
         // Validate giá trị đơn hàng tối thiểu
         if (!voucher.minOrderValue) {
-            newErrors.minOrderValue = 'Vui lòng nhập giá trị đơn hàng tối thiểu';
+            newErrors.minOrderValue =
+                "Vui lòng nhập giá trị đơn hàng tối thiểu";
         } else if (Number(voucher.minOrderValue) < 0) {
-            newErrors.minOrderValue = 'Giá trị đơn hàng tối thiểu không thể âm';
+            newErrors.minOrderValue = "Giá trị đơn hàng tối thiểu không thể âm";
         }
 
         // Validate số tiền giảm tối đa
         if (!voucher.maxDiscountAmount) {
-            newErrors.maxDiscountAmount = 'Vui lòng nhập số tiền giảm tối đa';
+            newErrors.maxDiscountAmount = "Vui lòng nhập số tiền giảm tối đa";
         } else if (Number(voucher.maxDiscountAmount) < 0) {
-            newErrors.maxDiscountAmount = 'Số tiền giảm tối đa không thể âm';
+            newErrors.maxDiscountAmount = "Số tiền giảm tối đa không thể âm";
         }
 
         setErrors(newErrors);
@@ -75,15 +85,15 @@ const AddVoucher = () => {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setVoucher(prev => ({
+        setVoucher((prev) => ({
             ...prev,
-            [name]: value
+            [name]: value,
         }));
         // Xóa lỗi khi người dùng thay đổi giá trị
         if (errors[name]) {
-            setErrors(prev => ({
+            setErrors((prev) => ({
                 ...prev,
-                [name]: undefined
+                [name]: undefined,
             }));
         }
     };
@@ -99,27 +109,54 @@ const AddVoucher = () => {
             // Chuyển đổi dữ liệu để khớp với model
             const voucherData = {
                 name: voucher.name,
-                code: voucher.code,  // Đổi từ applicableCode sang code
+                code: voucher.code, // Đổi từ applicableCode sang code
                 discountPercent: Number(voucher.discountPercent), // Đổi từ discountRate sang discountPercent
                 startDate: voucher.startDate, // Đổi từ usageDate sang startDate
                 endDate: voucher.endDate, // Đổi từ expirationDate sang endDate
                 minOrderValue: Number(voucher.minOrderValue), // Thêm các trường bắt buộc theo model
-                maxDiscountAmount: Number(voucher.maxDiscountAmount)
+                maxDiscountAmount: Number(voucher.maxDiscountAmount),
             };
 
-            const response = await axios.post(`${API_URL}/api/addDiscountCode`, voucherData, {
-                headers: { "Content-Type": "application/json" },
-            });
-            
+            const response = await axios.post(
+                `${API_URL}/api/addDiscountCode`,
+                voucherData,
+                {
+                    headers: { "Content-Type": "application/json" },
+                }
+            );
+
             if (response.status === 201) {
-                alert("Thêm voucher thành công");
+                notification.success({
+                    message: 'Thành công',
+                    description: "Thêm voucher thành công",
+                    duration: 4,
+                    placement: "bottomRight",
+                    showProgress: true,
+                    pauseOnHover: true
+                });
                 navigate("/voucher-management");
             } else {
-                alert("Không thể thêm voucher");
+                notification.error({
+                    message: 'Thất bại',
+                    description: "Không thể thêm voucher",
+                    duration: 4,
+                    placement: "bottomRight",
+                    showProgress: true,
+                    pauseOnHover: true
+                });
             }
         } catch (error) {
             console.error("Lỗi khi thêm voucher:", error);
-            alert(error.response?.data?.message || "Đã xảy ra lỗi khi thêm voucher");
+            notification.error({
+                message: "Thất bại",
+                description:
+                    error.response?.data?.message ||
+                    "Đã xảy ra lỗi khi thêm voucher",
+                duration: 4,
+                placement: "bottomRight",
+                showProgress: true,
+                pauseOnHover: true,
+            });
         }
     };
 
@@ -202,7 +239,9 @@ const AddVoucher = () => {
                             required
                             margin="normal"
                             error={!!errors.code}
-                            helperText={errors.code || 'Chỉ sử dụng chữ hoa và số'}
+                            helperText={
+                                errors.code || "Chỉ sử dụng chữ hoa và số"
+                            }
                         />
                     </Grid>
                     <Grid item xs={12} sm={6}>
