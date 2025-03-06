@@ -62,6 +62,5 @@ Update  ColorSizes
 set code = '#000000';
 GO
 
-Update Products
-set start_rate = 0;
-GO
+-- update 06/03/2025
+update Products set start_rate = 0
