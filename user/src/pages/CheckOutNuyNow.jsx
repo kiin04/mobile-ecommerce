@@ -41,14 +41,20 @@ const CheckoutBuyNow = () => {
                     const formData = new FormData();
                     formData.append("Name", customerInfo.name);
                     formData.append("Phone", customerInfo.phone);
-                    formData.append("Address", customerInfo.address || storeAddress);
-                    formData.append("Role", "1"); 
-                    formData.append("TotalBuy", "0"); 
-                
-                    const createUserResponse = await fetch(`${API_URL}/api/Users`, {
-                        method: "POST",
-                        body: formData, 
-                    });
+                    formData.append(
+                        "Address",
+                        customerInfo.address || storeAddress
+                    );
+                    formData.append("Role", "1");
+                    formData.append("TotalBuy", "0");
+
+                    const createUserResponse = await fetch(
+                        `${API_URL}/api/Users`,
+                        {
+                            method: "POST",
+                            body: formData,
+                        }
+                    );
                     if (createUserResponse.status === 201) {
                         const createdUser = await createUserResponse.json();
                         userIdToUse = createdUser.id; // Lấy id của người dùng vừa tạo
