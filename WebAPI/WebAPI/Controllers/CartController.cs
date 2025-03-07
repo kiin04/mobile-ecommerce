@@ -109,6 +109,19 @@ namespace WebAPI.Controllers
                 return NotFound(new { message = ex.Message });
             }
         }
+        [HttpDelete("ByUser/{id}")]
+        public async Task<IActionResult> DeleteAllCart(int id)
+        {
+            try
+            {
+                await _cartService.DeleteAllByUser(id);
+                return NoContent();
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+        }
     }
 
 }
