@@ -1,8 +1,16 @@
 import { useState } from "react";
-import { Box, TextField, Button, Grid, Typography, MenuItem } from "@mui/material";
+import {
+    Box,
+    TextField,
+    Button,
+    Grid,
+    Typography,
+    MenuItem,
+} from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { API_URL } from '../../config.js';
+import { API_URL } from "../../config.js";
+import { message, notification } from "antd";
 
 const AddUser = () => {
     const navigate = useNavigate();
@@ -10,9 +18,9 @@ const AddUser = () => {
         name: "",
         email: "",
         password: "",
-       phone: "",
+        phone: "",
         dayOfBirth: "",
-        role: "", 
+        role: "",
         gender: "",
         address: "",
         accountName: "",
@@ -22,81 +30,79 @@ const AddUser = () => {
     const [errors, setErrors] = useState({});
 
     const genderOptions = [
-        { value: 'Nam', label: 'Nam' },
-        { value: 'Nữ', label:    'Nữ' },
-        { value: 'Khác', label: 'Khác' }
+        { value: "Nam", label: "Nam" },
+        { value: "Nữ", label: "Nữ" },
+        { value: "Khác", label: "Khác" },
     ];
 
     const roleOptions = [
-        { value: 1, label: 'Admin' },
-        { value: 0, label: 'User' },
-        
+        { value: 1, label: "Admin" },
+        { value: 0, label: "User" },
     ];
 
     const validateForm = () => {
         const newErrors = {};
-        
+
         // Validate tên
         if (!user.name.trim()) {
-            newErrors.name = 'Vui lòng nhập tên';
+            newErrors.name = "Vui lòng nhập tên";
         } else if (user.name.length < 2) {
-            newErrors.name = 'Tên phải có ít nhất 2 ký tự';
+            newErrors.name = "Tên phải có ít nhất 2 ký tự";
         }
 
         // Validate email
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!user.email) {
-            newErrors.email = 'Vui lòng nhập email';
+            newErrors.email = "Vui lòng nhập email";
         } else if (!emailRegex.test(user.email)) {
-            newErrors.email = 'Email không hợp lệ';
+            newErrors.email = "Email không hợp lệ";
         }
 
         // Validate mật khẩu
         if (!user.password) {
-            newErrors.password = 'Vui lòng nhập mật khẩu';
+            newErrors.password = "Vui lòng nhập mật khẩu";
         } else if (user.password.length < 6) {
-            newErrors.password = 'Mật khẩu phải có ít nhất 6 ký tự';
+            newErrors.password = "Mật khẩu phải có ít nhất 6 ký tự";
         }
 
         // Validate số điện thoại
         const phoneRegex = /(84|0[3|5|7|8|9])+([0-9]{8})\b/;
         if (!user.phone) {
-            newErrors.phone = 'Vui lòng nhập số điện thoại';
+            newErrors.phone = "Vui lòng nhập số điện thoại";
         } else if (!phoneRegex.test(user.phone)) {
-            newErrors.phone = 'Số điện thoại không hợp lệ';
+            newErrors.phone = "Số điện thoại không hợp lệ";
         }
 
         // Validate ngày sinh
         if (!user.dayOfBirth) {
-            newErrors.dayOfBirth = 'Vui lòng chọn ngày sinh';
+            newErrors.dayOfBirth = "Vui lòng chọn ngày sinh";
         } else {
             const birthDate = new Date(user.dayOfBirth);
             const today = new Date();
             if (birthDate > today) {
-                newErrors.dayOfBirth = 'Ngày sinh không hợp lệ';
+                newErrors.dayOfBirth = "Ngày sinh không hợp lệ";
             }
         }
 
         // Validate giới tính
         if (!user.gender) {
-            newErrors.gender = 'Vui lòng chọn giới tính';
+            newErrors.gender = "Vui lòng chọn giới tính";
         }
 
         // Validate địa chỉ
         if (!user.address.trim()) {
-            newErrors.address = 'Vui lòng nhập địa chỉ';
+            newErrors.address = "Vui lòng nhập địa chỉ";
         }
 
         if (user.role === "") {
-            newErrors.role = 'Vui lòng chọn vai trò';
+            newErrors.role = "Vui lòng chọn vai trò";
         }
-        
 
         // Validate tên tài khoản
         if (!user.accountName.trim()) {
-            newErrors.accountName = 'Vui lòng nhập tên tài khoản';
+            newErrors.accountName = "Vui lòng nhập tên tài khoản";
         } else if (user.accountName.length < 4) {
-            newErrors.accountName = 'Tên tài khoản phải có ít nhất 4 ký tự';
+            newErrors.accountName = "Tên tài khoản phải có ít nhất 4 ký tự";
         }
 
         setErrors(newErrors);
@@ -105,7 +111,8 @@ const AddUser = () => {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        const newValue = name === "role" && value !== "" ? parseInt(value, 10) : value;
+        const newValue =
+            name === "role" && value !== "" ? parseInt(value, 10) : value;
         console.log(`Thay đổi: ${name} =`, newValue);
         setUser((prev) => ({
             ...prev,
@@ -115,46 +122,65 @@ const AddUser = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-       
 
         if (!validateForm()) {
             return;
         }
 
         try {
-            
             const response = await axios.post(`${API_URL}/api/Users`, user, {
                 headers: {
-                    "Content-Type": "multipart/form-data"
-                }
+                    "Content-Type": "multipart/form-data",
+                },
             });
             console.log("Response:", response.data);
 
-    // Kiểm tra nếu response có data hoặc message
-    const message = response.data?.message || "Tạo tài khoản thành công!";
-    alert(message);
+            // Kiểm tra nếu response có data hoặc message
+            notification.success({
+                message: 'Thành công',
+                description: response.data?.message || "Tạo tài khoản thành công!",
+                duration: 4,
+                placement: "bottomRight",
+                showProgress: true,
+                pauseOnHover: true
+            });
             if (response.status === 201) {
                 navigate("/user-management");
-                
             }
         } catch (error) {
             console.error("Lỗi khi tạo tài khoản:", error);
             if (error.response?.data?.message) {
                 // Hiển thị thông báo lỗi cụ thể từ server
-                alert(error.response.data.message);
-                
+                message.error(error.response.data.message);
+
                 // Nếu có lỗi về trùng lặp, cập nhật trạng thái lỗi
                 if (error.response.data.emailExists) {
-                    setErrors(prev => ({ ...prev, email: 'Email đã tồn tại' }));
+                    setErrors((prev) => ({
+                        ...prev,
+                        email: "Email đã tồn tại",
+                    }));
                 }
                 if (error.response.data.phoneExists) {
-                    setErrors(prev => ({ ...prev, phone: 'Số điện thoại đã tồn tại' }));
+                    setErrors((prev) => ({
+                        ...prev,
+                        phone: "Số điện thoại đã tồn tại",
+                    }));
                 }
                 if (error.response.data.accountNameExists) {
-                    setErrors(prev => ({ ...prev, accountName: 'Tên tài khoản đã tồn tại' }));
+                    setErrors((prev) => ({
+                        ...prev,
+                        accountName: "Tên tài khoản đã tồn tại",
+                    }));
                 }
             } else {
-                alert("Đã xảy ra lỗi khi tạo tài khoản");
+                notification.error({
+                    message: 'Thất bại',
+                    description: "Đã xảy ra lỗi khi tạo tài khoản",
+                    duration: 4,
+                    placement: "bottomRight",
+                    showProgress: true,
+                    pauseOnHover: true
+                });
             }
         }
     };
@@ -210,7 +236,10 @@ const AddUser = () => {
                             helperText={errors.gender}
                         >
                             {genderOptions.map((option) => (
-                                <MenuItem key={option.value} value={option.value}>
+                                <MenuItem
+                                    key={option.value}
+                                    value={option.value}
+                                >
                                     {option.label}
                                 </MenuItem>
                             ))}
@@ -271,25 +300,28 @@ const AddUser = () => {
                         />
                     </Grid>
                     <Grid item xs={12}>
-                    <TextField
-    select
-    label="Vai trò"
-    name="role"
-    value={user.role}
-    onChange={handleChange}
-    fullWidth
-    required
-    margin="normal"
-    error={!!errors.role}
-    helperText={errors.role}
->
-    {roleOptions.map((option) => (
-        <MenuItem key={option.value} value={option.value}>
-            {option.label}
-        </MenuItem>
-    ))}
-</TextField>
-                            </Grid>
+                        <TextField
+                            select
+                            label="Vai trò"
+                            name="role"
+                            value={user.role}
+                            onChange={handleChange}
+                            fullWidth
+                            required
+                            margin="normal"
+                            error={!!errors.role}
+                            helperText={errors.role}
+                        >
+                            {roleOptions.map((option) => (
+                                <MenuItem
+                                    key={option.value}
+                                    value={option.value}
+                                >
+                                    {option.label}
+                                </MenuItem>
+                            ))}
+                        </TextField>
+                    </Grid>
 
                     <Grid item xs={12}>
                         <TextField
