@@ -19,7 +19,7 @@ import {
 import { Delete, Visibility, } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 
-import apiConfigInstance from "../../../SingletonParttern.js";
+import apiConfigInstance from '../../../SingletonParttern.js';
 const API_URL = apiConfigInstance.getApiUrl();
 import axios from "axios";
 
@@ -52,10 +52,13 @@ const UserManagement = () => {
             try {
                 const response = await axios.get(`${API_URL}/api/Users`);
                 if (response.status === 200) {
-                    setUsers(response.data);
+                    const data = response.data
+                    setUsers(data);
+                } else {
+                    console.error(`Failed to fetch users: ${response.status} ${response.statusText}`);
                 }
             } catch (error) {
-                console.error("Lỗi khi lấy danh sách người dùng:", error);
+                console.error("Error fetching users:", error);
             }
         };
 
@@ -95,22 +98,15 @@ const UserManagement = () => {
   
 
     const handleDeleteUser = async (userId) => {
-        if (!userId || isNaN(userId)) {
-            console.error("Invalid userId:", userId);
-            return;
-        }
-
-        if (!window.confirm("Bạn có chắc chắn muốn xóa người dùng này?")) {
-            return;
-        }
         try {
-            console.log(`Deleting user with ID: ${userId}`);
-            const response = await axios.delete(
-                `${API_URL}/api/Users/${userId}`
+            const response = await fetch(
+                `${API_URL}/api/users/${userId}`,
+                {
+                    method: "DELETE",
+                }
             );
-            if (response.status === 204) {
+            if (response.ok) {
                 setUsers(users.filter((user) => user.id !== userId));
-                console.log("User deleted successfully");
             } else {
                 console.error("Failed to delete user");
             }
@@ -151,19 +147,9 @@ const UserManagement = () => {
         setPage(newPage);
     };
     const getRoleNameById = (id) => {
-        if (!id) return "Khách hàng thường";
-        const roleId = parseInt(id, 10);
-        if (roleId === 1) return "Admin";
-        const roleIdString = id.toString().toUpperCase();
-        if (roleIdString === "ADMIN") return "Admin";
-
-        const role = roles.find((r) => {
-            const roleValue =
-                parseInt(r.id, 10) || r.id.toString().toUpperCase();
-            return roleValue === roleId || roleValue === roleIdString;
-        });
-        return role ? role.name : "Khách vãng lai";
-    };
+        const role = roles.find((r) => r.id === id);
+        return role ? role.name : 'Unknown Role';
+      };
     return (
         <Box padding={3}>
             <Typography variant="h4" gutterBottom>
@@ -212,9 +198,7 @@ const UserManagement = () => {
                           
                                 <TableCell>{user.phone || "Không có"}</TableCell> {/* Hiển thị "Không có" nếu phone là null hoặc undefined */}
                                 <TableCell>{user.address}</TableCell>
-                                <TableCell>
-                                    {getRoleNameById(user.role)}
-                                </TableCell>
+                                <TableCell>{getRoleNameById(user.role)}</TableCell>
                                 <TableCell>
                                     <IconButton
                                         onClick={() => handleViewDetails(user)}
@@ -223,9 +207,7 @@ const UserManagement = () => {
                                         <Visibility />
                                     </IconButton>
                                     <IconButton
-                                        onClick={() =>
-                                            handleDeleteUser(user.id)
-                                        }
+                                        onClick={() => handleDeleteUser(user.id)}
                                         color="error"
                                     >
                                         <Delete />
@@ -247,123 +229,103 @@ const UserManagement = () => {
             </Box>
 
             {selectedUser && (
-                <Dialog
-                    open={true}
+                <Dialog 
+                    open={true} 
                     onClose={handleCloseDialog}
                     maxWidth="md"
                     fullWidth
                 >
-                    <DialogTitle
+                    <DialogTitle 
                         sx={{
-                            borderBottom: "1px solid #e0e0e0",
-                            padding: "16px 24px",
-                            display: "flex",
-                            justifyContent: "space-between",
-                            alignItems: "center",
+                            borderBottom: '1px solid #e0e0e0',
+                            padding: '16px 24px',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center'
                         }}
                     >
-                        <Typography variant="h6">
-                            Thông tin chi tiết người dùng
-                        </Typography>
-                        <Typography
-                            variant="subtitle1"
-                            sx={{
-                                backgroundColor:
-                                    selectedUser.role === "ADMIN"
-                                        ? "#ff9800"
-                                        : "#4caf50",
-                                color: "white",
-                                padding: "4px 12px",
-                                borderRadius: "16px",
-                                fontWeight: "bold",
-                                textTransform: "uppercase",
+                        <Typography variant="h6">Thông tin chi tiết người dùng</Typography>
+                        <Typography 
+                            variant="subtitle1" 
+                            sx={{ 
+                                backgroundColor: selectedUser.role === 'ADMIN' ? '#ff9800' : '#4caf50',
+                                color: 'white',
+                                padding: '4px 12px',
+                                borderRadius: '16px',
+                                fontWeight: 'bold',
+                                textTransform: 'uppercase'
                             }}
                         >
                             {getRoleNameById(selectedUser.role)}
                         </Typography>
                     </DialogTitle>
 
-                    <DialogContent sx={{ padding: "24px" }}>
+                    <DialogContent sx={{ padding: '24px' }}>
                         <Box display="flex" gap={3}>
                             {/* Cột trái - Avatar và thông tin cơ bản */}
                             <Box flex={1}>
                                 {selectedUser.userAvatar ? (
-                                    <Box
+                                    <Box 
                                         sx={{
-                                            width: "200px",
-                                            height: "200px",
-                                            margin: "0 auto 20px",
-                                            position: "relative",
-                                            "& img": {
-                                                width: "100%",
-                                                height: "100%",
-                                                borderRadius: "50%",
-                                                objectFit: "cover",
-                                                border: "3px solid #e0e0e0",
-                                            },
+                                            width: '200px',
+                                            height: '200px',
+                                            margin: '0 auto 20px',
+                                            position: 'relative',
+                                            '& img': {
+                                                width: '100%',
+                                                height: '100%',
+                                                borderRadius: '50%',
+                                                objectFit: 'cover',
+                                                border: '3px solid #e0e0e0'
+                                            }
                                         }}
                                     >
-                                        <img
-                                            src={`${API_URL}/${selectedUser.Avatar.replace(
-                                                /\\/g,
-                                                "/"
-                                            )}`}
+                                        <img 
+                                            src={`${API_URL}/${selectedUser.userAvatar.replace(/\\/g, '/')}`}
                                             alt={selectedUser.name}
                                         />
                                     </Box>
                                 ) : (
-                                    <Box
+                                    <Box 
                                         sx={{
-                                            width: "200px",
-                                            height: "200px",
-                                            backgroundColor: "#f5f5f5",
-                                            borderRadius: "50%",
-                                            display: "flex",
-                                            alignItems: "center",
-                                            justifyContent: "center",
-                                            margin: "0 auto 20px",
-                                            border: "3px solid #e0e0e0",
+                                            width: '200px',
+                                            height: '200px',
+                                            backgroundColor: '#f5f5f5',
+                                            borderRadius: '50%',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            margin: '0 auto 20px',
+                                            border: '3px solid #e0e0e0'
                                         }}
                                     >
-                                        <Typography
-                                            variant="h2"
-                                            color="primary"
-                                        >
-                                            {selectedUser.name
-                                                .charAt(0)
-                                                .toUpperCase()}
+                                        <Typography variant="h2" color="primary">
+                                            {selectedUser.name.charAt(0).toUpperCase()}
                                         </Typography>
                                     </Box>
                                 )}
 
-                                <Box
-                                    sx={{
-                                        backgroundColor: "#f8f9fa",
+                                <Box 
+                                    sx={{ 
+                                        backgroundColor: '#f8f9fa',
                                         padding: 2,
                                         borderRadius: 1,
-                                        textAlign: "center",
+                                        textAlign: 'center'
                                     }}
                                 >
-                                    <Typography
-                                        variant="h6"
-                                        color="primary"
-                                        gutterBottom
-                                    >
+                                    <Typography variant="h6" color="primary" gutterBottom>
                                         {selectedUser.name}
                                     </Typography>
-                                    <Typography
-                                        color="text.secondary"
-                                        gutterBottom
-                                    >
+                                    <Typography color="text.secondary" gutterBottom>
                                         @{selectedUser.accountName}
                                     </Typography>
-                                    <Typography
-                                        variant="caption"
-                                        sx={{
-                                            backgroundColor: "#e3f2fd",
-                                            padding: "4px 8px",
-                                            borderRadius: "4px",
-                                            color: "#1976d2",
+                                    <Typography 
+                                        variant="caption" 
+                                        sx={{ 
+                                            backgroundColor: '#e3f2fd',
+                                            padding: '4px 8px',
+                                            borderRadius: '4px',
+                                            color: '#1976d2'
                                         }}
                                     >
                                         ID: {selectedUser.id}
@@ -373,48 +335,42 @@ const UserManagement = () => {
 
                             {/* Cột phải - Thông tin chi tiết */}
                             <Box flex={1.5}>
-                                <Box
-                                    sx={{
-                                        display: "grid",
+                                <Box 
+                                    sx={{ 
+                                        display: 'grid',
                                         gap: 2,
-                                        "& .info-item": {
-                                            backgroundColor: "#f8f9fa",
+                                        '& .info-item': {
+                                            backgroundColor: '#f8f9fa',
                                             padding: 2,
                                             borderRadius: 1,
-                                            display: "flex",
-                                            flexDirection: "column",
-                                            gap: 0.5,
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            gap: 0.5
                                         },
-                                        "& .label": {
-                                            color: "#666",
-                                            fontSize: "0.875rem",
-                                            fontWeight: 500,
+                                        '& .label': {
+                                            color: '#666',
+                                            fontSize: '0.875rem',
+                                            fontWeight: 500
                                         },
-                                        "& .value": {
-                                            fontSize: "1rem",
-                                            fontWeight: 400,
-                                        },
+                                        '& .value': {
+                                            fontSize: '1rem',
+                                            fontWeight: 400
+                                        }
                                     }}
                                 >
+                                  
+
                                     <Box className="info-item">
-                                        <Typography className="label">
-                                            Ngày sinh
-                                        </Typography>
+                                        <Typography className="label">Ngày sinh</Typography>
                                         <Typography className="value">
-                                            {new Date(
-                                                selectedUser.dayOfBirth
-                                            ).toLocaleDateString("vi-VN")}
+                                            {new Date(selectedUser.dayOfBirth).toLocaleDateString('vi-VN')}
                                         </Typography>
                                     </Box>
 
-                                    {/* <Box className="info-item">
-                                        <Typography className="label">
-                                            Giới tính
-                                        </Typography>
-                                        <Typography className="value">
-                                            {selectedUser.gender}
-                                        </Typography>
-                                    </Box> */}
+                                    <Box className="info-item">
+                                        <Typography className="label">Giới tính</Typography>
+                                        <Typography className="value">{selectedUser.gender}</Typography>
+                                    </Box>
 
                                     <Box className="info-item">
                                     <Typography className="label">Email</Typography>
@@ -422,21 +378,13 @@ const UserManagement = () => {
                                     </Box>
 
                                     <Box className="info-item">
-                                        <Typography className="label">
-                                            Số điện thoại
-                                        </Typography>
-                                        <Typography className="value">
-                                            {selectedUser.phone || "Không có"}
-                                        </Typography>
+                                        <Typography className="label">Số điện thoại</Typography>
+                                        <Typography className="value">{selectedUser.phone}</Typography>
                                     </Box>
 
                                     <Box className="info-item">
-                                        <Typography className="label">
-                                            Địa chỉ giao hàng
-                                        </Typography>
-                                        <Typography className="value">
-                                            {selectedUser.address}
-                                        </Typography>
+                                        <Typography className="label">Địa chỉ giao hàng</Typography>
+                                        <Typography className="value">{selectedUser.address}</Typography>
                                     </Box>
                                 </Box>
                             </Box>
