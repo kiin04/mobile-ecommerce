@@ -41,4 +41,31 @@ create table Comments(
 	created_at DATETIME DEFAULT GETDATE(),
     updated_at DATETIME DEFAULT GETDATE()
 );
+
+
+-- update 04/03/2025
+alter table Promotion
+add code VARCHAR(10) NULL;
 GO
+
+alter table Promotion
+add minPrice  DECIMAL(18, 2) NULL;
+GO
+
+alter table colorSizes
+add code VARCHAR(10);
+GO
+
+Update  ColorSizes
+set code = '#000000';
+GO
+
+-- update 06/03/2025
+update Products set start_rate = 0
+
+
+-- update 07/03/2025
+ALTER TABLE Users 
+ADD Email NVARCHAR(255);
+
+

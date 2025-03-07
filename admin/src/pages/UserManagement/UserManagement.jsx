@@ -16,7 +16,7 @@ import {
     IconButton,
     Pagination,
 } from "@mui/material";
-import { Delete, Visibility } from "@mui/icons-material";
+import { Delete, Visibility, } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 
 import apiConfigInstance from '../../../SingletonParttern.js';
@@ -30,13 +30,27 @@ const UserManagement = () => {
     const [users, setUsers] = useState([]);
     const [roles, setRoles] = useState([]);
     const [page, setPage] = useState(1);
+    const [accounts, setAccounts] = useState([]);
+   
     const [rowsPerPage, setRowsPerPage] = useState(10);
 
     useEffect(() => {
+
+        const fetchRole = async () => {
+            try {
+                const response = await axios.get(`${API_URL}/api/Roles`);
+                console.log('role res',response);
+                if (response.status === 200) {
+                    setAccounts(response.data);
+                }
+            } catch (error) {
+                console.error("Lỗi khi lấy danh sách tài khoản:", error);
+            }
+        };
+
         const fetchUsers = async () => {
             try {
                 const response = await axios.get(`${API_URL}/api/Users`);
-                console.log(response);
                 if (response.status === 200) {
                     const data = response.data
                     setUsers(data);
@@ -47,31 +61,41 @@ const UserManagement = () => {
                 console.error("Error fetching users:", error);
             }
         };
-        const fetchRole = async () => {
+
+        const fetchAccounts = async () => {
             try {
-                const response = await axios.get(`${API_URL}/api/Roles`);
-                console.log('role res',response);
+                const response = await axios.get(`${API_URL}/api/Accounts`);
                 if (response.status === 200) {
-                    const data = response.data
-                    setRoles(data);
-                } else {
-                    console.error(`Failed to fetch users: ${response.status} ${response.statusText}`);
+                    setAccounts(response.data);
                 }
             } catch (error) {
-                console.error("Error fetching users:", error);
+                console.error("Lỗi khi lấy danh sách tài khoản:", error);
             }
         };
+
         fetchRole();
         fetchUsers();
+        fetchAccounts();
     }, []);
 
+       
+
     const handleViewDetails = (user) => {
-        setSelectedUser(user);
+        setSelectedUser({
+            ...user,
+            email: user.email || "Không có email", // Lấy email từ user (đã được kết hợp từ fetchAccounts)
+        });
+    
+
+    
+    
     };
 
     const handleCloseDialog = () => {
         setSelectedUser(null);
     };
+
+  
 
     const handleDeleteUser = async (userId) => {
         try {
@@ -91,14 +115,25 @@ const UserManagement = () => {
         }
     };
 
-    const handleAddUser = () => {
+    const handleAddAccount = async (e) => {
         navigate("/add-user");
+        e.preventDefault();
+       
     };
-
-    const filteredUsers = users.filter(
-        (user) =>
-            user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            user.id.includes(searchTerm)
+    const filteredUsers = users
+    .map(user => {
+        const account = accounts.find(acc => acc.userId === user.id);
+        return {
+            ...user,
+            email: account?.email || user.email || "Không có email",
+        password: account?.password || "Không có mật khẩu",
+        };
+        
+    })
+    .filter(user =>
+        user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.id?.toString().includes(searchTerm) ||
+        user.email?.toLowerCase().includes(searchTerm.toLowerCase()) // Cho phép tìm kiếm theo email
     );
 
     // Tính toán số trang và dữ liệu hiển thị
@@ -120,6 +155,7 @@ const UserManagement = () => {
             <Typography variant="h4" gutterBottom>
                 Quản lý người dùng
             </Typography>
+            
 
             <TextField
                 label="Tìm kiếm người dùng"
@@ -134,7 +170,7 @@ const UserManagement = () => {
             />
 
             <Box marginY={2}>
-                <Button variant="contained" color="primary" onClick={handleAddUser}>
+                <Button variant="contained" color="primary" onClick={handleAddAccount}>
                     Thêm người dùng
                 </Button>
             </Box>
@@ -145,7 +181,9 @@ const UserManagement = () => {
                         <TableRow>
                             <TableCell>ID</TableCell>
                             <TableCell>Họ tên</TableCell>
-                            <TableCell>Số điện thoại liên lạc</TableCell>
+                            <TableCell>Email</TableCell>
+                            
+                            <TableCell>Số điện thoại liên lạc</TableCell> {/* Luôn hiển thị cột này */}
                             <TableCell>Địa chỉ giao hàng</TableCell>
                             <TableCell>Quyền truy cập</TableCell>
                             <TableCell>Hành động</TableCell>
@@ -156,7 +194,9 @@ const UserManagement = () => {
                             <TableRow key={user.id}>
                                 <TableCell>{user.id}</TableCell>
                                 <TableCell>{user.name}</TableCell>
-                                <TableCell>{user.phone}</TableCell>
+                                <TableCell>{user.email}</TableCell>
+                          
+                                <TableCell>{user.phone || "Không có"}</TableCell> {/* Hiển thị "Không có" nếu phone là null hoặc undefined */}
                                 <TableCell>{user.address}</TableCell>
                                 <TableCell>{getRoleNameById(user.role)}</TableCell>
                                 <TableCell>
@@ -333,8 +373,8 @@ const UserManagement = () => {
                                     </Box>
 
                                     <Box className="info-item">
-                                        <Typography className="label">Email</Typography>
-                                        <Typography className="value">{selectedUser.email}</Typography>
+                                    <Typography className="label">Email</Typography>
+                                    <Typography className="value">{selectedUser.email}</Typography>
                                     </Box>
 
                                     <Box className="info-item">
