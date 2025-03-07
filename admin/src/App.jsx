@@ -13,6 +13,7 @@ import EditProduct from './pages/ProductManagement/EditProduct.jsx';
 import AddOrder from './pages/OrderManagement/AddOrder.jsx';
 import EditOrder from './pages/OrderManagement/EditOrder.jsx';
 import VoucherManagement from './pages/VoucherManagement/VoucherManagement.jsx';
+import CategoryManager from './pages/CategoryManager/CategoryManager.jsx';
 import AddVoucher from './pages/VoucherManagement/AddVoucher.jsx';
 import EditVoucher from './pages/VoucherManagement/EditVoucher.jsx';
 import AddUser from './pages/UserManagement/AddUser.jsx';
@@ -22,14 +23,18 @@ import EditKho from './pages/KhoManagement/EditKho.jsx';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import './index.css';
-import CategoryManager from './pages/CategoryManager/CategoryManager.jsx';
 
 function App() {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("userId"));
     const [selectedContent, setSelectedContent] = useState('dashboard');
 
     const handleLoginSuccess = () => {
         setIsLoggedIn(true);
+    };
+
+    const handleLogout = () => {
+        localStorage.removeItem("userId");
+        setIsLoggedIn(false); // Reset login state
     };
 
     const handleSidebarNavigation = (content) => {
@@ -49,7 +54,7 @@ function App() {
             <div className="container-fluid flex-grow-1">
             <div className="row">
                 <nav className="col-md-3 col-lg-2 d-md-block bg-light sidebar">
-                <Sidebar selectedContent={selectedContent} onNavigate={handleSidebarNavigation} />
+                <Sidebar selectedContent={selectedContent} onNavigate={handleSidebarNavigation} onLogout={handleLogout} />
                 </nav>
                 <main className="col-md-9 ms-sm-auto col-lg-10 px-md-4">
                 <div className="main-content">

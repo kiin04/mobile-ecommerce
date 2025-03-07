@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./styles/AdminLogin.css";
+import { message } from "antd";
 import { API_URL } from "./config";
 import axios from "axios";
 // eslint-disable-next-line react/prop-types
@@ -8,29 +9,75 @@ const AdminLogin = ({ onLoginSuccess }) => {
     const [password, setPassword] = useState("");
     const [loginError, setLoginError] = useState("");
 
-     // Gửi request login
-    
+    // Gửi request login
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         setLoginError("");
 
         try {
+            const loginResponse = await axios.post(
+                `${API_URL}/api/Accounts/login`,
+                {
+                    email,
+                    password,
+                }
+            );
 
-            const response = await axios.post(`${API_URL}/api/Accounts/login`, {
-                email,
-                password,
-            })
-            console.log('response login',response.data);
-            if (response.data) {
-                alert("Đăng nhập thành công!");
-                onLoginSuccess();
-            } else {
-                setLoginError( "Đăng nhập không thành công");
+            const userId = loginResponse.data;
+            if (!userId) {
+                setLoginError(
+                    "Đăng nhập thất bại: Không nhận được dữ liệu từ server!"
+                );
+                return;
             }
-        } catch (err) {
-            setLoginError("Lỗi server");
-            console.error(err);
+
+            try {
+                const userResponse = await axios.get(
+                    `${API_URL}/api/Users/${userId}`
+                );
+                const user = userResponse.data;
+
+                if (user.role === 2) {
+                    message.success("Đăng nhập thành công!");
+                    onLoginSuccess();
+                } else {
+                    setLoginError("Bạn không có quyền truy cập vào hệ thống!");
+                }
+            } catch (userError) {
+                console.error("Error fetching user details:", userError);
+                if (userError.response) {
+                    setLoginError(
+                        "Không thể lấy thông tin người dùng từ server!"
+                    );
+                } else if (userError.request) {
+                    setLoginError("Lỗi mạng: Không thể kết nối đến server!");
+                } else {
+                    setLoginError(
+                        "Lỗi không xác định khi lấy thông tin người dùng!"
+                    );
+                }
+            }
+        } catch (loginError) {
+            console.error("Login error:", loginError);
+
+            if (loginError.response) {
+                const status = loginError.response.status;
+                if (status === 401 || status === 400) {
+                    setLoginError("Email hoặc mật khẩu không chính xác!");
+                } else {
+                    setLoginError(
+                        `Lỗi server: ${
+                            loginError.response.data?.message ||
+                            "Không xác định"
+                        }`
+                    );
+                }
+            } else if (loginError.request) {
+                setLoginError("Lỗi mạng: Không thể kết nối đến server!");
+            } else {
+                setLoginError("Có lỗi xảy ra khi đăng nhập!");
+            }
         }
     };
 

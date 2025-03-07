@@ -18,7 +18,6 @@ namespace WebAPI.Controllers
         {
             _CartRepository = RepositoryFactory.CreateRepository<Cart>(context);
             _cartService = cartService;
-           
         }
 
         // GET: api/Carts
@@ -100,10 +99,22 @@ namespace WebAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCart(int id)
         {
-           
             try
             {
                 await _CartRepository.DeleteAsync(id);
+                return NoContent();
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+        }
+        [HttpDelete("ByUser/{id}")]
+        public async Task<IActionResult> DeleteAllCart(int id)
+        {
+            try
+            {
+                await _cartService.DeleteAllByUser(id);
                 return NoContent();
             }
             catch (KeyNotFoundException ex)

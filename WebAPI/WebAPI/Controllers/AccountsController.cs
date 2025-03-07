@@ -28,27 +28,27 @@ namespace WebAPI.Controllers
             return Ok(await _accountRepository.GetAllAsync());
         }
 
-        // GET: api/Account/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Account>> GetAccount(int id)
-        {
-            try
-            {
-                var Account = await _accountRepository.GetByIdAsync(id);
-                return Ok(Account);
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(new { message = ex.Message });
-            }
-        }
-        // GET: api/User/CheckUser/1
-        [HttpGet("CheckUser/{id}")]
-        public async Task<ActionResult<Account>> CheckUser(int id)
-        {
-            try
-            {  
-                var user = await _accountService.CheckUserAsync(id);
+                // GET: api/Account/5
+                [HttpGet("{id}")]
+                public async Task<ActionResult<Account>> GetAccount(int id)
+                {
+                    try
+                    {
+                        var Account = await _accountRepository.GetByIdAsync(id);
+                        return Ok(Account);
+                    }
+                    catch (KeyNotFoundException ex)
+                    {
+                        return NotFound(new { message = ex.Message });
+                    }
+                }
+                // GET: api/Users/CheckUser/1
+                [HttpGet("CheckUser/{id}")]
+                public async Task<ActionResult<Account>> CheckUser(int id)
+                {
+                    try
+                    {  
+                        var user = await _accountService.CheckUserAsync(id);
 
                 return Ok(user);
             }

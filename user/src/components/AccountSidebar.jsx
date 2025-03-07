@@ -5,9 +5,9 @@ const Sidebar = () => {
     const location = useLocation(); // Get the current location
 
     const handleLogout = () => {
-        sessionStorage.removeItem("userEmail"); // Clear the user email
-        sessionStorage.removeItem("userId"); // Clear the user id if stored
-        sessionStorage.removeItem("accountName");
+        localStorage.removeItem("userEmail"); // Clear the user email
+        localStorage.removeItem("userId"); // Clear the user id if stored
+        localStorage.removeItem("accountName");
     };
 
     return (

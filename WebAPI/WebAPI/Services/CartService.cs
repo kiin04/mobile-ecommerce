@@ -20,5 +20,16 @@ namespace WebAPI.Services
 
             return carts;
         }
+
+        public async Task DeleteAllByUser(int id)
+        {
+            var carts = await _context.Carts.Where(cart => cart.UserId == id).ToListAsync();
+            if (carts == null || !carts.Any())
+            {
+                throw new KeyNotFoundException($"No orders found for User with ID: {id}");
+            }
+
+            await _context.Carts.Where(cart => cart.UserId == id).ExecuteDeleteAsync();
+        }
     }
 }

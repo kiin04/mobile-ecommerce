@@ -12,14 +12,16 @@ const ProductDetails = () => {
     const dispatch = useDispatch();
     const { productId } = useParams();
     const [product, setProduct] = useState(null);
-    const [colorSizes, setColorSizes] = useState(null);
     const [details, setDetails] = useState(null);
     const [quantity, setQuantity] = useState(1);
     const [error, setError] = useState("");
     const user = useSelector((state) => state.user);
     const userId = user?.id;
-    console.log("user", user);
+    
+    const [colorSizes, setColorSizes] = useState(null);
     const [availableColors, setAvailableColors] = useState([]);
+    const [availableSizes, setAvailableSizes] = useState([]);
+    const [chooseColor, setChooseColor] = useState("");
     const [selectedColor, setSelectedColor] = useState("");
 
     useEffect(() => {
@@ -47,9 +49,23 @@ const ProductDetails = () => {
                 const response = await fetch(
                     `${API_URL}/api/ColorSizes/ProductColorSize/${productId}`
                 );
-
+        
                 if (response.ok) {
                     const data = await response.json();
+             
+                    // Lọc danh sách các màu có quantity > 0
+                    const colorsWithQuantity = data.filter((item) => item.quantity > 0);
+        
+                    // Nhóm các màu duy nhất
+                    const colors = [...new Set(colorsWithQuantity.map((item) => item.code))];
+                    // set  lưu các giá trị duy nhất 
+                    setAvailableColors(
+                        colors.map((code) => ({
+                            code,
+                            items: colorsWithQuantity.filter((item) => item.code === code),
+                        }))
+                    );
+        
                     setColorSizes(data);
                 } else {
                     throw new Error("Failed to fetch product");
@@ -57,10 +73,9 @@ const ProductDetails = () => {
             } catch (error) {
                 console.error("Error fetching product:", error);
                 setError("Failed to load product data. Please try again.");
-            } finally {
-                //
             }
         };
+        
         const fetchDetails = async () => {
             try {
                 const response = await fetch(
@@ -87,16 +102,14 @@ const ProductDetails = () => {
         fetchDetails();
     }, [productId]);
 
-    useEffect(() => {
-        if (colorSizes) {
-            setAvailableColors(colorSizes.filter((item) => item.quantity > 0));
-        }
-    }, [colorSizes]);
+  
+    const handleColorClick = (colorGroup) => {
+        setAvailableSizes(colorGroup.items);
+        setChooseColor(colorGroup.code);
+    };
 
-    const handelChangeColorSize = (colorSizeId) => {
-        setSelectedColor(
-            availableColors.find((item) => item.id === colorSizeId)
-        );
+    const handleSizeClick = (id) => {
+        setSelectedColor  (colorSizes.find((item) => item.id === id));
     };
 
     const getStock = () => {
@@ -323,6 +336,7 @@ const ProductDetails = () => {
                             className="w-full h-auto rounded-lg shadow-md mb-4"
                             id="mainImage"
                         />
+                        {/* sub image */}
                         {/* <div className="flex gap-4 py-4 justify-center overflow-x-auto">
                             <img
                                 src="https://images.unsplash.com/photo-1505751171710-1f6d0ace5a85?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0NzEyNjZ8MHwxfHNlYXJjaHwxMnx8aGVhZHBob25lfGVufDB8MHx8fDE3MjEzMDM2OTB8MA&ixlib=rb-4.0.3&q=80&w=1080"
@@ -402,14 +416,7 @@ const ProductDetails = () => {
                             {product.description}
                         </p>
 
-                        {/* <div className="mb-6">
-                            <h3 className="text-lg font-semibold mb-2">Màu:</h3>
-                            <div className="flex space-x-2">
-                                <button className="w-8 h-8 bg-black rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black"></button>
-                                <button className="w-8 h-8 bg-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300"></button>
-                                <button className="w-8 h-8 bg-blue-500 rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"></button>
-                            </div>
-                        </div> */}
+             
 
                         {/* Color Selection */}
                         {availableColors.length > 0 && (
@@ -420,27 +427,40 @@ const ProductDetails = () => {
                                 >
                                     Màu:
                                 </label>
-                                <Select
-                                    size="large"
-                                    id="color"
-                                    value={
-                                        selectedColor ? selectedColor.id : ""
-                                    }
-                                    onChange={(value) => {
-                                        handelChangeColorSize(value);
-                                    }}
-                                    className="w-40 rounded-lg focus:outline-none"
-                                >
-                                    {availableColors.map((colorOption) => (
-                                        <Select.Option
-                                            key={colorOption.id}
-                                            value={colorOption.id}
+
+                                <div className="flex space-x-5">
+                                    {availableColors.map((colorGroup, index) => (
+                                        <button
+                                            key={index}
+                                            className={`w-9 h-9 rounded-full cursor-pointer border ${
+                                                chooseColor === colorGroup.code
+                                                ? "ring-1  ring-blue-500 "
+                                                : "border-gray-300"
+                                            }`}
+                                            style={{ backgroundColor: colorGroup.code }}
+                                            onClick={() => handleColorClick(colorGroup)}
                                         >
-                                            {colorOption.color} -{" "}
-                                            {colorOption.size}
-                                        </Select.Option>
+                                        </button>
                                     ))}
-                                </Select>
+                                </div>
+                               
+                                {availableSizes.length > 0 && (
+                                    <div className="flex gap-2 mt-4">
+                                        {availableSizes.map((size) => (
+                                            <div
+                                                key={size.id}
+                                                className={`p-2 h-9 border rounded cursor-pointer ${
+                                                    selectedColor?.id === size.id
+                                                        ? "bg-yellow-500 text-white border-yellow-600"
+                                                        : "hover:bg-yellow-500 hover:text-white"
+                                                }`}
+                                                onClick={() => handleSizeClick(size.id)}
+                                            >
+                                                {size.size}
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}     
                             </div>
                         )}
 
@@ -572,149 +592,7 @@ const ProductDetails = () => {
             </script>
         </div>
 
-        // <div className="flex flex-col items-center justify-center min-h-screen p-5 bg-gray-100">
-        //     <div className="flex flex-col md:flex-row bg-white rounded-lg shadow-md w-full max-w-6xl overflow-hidden">
-        //         {/* Image Section */}
-        //         <div className="w-full md:w-1/3 p-4">
-        //             <img
-        //                 src={`${API_URL}/${product.image}`}
-        //                 alt={product.name}
-        //                 className="w-full h-auto object-cover rounded-lg border border-gray-300"
-        //             />
-        //         </div>
-
-        //         {/* Description Section */}
-        //         <div className="flex-1 p-4">
-        //             <h1 className="text-2xl font-bold text-gray-800 mb-2">
-        //                 {product.name}
-        //             </h1>
-        //             <p className="text-xl text-gray-700 mb-2">
-        //                 Giá:{" "}
-        //                 <span className="font-semibold">
-        //                     {product.price.toLocaleString()} VND
-        //                 </span>
-        //             </p>
-        //             <p className="text-md text-gray-600 mb-4">
-        //                 Mô tả: {product.description}
-        //             </p>
-
-        //             {/* Show how many items are left in stock */}
-        //             <p className="text-md text-gray-600 mb-4">
-        //                 Trạng thái:{" "}
-        //                 <span
-        //                     className={
-        //                         product.quantity > 0
-        //                             ? "text-green-600"
-        //                             : "text-red-600"
-        //                     }
-        //                 >
-        //                     {product.quantity > 0
-        //                         ? `${product.quantity} sản phẩm còn lại`
-        //                         : "Hết hàng"}
-        //                 </span>
-        //             </p>
-        //             {/* Color Selection */}
-        //             {availableColors.length > 1 && (
-        //                 <div className="mt-4">
-        //                     <label
-        //                         htmlFor="color"
-        //                         className="text-lg font-semibold mr-2"
-        //                     >
-        //                         Màu sắc:
-        //                     </label>
-        //                     <select
-        //                         id="color"
-        //                         value={selectedColor}
-        //                         onChange={(e) => {
-        //                             const newColorId = e.target.value;
-        //                             setSelectedColor(newColorId); // Update selected color
-        //                             const newProduct = availableColors.find(
-        //                                 (color) => color.id === newColorId
-        //                             );
-        //                             if (newProduct) {
-        //                                 window.location.href = `/product/${newProduct.id}`; // Redirect to the new product
-        //                             }
-        //                         }}
-        //                         className="w-32 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-        //                     >
-        //                         {availableColors.map((colorOption) => (
-        //                             <option
-        //                                 key={colorOption.id}
-        //                                 value={colorOption.id}
-        //                             >
-        //                                 {colorOption.color}
-        //                             </option>
-        //                         ))}
-        //                     </select>
-        //                 </div>
-        //             )}
-
-        //             {/* Quantity Selection */}
-        //             {product.quantity > 0 && (
-        //                 <div className="mt-4 flex items-center">
-        //                     <label
-        //                         htmlFor="quantity"
-        //                         className="text-lg font-semibold mr-2"
-        //                     >
-        //                         Số lượng:
-        //                     </label>
-        //                     <input
-        //                         type="number"
-        //                         id="quantity"
-        //                         min="1"
-        //                         max={product.quantity}
-        //                         value={quantity}
-        //                         onChange={handleQuantityChange}
-        //                         className="w-16 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-        //                     />
-        //                     <button
-        //                         className={`ml-4 py-2 px-4 rounded-md transition-colors duration-200 bg-primary text-white hover:bg-red-600`}
-        //                         onClick={handleBuyNow}
-        //                         // disabled={!userId}
-        //                     >
-        //                         {/* {userId
-        //                             ? "Thêm vào giỏ hàng"
-        //                             : "Vui lòng đăng nhập"} */}
-        //                         Thêm vào giỏ hàng
-        //                     </button>
-        //                 </div>
-        //             )}
-
-        //             {error && <p className="text-red-500 mt-2">{error}</p>}
-        //         </div>
-        //     </div>
-
-        //     {/* Specifications Section */}
-        //     <div className="mt-6 w-full max-w-6xl">
-        //         <h2 className="text-lg font-semibold text-gray-800 mb-2">
-        //             Thông số kỹ thuật:
-        //         </h2>
-        //         <table className="min-w-full border border-gray-300 table-auto">
-        //             <thead>
-        //                 <tr className="bg-gray-200">
-        //                     <th className="border border-gray-300 px-4 py-2 text-left">
-        //                         Thông số
-        //                     </th>
-        //                     <th className="border border-gray-300 px-4 py-2 text-left">
-        //                         Chi tiết
-        //                     </th>
-        //                 </tr>
-        //             </thead>
-        //             <tbody className="text-gray-600">
-        //                 {tableData.map((item, index) => (
-        //                     <tr key={index}>
-        //                         <td className="border border-gray-300 px-4 py-2">
-        //                             <strong>{item.key}</strong>
-        //                         </td>
-        //                         <td className="border border-gray-300 px-4 py-2">
-        //                             {item.value || "Không có thông tin"}
-        //                         </td>
-        //                     </tr>
-        //                 ))}
-        //             </tbody>
-        //         </table>
-        //     </div>
-        // </div>
+        
     );
 };
 

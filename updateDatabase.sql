@@ -28,10 +28,12 @@ GO
 ALTER TABLE [Users]
 ALTER COLUMN image VARBINARY(MAX) NULL;
 GO
+
 -- update 03/03/2025
 alter table Products
-add start_rate INT NULL
+add start_rate INT NULL;
 GO
+
 create table Comments(
 	id INT PRIMARY KEY IDENTITY(1,1),
     userID NVARCHAR(255) NOT NULL,
@@ -62,6 +64,7 @@ GO
 
 -- update 06/03/2025
 update Products set start_rate = 0
+<<<<<<< HEAD
 
 
 -- update 07/03/2025
@@ -69,3 +72,5 @@ ALTER TABLE Users
 ADD Email NVARCHAR(255);
 
 
+=======
+>>>>>>> 270bebc2687741bc04c04976bfad5ee1a3663cd4

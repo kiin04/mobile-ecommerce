@@ -74,10 +74,7 @@ const Profile = () => {
     useEffect(() => {
         setUserData(user)
     }, [user, dispatch]);
-    useEffect(() => {
-      console.log('userData',userData);
-    }, [userData]);
-
+   
     const handleEditToggle = () => {
         setIsEditing(!isEditing);
         if (!isEditing) {
@@ -124,10 +121,10 @@ const Profile = () => {
             hasErrors = true;
         }
 
-        if (!validateAge(userData.dayOfBirth)) {
-            newErrors.dayOfBirth = "Bạn phải đủ 18 tuổi";
-            hasErrors = true;
-        }
+        // if (!validateAge(userData.dayOfBirth)) {
+        //     newErrors.dayOfBirth = "Bạn phải đủ 18 tuổi";
+        //     hasErrors = true;
+        // }
 
         // Validate password if changing
         if (passwordData.newPassword) {
@@ -148,42 +145,48 @@ const Profile = () => {
             return;
         }
 
-        const userId = sessionStorage.getItem("userId");
+        const userId = localStorage.getItem("userId");
 
         const formData = new FormData(); // Create FormData to handle file uploads
         formData.append("name", userData.name);
-        formData.append("email", userData.email);
+        //formData.append("email", userData.email);
         formData.append("phone", userData.phone);
-        formData.append("dayOfBirth", userData.dayOfBirth);
-        formData.append("gender", userData.gender);
+        //formData.append("dayOfBirth", userData.dayOfBirth);
+        //formData.append("gender", userData.gender);
         formData.append("address", userData.address);
-        formData.append("accountName", userData.accountName);
+        formData.append("account", user.account);
+        formData.append("totalBuy", user.totalBuy);
+        formData.append("role", user.role);
+        formData.append("createdAt", userData.createdAt);
+        
+        if (userAvatar) {
+            formData.append("image", userAvatar); // Append the avatar file
+        }
         console.log([...formData]); // Log FormData entries
 
-        if (userAvatar) {
-            formData.append("avatar", userAvatar); // Append the avatar file
-        }
-        console.log(userAvatar);
 
-        if (passwordData.newPassword) {
-            if (passwordData.newPassword !== passwordData.confirmNewPassword) {
-                setPasswordError("Mật khẩu mới không khớp");
-                return;
-            }
-            formData.append("currentPassword", passwordData.currentPassword);
-            formData.append("newPassword", passwordData.newPassword);
-        }
+        // if (passwordData.newPassword) {
+        //     if (passwordData.newPassword !== passwordData.confirmNewPassword) {
+        //         setPasswordError("Mật khẩu mới không khớp");
+        //         return;
+        //     }
+        //     formData.append("currentPassword", passwordData.currentPassword);
+        //     formData.append("newPassword", passwordData.newPassword);
+        // }
 
         try {
-            const response = await fetch(`${API_URL}/api/users/${userId}`, {
+            const response = await fetch(`${API_URL}/api/Users/${userId}`, {
                 method: "PUT",
                 body: formData,
             });
 
-            const data = await response.json();
+           
+            console.log('data update user:', response);
             if (response.ok) {
+                dispatch(setUser({
+                    ...userData,
+                }));
                 setIsEditing(false);
-                
                 setUserAvatar(null); // Reset userAvatar after successful update
                 setAvatarPreview(null); // Reset avatar preview after successful update
                 if (passwordData.newPassword) {
@@ -204,11 +207,12 @@ const Profile = () => {
                 }, 3000);
             } else {
                 setUpdateError(
-                    data.message || "Lỗi cập nhật thông tin người dùng"
+                    "Lỗi cập nhật thông tin người dùng"
                 );
             }
         } catch (error) {
             setUpdateError("Lỗi kết nối server");
+            console.log(error);
         }
     };
 
@@ -285,23 +289,22 @@ const Profile = () => {
                                                     } // Update avatar and preview
                                                     className="border rounded-lg p-2"
                                                 />
-                                                {avatarPreview && (
+                                                {avatarPreview ? (
                                                     <img
                                                         src={avatarPreview}
                                                         alt="Avatar Preview"
                                                         className="w-16 h-16 rounded-full object-cover" // object-cover to maintain aspect ratio
                                                     />
-                                                )}
+                                                ) : <img
+                                                src={ `data:image/jpeg;base64,${user?.image}`}
+                                                alt="Avatar Preview"
+                                                className="w-16 h-16 rounded-full object-cover" // object-cover to maintain aspect ratio
+                                            /> }
                                             </>
                                         ) : (
                                             <img
                                                 src={
-                                                    userData.userAvatar
-                                                        ? `${API_URL}/${userData.userAvatar.replace(
-                                                              /\\/g,
-                                                              "/"
-                                                          )}`
-                                                        : "/default-avatar.png"
+                                                     `data:image/jpeg;base64,${user?.image}`
                                                 }
                                                 alt="User Avatar"
                                                 className="w-16 h-16 rounded-full object-cover"
@@ -427,7 +430,7 @@ const Profile = () => {
                                     </div>
                                 </div>
 
-                                <div className="flex justify-between items-start">
+                                {/* <div className="flex justify-between items-start">
                                     <label className="font-medium">
                                         Ngày sinh:
                                     </label>
@@ -464,9 +467,9 @@ const Profile = () => {
                                             <p>{userData.dayOfBirth}</p>
                                         )}
                                     </div>
-                                </div>
+                                </div> */}
 
-                                <div className="flex justify-between items-start">
+                                {/* <div className="flex justify-between items-start">
                                     <label className="font-medium">
                                         Giới tính:
                                     </label>
@@ -501,7 +504,7 @@ const Profile = () => {
                                             <p>{userData.gender}</p>
                                         )}
                                     </div>
-                                </div>
+                                 </div> */}
 
                                 <div className="flex justify-between items-start">
                                     <label className="font-medium">
@@ -533,14 +536,14 @@ const Profile = () => {
                                     </div>
                                 </div>
 
-                                <div className="flex justify-between items-center">
+                                {/* <div className="flex justify-between items-center">
                                     <label className="font-medium">
                                         Tên tài khoản:
                                     </label>
                                     <p className="w-1/2 text-right">
                                         {userData.accountName}
                                     </p>
-                                </div>
+                                </div> */}
 
                                 {/* Cập nhật phần nút */}
                                 <div className="mt-8 flex justify-end space-x-4 border-t pt-4">
