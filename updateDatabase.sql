@@ -37,12 +37,27 @@ GO
 create table Comments(
 	id INT PRIMARY KEY IDENTITY(1,1),
     userID NVARCHAR(255) NOT NULL,
+	product_id  INT ,
     name NVARCHAR(255),
 	start  INT NULL,
-	product_id  INT ,
 	created_at DATETIME DEFAULT GETDATE(),
     updated_at DATETIME DEFAULT GETDATE()
 );
+
+-- update 09/03/2025
+ALTER TABLE Comments
+ADD rating INT NULL;
+
+ALTER TABLE Comments
+ALTER COLUMN userID INT NOT NULL;
+
+ALTER TABLE Comments
+ADD CONSTRAINT FK_Comments_Users FOREIGN KEY (userID) REFERENCES Users(id);
+
+ALTER TABLE Comments
+ADD CONSTRAINT FK_Comments_Products FOREIGN KEY (product_id) REFERENCES Products(id);
+
+EXEC sp_rename 'Comments.start', 'content', 'COLUMN';
 
 
 -- update 04/03/2025
@@ -64,8 +79,3 @@ GO
 
 -- update 06/03/2025
 update Products set start_rate = 0
-
--- update 09/03/2025
-ALTER TABLE Comments
-ADD rating INT NULL;
-EXEC sp_rename 'Comments.start', 'content', 'COLUMN';

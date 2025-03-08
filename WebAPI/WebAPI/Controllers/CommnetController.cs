@@ -56,7 +56,6 @@ namespace WebAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutComment(int id, Comment Comment)
         {
-            
             try
             {
                 Comment.Id = id;
