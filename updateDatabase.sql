@@ -64,3 +64,13 @@ GO
 
 -- update 06/03/2025
 update Products set start_rate = 0
+<<<<<<< HEAD
+
+
+-- update 07/03/2025
+ALTER TABLE Users 
+ADD Email NVARCHAR(255);
+
+
+=======
+>>>>>>> 270bebc2687741bc04c04976bfad5ee1a3663cd4

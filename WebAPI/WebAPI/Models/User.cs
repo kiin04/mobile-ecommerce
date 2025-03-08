@@ -23,5 +23,7 @@ public partial class User : BaseEntity, IHasImage
 
     public int? Account { get; set; }
 
-    
+   public string? Email { get; set; }
+
+   public string? Password { get; set; }
 }
