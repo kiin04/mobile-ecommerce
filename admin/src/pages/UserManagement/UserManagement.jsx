@@ -41,7 +41,7 @@ const UserManagement = () => {
                 const response = await axios.get(`${API_URL}/api/Roles`);
                 console.log('role res',response);
                 if (response.status === 200) {
-                    setAccounts(response.data);
+                    setRoles(response.data);
                 }
             } catch (error) {
                 console.error("Lỗi khi lấy danh sách tài khoản:", error);
@@ -85,8 +85,6 @@ const UserManagement = () => {
             ...user,
             email: user.email || "Không có email", // Lấy email từ user (đã được kết hợp từ fetchAccounts)
         });
-    
-
     
     
     };
@@ -146,10 +144,10 @@ const UserManagement = () => {
     const handlePageChange = (event, newPage) => {
         setPage(newPage);
     };
-    const getRoleNameById = (id) => {
-        const role = roles.find((r) => r.id === id);
-        return role ? role.name : 'Unknown Role';
-      };
+    const getRoleNameById = (roleId) => {
+        const role = roles.find((r) => r.id == roleId);
+        return role ? role?.name : 'Unknown Role';
+    };
     return (
         <Box padding={3}>
             <Typography variant="h4" gutterBottom>
@@ -317,7 +315,7 @@ const UserManagement = () => {
                                         {selectedUser.name}
                                     </Typography>
                                     <Typography color="text.secondary" gutterBottom>
-                                        @{selectedUser.accountName}
+                                        Đã chi: {selectedUser.totalBuy} VNĐ
                                     </Typography>
                                     <Typography 
                                         variant="caption" 

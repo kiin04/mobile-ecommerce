@@ -176,8 +176,8 @@ const CategoryManager = () => {
         navigate("/add-product");
     };
 
-    const handleEditCategory = (productId) => {
-        navigate(`/edit-product/${productId}`);
+    const handleEditCategory = (categoryId) => {
+        navigate(`/edit-category/${categoryId}`);
     };
 
     const filteredCategories = categories.filter(
