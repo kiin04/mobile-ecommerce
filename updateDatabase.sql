@@ -64,3 +64,8 @@ GO
 
 -- update 06/03/2025
 update Products set start_rate = 0
+
+-- update 09/03/2025
+ALTER TABLE Comments
+ADD rating INT NULL;
+EXEC sp_rename 'Comments.start', 'content', 'COLUMN';

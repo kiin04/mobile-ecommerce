@@ -218,7 +218,7 @@ const Shop = () => {
                 message: "Lỗi",
                 description: "Vui lòng chọn màu trước khi mua",
                 duration: 4,
-                placement: "bottomRight",
+                placement: "bottomLeft",
                 showProgress: true,
                 pauseOnHover: true,
             });

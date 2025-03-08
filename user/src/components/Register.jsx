@@ -138,7 +138,7 @@ const Register = ({ onRegisterSuccess }) => {
                 //     message: 'Thành công',
                 //     description: 'Đăng ký thành công!',
                 //     duration: 4,
-                //     placement: "bottomRight",
+                //     placement: "bottomLeft",
                 //     pauseOnHover: true
                 // });
                 message.open({
@@ -156,7 +156,7 @@ const Register = ({ onRegisterSuccess }) => {
                 //     message: 'Lỗi',
                 //     description: "Đã xảy ra lỗi trong quá trình đăng ký. Vui lòng thử lại.",
                 //     duration: 4,
-                //     placement: "bottomRight",
+                //     placement: "bottomLeft",
                 //     pauseOnHover: true
                 // })
                 message.open({

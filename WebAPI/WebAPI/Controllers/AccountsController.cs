@@ -21,14 +21,14 @@
                     _accountService = accountService;
                 }
 
-                // GET: api/Account
+                // GET: api/Accounts
                 [HttpGet]
                 public async Task<ActionResult<IEnumerable<Account>>> GetAccount()
                 {
                     return Ok(await _accountRepository.GetAllAsync());
                 }
 
-                // GET: api/Account/5
+                // GET: api/Accounts/5
                 [HttpGet("{id}")]
                 public async Task<ActionResult<Account>> GetAccount(int id)
                 {
@@ -61,7 +61,7 @@
                         return StatusCode(500, new { message = "An error occurred.", details = ex.Message });
                     }
                 }
-                // PUT: api/Account/5
+                // PUT: api/Accounts/5
                 [HttpPut("{id}")]
                 public async Task<IActionResult> PutAccount(int id, Account Account)
                 {
@@ -81,7 +81,7 @@
                     }
                 }
 
-                // POST: api/Account
+                // POST: api/Accounts
                 [HttpPost]
                 public async Task<ActionResult<Account>> PostAccount(Account Account)
                 {
@@ -96,7 +96,7 @@
                     }
                 }
 
-                // DELETE: api/Account/5
+                // DELETE: api/Accounts/5
                 [HttpDelete("{id}")]
                 public async Task<IActionResult> DeleteAccount(int id)
                 {
