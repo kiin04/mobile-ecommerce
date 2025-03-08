@@ -117,7 +117,7 @@ const Hero = () => {
                                             <img
                                                 src={`data:image/jpeg;base64,${product.image}`}
                                                 alt=""
-                                                className="w-[300px] sm:w-[450px] h-[320px] sm:h-[470px] sm:scale-105 lg:scale-110 object-contain mx-auto drop-shadow-[-8px_4px_6px_rgba(0,0,0,.4)] relative z-40"
+                                                className="w-[300px] sm:w-[450px] h-[320px] sm:h-[470px] sm:scale-105 lg:scale-110 object-contain mx-auto  relative z-40"
                                             />
                                         </div>
                                     </div>
