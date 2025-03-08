@@ -39,14 +39,14 @@ create table Comments(
     userID NVARCHAR(255) NOT NULL,
 	product_id  INT ,
     name NVARCHAR(255),
-	start  INT NULL,
+	start INT NULL,
 	created_at DATETIME DEFAULT GETDATE(),
     updated_at DATETIME DEFAULT GETDATE()
 );
 
 -- update 09/03/2025
 ALTER TABLE Comments
-ADD rating INT NULL;
+ADD content NVARCHAR(250) NULL;
 
 ALTER TABLE Comments
 ALTER COLUMN userID INT NOT NULL;
@@ -57,7 +57,7 @@ ADD CONSTRAINT FK_Comments_Users FOREIGN KEY (userID) REFERENCES Users(id);
 ALTER TABLE Comments
 ADD CONSTRAINT FK_Comments_Products FOREIGN KEY (product_id) REFERENCES Products(id);
 
-EXEC sp_rename 'Comments.start', 'content', 'COLUMN';
+EXEC sp_rename 'Comments.start', 'stars', 'COLUMN';
 
 
 -- update 04/03/2025
