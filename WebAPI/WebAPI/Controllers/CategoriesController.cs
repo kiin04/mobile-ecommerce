@@ -14,10 +14,10 @@ namespace WebAPI.Controllers
         private readonly IRepository<Category> _CategoryRepository;
         private CategoriesService _categoriesService;
 
-        public CategoriesController(CSDLBanHang context,CategoriesService categoriesService)
+        public CategoriesController(CSDLBanHang context, CategoriesService categoriesService)
         {
             _CategoryRepository = RepositoryFactory.CreateRepository<Category>(context);
-            _categoriesService= categoriesService;
+            _categoriesService = categoriesService;
 
 
         }
@@ -53,7 +53,9 @@ namespace WebAPI.Controllers
                 var category = new Category
                 {
                     Id = id,
-                    Name = categoryDTO.Name
+                    Name = categoryDTO.Name,
+                    Description = categoryDTO.Description,
+                    CreatedAt = categoryDTO.CreatedAt,
                 };
 
                 await _CategoryRepository.UpdateAsync(category, image);
@@ -74,7 +76,8 @@ namespace WebAPI.Controllers
             {
                 var category = new Category
                 {
-                    Name = categoryDTO.Name
+                    Name = categoryDTO.Name,
+                    Description = categoryDTO.Description,
                 };
 
 
