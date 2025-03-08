@@ -5,12 +5,15 @@ namespace WebAPI.Models;
 
 public partial class Comment : BaseEntity
 {
-   
+
     public int ProductId { get; set; }
 
-    public int UserId { get; set; } 
-    public int Start { get; set; }
+    public int UserId { get; set; }
 
-    public string Name { get; set; } = null!;
-   
+    public string Name { get; set; }
+
+    public int Stars { get; set; }
+
+    public string? Content { get; set; }
+
 }

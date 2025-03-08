@@ -38,7 +38,7 @@ public partial class CSDLBanHang : DbContext
 
     public virtual DbSet<User> Users { get; set; }
 
-   
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Account>(entity =>
@@ -88,7 +88,7 @@ public partial class CSDLBanHang : DbContext
                 .HasColumnName("updated_at");
             entity.Property(e => e.UserId).HasColumnName("user_id");
 
-             
+
         });
 
         modelBuilder.Entity<Category>(entity =>
@@ -141,7 +141,7 @@ public partial class CSDLBanHang : DbContext
                 .HasColumnType("datetime")
                 .HasColumnName("updated_at");
 
-             
+
         });
 
         modelBuilder.Entity<Detail>(entity =>
@@ -177,7 +177,6 @@ public partial class CSDLBanHang : DbContext
                 .HasColumnType("datetime")
                 .HasColumnName("updated_at");
 
-           
         });
 
         modelBuilder.Entity<Order>(entity =>
@@ -220,7 +219,6 @@ public partial class CSDLBanHang : DbContext
                 .HasColumnName("updated_at");
             entity.Property(e => e.UserId).HasColumnName("user_id");
 
-           
         });
 
         modelBuilder.Entity<OrderDetail>(entity =>
@@ -244,7 +242,7 @@ public partial class CSDLBanHang : DbContext
                 .HasColumnType("datetime")
                 .HasColumnName("updated_at");
 
-           
+
         });
 
         modelBuilder.Entity<Product>(entity =>
@@ -286,29 +284,38 @@ public partial class CSDLBanHang : DbContext
                 .HasColumnType("datetime")
                 .HasColumnName("updated_at");
 
-           
+
         });
         modelBuilder.Entity<Comment>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__Comment__3213E83F5350BA77");
 
+            entity.ToTable("Comments");
+
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.ProductId).HasColumnName("product_id");
-            entity.Property(e => e.Name).HasColumnName("name");
-            entity.Property(e => e.Start)
-                .HasColumnName("start");
             entity.Property(e => e.UserId).HasColumnName("userID");
-
+            entity.Property(e => e.Name).HasColumnName("name");
+            entity.Property(e => e.Stars).HasColumnName("stars");
+            entity.Property(e => e.Content).HasMaxLength(250)
+                .HasColumnName("content");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime")
+                .HasColumnName("created_at");
             entity.Property(e => e.UpdatedAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime")
                 .HasColumnName("updated_at");
-            entity.Property(e => e.CreatedAt)
-             .HasDefaultValueSql("(getdate())")
-             .HasColumnType("datetime")
-             .HasColumnName("created_at");
 
-
+            // entity.HasOne(c => c.User)
+            //     .WithMany()
+            //     .HasForeignKey(c => c.UserId)
+            //     .HasConstraintName("FK_Comments_Users");
+            // entity.HasOne(c => c.Product)
+            //     .WithMany()
+            //     .HasForeignKey(c => c.ProductId)
+            //     .HasConstraintName("FK_Comments_Products");
         });
 
 

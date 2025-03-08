@@ -37,7 +37,7 @@ GO
 create table Comments(
 	id INT PRIMARY KEY IDENTITY(1,1),
     userID NVARCHAR(255) NOT NULL,
-	product_id  INT ,
+	product_id INT,
     name NVARCHAR(255),
 	start INT NULL,
 	created_at DATETIME DEFAULT GETDATE(),
@@ -50,6 +50,9 @@ ADD content NVARCHAR(250) NULL;
 
 ALTER TABLE Comments
 ALTER COLUMN userID INT NOT NULL;
+
+ALTER TABLE Comments
+ALTER COLUMN product_id INT NOT NULL;
 
 ALTER TABLE Comments
 ADD CONSTRAINT FK_Comments_Users FOREIGN KEY (userID) REFERENCES Users(id);
