@@ -1,25 +1,25 @@
-﻿        using Microsoft.AspNetCore.Identity.Data;
-        using Microsoft.AspNetCore.Mvc;
-        using Microsoft.EntityFrameworkCore;
-        using WebAPI.Factory;
-        using WebAPI.Models;
-        using WebAPI.Services;
+﻿using Microsoft.AspNetCore.Identity.Data;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using WebAPI.Factory;
+using WebAPI.Models;
+using WebAPI.Services;
 
-        namespace WebAPI.Controllers
+namespace WebAPI.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class AccountsController : ControllerBase
+    {
+        //factory design parttern
+        private readonly IRepository<Account> _accountRepository;
+        private readonly AccountService _accountService;
+       
+        public AccountsController(CSDLBanHang context, AccountService accountService)
         {
-            [Route("api/[controller]")]
-            [ApiController]
-            public class AccountsController : ControllerBase
-            {
-                //factory design parttern
-                private readonly IRepository<Account> _accountRepository;
-                private readonly AccountService _accountService;
-
-                public AccountsController(CSDLBanHang context, AccountService accountService)
-                {
-                    _accountRepository = RepositoryFactory.CreateRepository<Account>(context);
-                    _accountService = accountService;
-                }
+            _accountRepository = RepositoryFactory.CreateRepository<Account>(context);
+            _accountService = accountService;
+        }
 
                 // GET: api/Accounts
                 [HttpGet]
@@ -101,35 +101,34 @@
                 public async Task<IActionResult> DeleteAccount(int id)
                 {
 
-                    try
-                    {
-                        await _accountRepository.DeleteAsync(id);
-                        return NoContent();
-                    }
-                    catch (KeyNotFoundException ex)
-                    {
-                        return NotFound(new { message = ex.Message });
-                    }
-                }
-                [HttpPost("login")]
-                public async Task<ActionResult<int>> Login([FromBody] LoginRequest loginRequest)
-                {
-                    try
-                    {
-                        var userId = await _accountService.LoginAsync(loginRequest.Email, loginRequest.Password);
-                        return Ok(userId); // Trả về ID tài khoản
-                        Console.WriteLine(userId);
-                    }
-                    catch (InvalidOperationException ex)
-                    {
-                        return BadRequest(new { message = ex.Message });
-                    }
-                }
-                public class LoginRequest
-                {
-                    public string Email { get; set; } = null!;
-                    public string Password { get; set; } = null!;
-                }
+            try
+            {
+               await _accountRepository.DeleteAsync(id);
+                return NoContent();
             }
-
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
         }
+        [HttpPost("login")]
+        public async Task<ActionResult<int>> Login([FromBody] LoginRequest loginRequest)
+        {
+            try
+            {
+                var userId = await _accountService.LoginAsync(loginRequest.Email, loginRequest.Password);
+                return Ok(userId); // Trả về ID tài khoản
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+        public class LoginRequest
+        {
+            public string Email { get; set; } = null!;
+            public string Password { get; set; } = null!;
+        }
+    }
+
+}

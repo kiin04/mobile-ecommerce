@@ -23,6 +23,7 @@ import EditKho from './pages/KhoManagement/EditKho.jsx';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import './index.css';
+import EditCategory from './pages/CategoryManager/EditCategory.jsx';
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("userId"));
@@ -63,6 +64,7 @@ function App() {
                     <Route path="/dashboard" element= <Dashboard /> />
                     <Route path="/product-management" element= <ProductManagement /> />
                     <Route path="/category-management" element= <CategoryManager /> />
+                    <Route path="/edit-category/:categoryId" element= <EditCategory /> />
                     <Route path="/order-management" element= <OrderManagement /> />
                     <Route path="/add-product" element= <AddProduct /> />
                     <Route path="/edit-product/:productId" element= <EditProduct /> />
