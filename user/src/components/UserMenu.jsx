@@ -29,6 +29,7 @@ const UserMenu = () => {
 
         message.success("Logged out successfully");
         navigate(PathNames.HOMEPAGE);
+        window.location.reload();
     };
 
     const GuestItems = [
