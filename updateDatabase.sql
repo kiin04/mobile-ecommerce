@@ -68,5 +68,12 @@ CREATE TABLE Comments(
     FOREIGN KEY (product_id) REFERENCES Products(id)
 );
 
+-- update-3 09/03/2025
+alter table  Users
+add DateofBirth DATE NULL;
+
+alter table Accounts
+add username NVARCHAR(20) UNIQUE;
+
 -- update 09/03/2025
-alter table Orders  add note NVARCHAR(MAX) NULL
+alter table Orders  add note NVARCHAR(MAX) NULL;

@@ -1,4 +1,5 @@
 import { faStar as farStar } from "@fortawesome/free-regular-svg-icons";
+import { Rate } from "antd";
 import {
     faStar,
     faStarHalfAlt
