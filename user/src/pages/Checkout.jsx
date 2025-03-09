@@ -15,7 +15,7 @@ const Checkout = () => {
         address: "",
     });
     const [shippingOption, setShippingOption] = useState("store");
-    const [paymentMethod, setPaymentMethod] = useState("Thanh toán qua MOMO");
+    const [paymentMethod, setPaymentMethod] = useState("COD");
     const [cartItems, setCartItems] = useState([]);
     const [totalAmount, setTotalAmount] = useState(0);
     const [notes, setNotes] = useState(""); // Lưu trữ ghi chú từ người dùng
@@ -58,6 +58,63 @@ const Checkout = () => {
             console.error("No userId found in localStorage");
         }
     }, [userId, location.state, navigate]);
+
+    const [productItems, setProductItems] = useState({});
+    // Hàm lấy dữ liệu sản phẩm
+    const fetchProducts = async () => {
+        try {
+            const promises = cartItems.map(async (item) => {
+                const response = await fetch(`${API_URL}/api/Products/${item.productId}`);
+                if (!response.ok) {
+                    throw new Error("Failed to fetch product");
+                }
+                const data = await response.json();
+                return { productId: item.productId, product: data };
+            });
+
+            const results = await Promise.all(promises);
+            const productsMap = results.reduce((acc, { productId, product }) => {
+                acc[productId] = product;
+                return acc;
+            }, {});
+
+            setProductItems(productsMap);
+        } catch (error) {
+            console.error("Error fetching products:", error);
+            setError(error.message);
+        }
+    };
+    const [colorSizes, setColorSizes] = useState({});
+     // Hàm lấy dữ liệu color
+     const fetchColorSizes = async () => {
+        try {
+            const promises = cartItems.map(async (item) => {
+                const response = await fetch(`${API_URL}/api/ColorSizes/${item.colorSizeId}`);
+                if (!response.ok) {
+                    throw new Error("Failed to fetch product");
+                }
+                const data = await response.json();
+                return { colorSizeId: item.colorSizeId, color: data };
+            });
+
+            const results = await Promise.all(promises);
+            const colorsMap = results.reduce((acc, { colorSizeId, color }) => {
+                acc[colorSizeId] = color;
+                return acc;
+            }, {});
+
+            setColorSizes(colorsMap);
+        } catch (error) {
+            console.error("Error fetching products:", error);
+            setError(error.message);
+        }
+    };
+    useEffect(() => {
+        if (cartItems.length > 0) {
+            fetchProducts();
+            fetchColorSizes();
+        }
+    }, [cartItems]);
 
     // Thêm useEffect để fetch mã giảm giá
     useEffect(() => {
@@ -108,6 +165,7 @@ const Checkout = () => {
             totalPrice: finalAmount,
             paymentMethod: paymentMethod,
             phone: customerInfo.phone,
+            note: notes,
             paymentStatus: "Chưa thanh toán",
             status: "Chờ xác nhận",
             // items: cartItems.map((item) => ({
@@ -120,7 +178,7 @@ const Checkout = () => {
                     ? storeAddress
                     : customerInfo.address,
         };
-
+        console.log(paymentData);
         if (paymentMethod === "MoMo") {
             try {
                 // Gọi API tạo thanh toán MOMO
@@ -179,15 +237,20 @@ const Checkout = () => {
 
                 if (orderResponse.ok) {
                     // Xóa sản phẩm khỏi giỏ hàng
-                    const productIds = cartItems.map((item) => item.productId);
-                    await fetch(`${API_URL}/api/Carts/${userId}`, {
+                    const ids = cartItems.map((item) => item.id);
+                    console.log("IDs to delete:", ids); 
+                    const deleteResponse = await fetch(`${API_URL}/api/Carts/BySelectedItem/${userId}`, {
                         method: "DELETE",
                         headers: {
                             "Content-Type": "application/json",
                         },
-                        body: JSON.stringify({ productIds }),
+                        body: JSON.stringify(ids),
                     });
-
+                    if (!deleteResponse.ok) {
+                        const errorData = await deleteResponse.json();
+                        console.error("Lỗi API:", errorData);
+                        throw new Error(errorData.message || "Lỗi khi xóa sản phẩm khỏi giỏ hàng");
+                    }
                     notification.success({
                         message: "Đặt hàng thành công",
                         description:
@@ -233,39 +296,42 @@ const Checkout = () => {
 
             {/* Hiển thị sản phẩm trong giỏ hàng của user */}
             {cartItems.length > 0 ? (
-                cartItems.map((item) => (
-                    <div
-                        key={item.productId}
-                        className="bg-white p-4 rounded-lg shadow mb-4"
-                    >
-                        <div className="flex items-center">
-                            <img
-                                src={
-                                    item.image
-                                        ? `${API_URL}/${item.image.replace(
-                                              /\\/g,
-                                              "/"
-                                          )}`
-                                        : "/default-image.jpg"
-                                }
-                                alt={item.name}
-                                className="w-20 h-20 object-cover"
-                            />
-                            <div className="ml-4">
-                                <h3 className="text-lg font-semibold">
-                                    {item?.name}
-                                </h3>
-                                <p className="text-red-500">
-                                    {item.price.toLocaleString()}{" "}
-                                    <span className="line-through text-gray-500">
-                                        {item.price?.toLocaleString()}
-                                    </span>
-                                </p>
-                                <p>Số lượng: {item.quantity}</p>
+                cartItems.map((item) =>{
+                        const product = productItems[item.productId];
+                        const color = colorSizes[item.colorSizeId];
+                        return (
+                            <div
+                                key={item.productId}
+                                className="bg-white p-4 rounded-lg shadow mb-4"
+                            >
+                                <div className="flex items-center">
+                                    {product ? (
+                                        <img
+                                            src={`data:image/jpeg;base64,${product?.image}`}
+                                            alt={product?.name}
+                                            className="object-cover w-20 h-20"
+                                        />
+                                    ) : (
+                                        <p>Đang tải...</p>
+                                    )}
+                                    <div className="ml-4">
+                                        <h3 className="text-lg font-semibold">
+                                            {product?.name} -  {color?.color} - {color?.size}
+                                        </h3>
+                                     
+                                        <p className="text-red-500">
+                                            {item.price.toLocaleString()}{" "}
+                                            <span className="line-through text-gray-500">
+                                                {item.price?.toLocaleString()}
+                                            </span>
+                                        </p>
+                                        <p>Số lượng: {item.quantity}</p>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                ))
+                        )
+                    } 
+                )
             ) : (
                 <p>Giỏ hàng của bạn trống. Hãy mua gì đó rồi quay lại nhé</p>
             )}
@@ -311,7 +377,7 @@ const Checkout = () => {
                             )}
                         </div>
                         <label className="text-gray-800">
-                            Giao hng tận nơi
+                            Giao hàng tận nơi
                         </label>
                     </div>
                 </div>
@@ -386,9 +452,7 @@ const Checkout = () => {
                     value={paymentMethod}
                     onChange={(e) => setPaymentMethod(e.target.value)}
                 >
-                    {/* {shippingOption === "store" && (
-                        <option value="Tiền mặt">Tiền mặt</option>
-                    )} */}
+                    
                     <option value="COD">Thanh toán khi nhận hàng</option>
                     <option value="MoMo">Thanh toán qua MOMO</option>
                     <option value="Thanh toán qua VNpay">
