@@ -15,5 +15,7 @@
 
         public int? Account { get; set; }
         public DateTime? CreatedAt { get; set; }
+
+        public DateTime? DateofBirth { get; set; }
     }
 }

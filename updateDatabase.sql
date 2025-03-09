@@ -73,7 +73,22 @@ alter table  Users
 add DateofBirth DATE NULL;
 
 alter table Accounts
-add username NVARCHAR(20) UNIQUE;
+add username NVARCHAR(20);
 
 -- update 09/03/2025
 alter table Orders  add note NVARCHAR(MAX) NULL;
+
+-- update 10/03/2025
+UPDATE Users
+SET DateofBirth = '2004-06-20';
+
+UPDATE Accounts
+SET username = CASE
+    WHEN id = 1 THEN 'lamnt108'
+    WHEN id = 2 THEN 'qcao'
+    WHEN id = 3 THEN 'dnghia'
+    WHEN id = 4 THEN 'nsong'
+    WHEN id = 5 THEN 'minhquan'
+    ELSE username
+END
+WHERE id IN (1, 2, 3, 4, 5);

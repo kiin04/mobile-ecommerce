@@ -21,5 +21,5 @@ public partial class User : BaseEntity, IHasImage
 
     public int? Account { get; set; }
 
-
+    public DateTime? DateofBirth { get; set; }
 }

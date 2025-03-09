@@ -32,9 +32,9 @@ namespace WebAPI.Services
             if (user == null) return;
 
             var orderIds = await _context.Orders
-               .Where(cs => cs.UserId == id)
-               .Select(cs => cs.Id)
-               .ToListAsync();
+                .Where(cs => cs.UserId == id)
+                .Select(cs => cs.Id)
+                .ToListAsync();
 
             if (orderIds.Any())
             {
