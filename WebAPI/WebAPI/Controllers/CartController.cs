@@ -48,10 +48,7 @@ namespace WebAPI.Controllers
             try
             {
                 var carts = await _cartService.GetByUserAsync(userId);
-                if (carts == null || !carts.Any())
-                {
-                    return NotFound(new { message = "No carts found for the given user." });
-                }
+               
 
                 return Ok(carts);
             }
@@ -122,6 +119,29 @@ namespace WebAPI.Controllers
                 return NotFound(new { message = ex.Message });
             }
         }
+        [HttpDelete("BySelectedItem/{id}")]
+        public async Task<IActionResult> DeleteSelectedCart([FromBody] List<int> ids, int id)
+        {
+            try
+            {
+                if (ids == null || ids.Count == 0)
+                {
+                    return BadRequest(new { message = "Danh sách ids không hợp lệ hoặc rỗng." });
+                }
+
+                await _cartService.DeleteselectetedCart(ids, id);
+                return NoContent();
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Lỗi server: " + ex.Message });
+            }
+        }
+
     }
 
 }

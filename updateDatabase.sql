@@ -67,3 +67,6 @@ CREATE TABLE Comments(
     FOREIGN KEY (userID) REFERENCES Users(id),
     FOREIGN KEY (product_id) REFERENCES Products(id)
 );
+
+-- update 09/03/2025
+alter table Orders  add note NVARCHAR(MAX) NULL

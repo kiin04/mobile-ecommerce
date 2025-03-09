@@ -31,5 +31,27 @@ namespace WebAPI.Services
 
             await _context.Carts.Where(cart => cart.UserId == id).ExecuteDeleteAsync();
         }
+        public async Task DeleteselectetedCart(List<int> ids, int userId)
+        {
+            if (ids == null || !ids.Any())
+            {
+                throw new ArgumentException("The list of IDs to delete cannot be null or empty.", nameof(ids));
+            }
+           
+            var carts = await _context.Carts
+                .Where(cart => cart.UserId == userId && ids.Contains(cart.Id))
+                .ToListAsync();
+
+            if (carts == null || !carts.Any())
+            {
+                throw new KeyNotFoundException($"No carts found for User with ID: {userId} and provided IDs.");
+            }
+
+            
+            await _context.Carts
+                .Where(cart => cart.UserId == userId && ids.Contains(cart.Id))
+                .ExecuteDeleteAsync();
+        }
+
     }
 }
