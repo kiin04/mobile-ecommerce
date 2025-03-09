@@ -10,15 +10,10 @@
         public string? Address { get; set; }
 
         public int? Role { get; set; }
-        
 
         public decimal? TotalBuy { get; set; }
 
-        public int Account { get; set; }
+        public int? Account { get; set; }
         public DateTime? CreatedAt { get; set; }
-
-        public string? Email { get; set; }
-
-        public string? Password { get; set; }
     }
 }

@@ -19,7 +19,7 @@ const PaymentResult = () => {
                 message: 'Thành công',
                 description: 'Thanh toán thành công!',
                 duration: 4,
-                placement: "bottomRight",
+                placement: "bottomLeft",
                 showProgress: true,
                 pauseOnHover: true
             });
@@ -30,7 +30,7 @@ const PaymentResult = () => {
                 message: 'Lỗi',
                 description: `Thanh toán thất bại: ${message}`,
                 duration: 4,
-                placement: "bottomRight",
+                placement: "bottomLeft",
                 showProgress: true,
                 pauseOnHover: true
             });

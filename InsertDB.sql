@@ -98,3 +98,9 @@ INSERT INTO Promotion (name, value, end_at, code, minPrice) VALUES
 (N'Sale Back To School', 5, '2025-08-31','GOSCHOOL',20000000),
 (N'Khuyến mãi Black Friday', 20, '2025-11-30','BACLK6DAYS',20000000),
 (N'Giảm giá VIP Member', 12, '2025-12-31','VIPMEMBER',20000000);
+
+-- Thêm dữ liệu vào bảng Comments
+INSERT INTO Comments (userID, product_id, name, content, created_at, updated_at, stars) VALUES
+(1, 1, N'Nguyễn Tùng Lâm', N'Sản phẩm này thật tuyệt vời!', GETDATE(), GETDATE(), 5),
+(2, 2, N'Cao Xuân Quang', N'Chất lượng sản phẩm rất tốt.', GETDATE(), GETDATE(), 4),
+(5, 3, N'Huỳnh Minh Quân', N'Dịch vụ khách hàng rất chu đáo.', GETDATE(), GETDATE(), 3);

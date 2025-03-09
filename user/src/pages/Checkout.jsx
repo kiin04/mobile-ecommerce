@@ -163,7 +163,7 @@ const Checkout = () => {
                     description:
                         error.message || "Có lỗi xảy ra khi xử lý thanh toán",
                     duration: 4,
-                    placement: "bottomRight",
+                    placement: "bottomLeft",
                 });
             }
         } else if (paymentMethod === "COD") {
@@ -193,7 +193,7 @@ const Checkout = () => {
                         description:
                             "Đơn hàng của bạn đang chờ xác nhận. Chúng tôi sẽ liên hệ với bạn sớm nhất!",
                         duration: 4,
-                        placement: "bottomRight",
+                        placement: "bottomLeft",
                         showProgress: true,
                         pauseOnHover: true,
                     });
@@ -207,7 +207,7 @@ const Checkout = () => {
                     message: "Lỗi",
                     description: "Có lỗi xảy ra khi tạo đơn hàng",
                     duration: 4,
-                    placement: "bottomRight",
+                    placement: "bottomLeft",
                     showProgress: true,
                     pauseOnHover: true,
                 });

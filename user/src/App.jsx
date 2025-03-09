@@ -15,7 +15,7 @@ import PaymentFailed from "./pages/PaymentFailed.jsx";
 import PaymentResult from "./pages/PaymentResult.jsx";
 import PaymentSuccess from "./pages/PaymentSuccess.jsx";
 import PrivacyPolicy from "./pages/PrivacyPolicy.jsx";
-import ProductDetails from "./pages/ProductDetails.jsx";
+import ProductDetails from "./pages/ProductDetails/ProductDetails.jsx";
 import Profile from "./pages/Profile.jsx";
 import SearchResult from "./pages/SearchResults.jsx";
 import Shop from "./pages/Shop.jsx";
@@ -24,8 +24,8 @@ import Support from "./pages/Support.jsx";
 import Terms from "./pages/Terms.jsx";
 import Vacancies from "./pages/Vacancies.jsx";
 import PathNames from "./PathNames.js";
-import Breadcrumbs from './shared/Breadcrumbs.jsx';
-import userService from './facadeParttern/userService.js'
+import Breadcrumbs from "./shared/Breadcrumbs.jsx";
+import userService from "./facadeParttern/userService.js";
 import { useDispatch } from "react-redux";
 import { setUser } from "./redux/userSlide.js";
 import CheckoutBuyNow from "./pages/CheckOutNuyNow.jsx";
@@ -39,13 +39,18 @@ function App() {
             if (userId) {
                 try {
                     const user = await userService.fetchUserDetails(userId);
-                   
-                    dispatch(setUser({
-                        ...user, 
-                        email: emaillocal, 
-                    }));
+
+                    dispatch(
+                        setUser({
+                            ...user,
+                            email: emaillocal,
+                        })
+                    );
                 } catch (error) {
-                    console.error("Error fetching user details:", error.message);
+                    console.error(
+                        "Error fetching user details:",
+                        error.message
+                    );
                 }
             }
         };
@@ -53,10 +58,10 @@ function App() {
         fetchUser();
     }, [userId, dispatch]);
     console.log(userId);
-    
+
     return (
         <>
-            <Header cartOpen={cartOpen} setCartOpen={setCartOpen}  />
+            <Header cartOpen={cartOpen} setCartOpen={setCartOpen} />
             <CartSidebar cartOpen={cartOpen} setCartOpen={setCartOpen} />
 
             <div className="container mx-auto p-4">
@@ -65,24 +70,48 @@ function App() {
                 <Routes>
                     <Route path="/" element={<Homepage />} />
                     <Route path={PathNames.ABOUT} element={<About />} />
-                    <Route path={PathNames.CHECKOUTBUYNOW} element={<CheckoutBuyNow />} />
+                    <Route
+                        path={PathNames.CHECKOUTBUYNOW}
+                        element={<CheckoutBuyNow />}
+                    />
                     <Route path={PathNames.STORIES} element={<Stories />} />
                     <Route path={PathNames.FAQ} element={<FaQ />} />
                     <Route path={PathNames.VACANCIES} element={<Vacancies />} />
-                    <Route path={PathNames.CONTACT_US} element={<ContactUs />} />
-                    <Route path={PathNames.PRIVACY_POLICY} element={<PrivacyPolicy />} />
+                    <Route
+                        path={PathNames.CONTACT_US}
+                        element={<ContactUs />}
+                    />
+                    <Route
+                        path={PathNames.PRIVACY_POLICY}
+                        element={<PrivacyPolicy />}
+                    />
                     <Route path={PathNames.TERMS} element={<Terms />} />
                     <Route path={PathNames.SUPPORT} element={<Support />} />
                     <Route path={PathNames.CART} element={<Cart />} />
                     <Route path={PathNames.CHECKOUT} element={<Checkout />} />
                     <Route path={PathNames.PROFILE} element={<Profile />} />
                     <Route path={PathNames.MY_ORDERS} element={<MyOrders />} />
-                    <Route path={PathNames.SEARCH_RESULTS} element={<SearchResult />} />
-                    <Route path={PathNames.PAYMENT_RESULT} element={<PaymentResult />} />
-                    <Route path={PathNames.PAYMENT_SUCCESS} element={<PaymentSuccess />} />
-                    <Route path={PathNames.PAYMENT_FAILED} element={<PaymentFailed />} />
+                    <Route
+                        path={PathNames.SEARCH_RESULTS}
+                        element={<SearchResult />}
+                    />
+                    <Route
+                        path={PathNames.PAYMENT_RESULT}
+                        element={<PaymentResult />}
+                    />
+                    <Route
+                        path={PathNames.PAYMENT_SUCCESS}
+                        element={<PaymentSuccess />}
+                    />
+                    <Route
+                        path={PathNames.PAYMENT_FAILED}
+                        element={<PaymentFailed />}
+                    />
                     <Route path={PathNames.SHOP} element={<Shop />} />
-                    <Route path={`${PathNames.PRODUCT_DETAILS}/:productId`} element={<ProductDetails />} />
+                    <Route
+                        path={`${PathNames.PRODUCT_DETAILS}/:productId`}
+                        element={<ProductDetails />}
+                    />
                 </Routes>
             </div>
 

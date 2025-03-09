@@ -43,7 +43,7 @@ const NewReleases = () => {
     //             description:
     //                 "Số lượng bạn chọn đã đạt mức tối đa của sản phẩm này",
     //             duration: 4,
-    //             placement: "bottomRight",
+    //             placement: "bottomLeft",
     //             showProgress: true,
     //             pauseOnHover: true,
     //         });
@@ -59,7 +59,7 @@ const NewReleases = () => {
                 message: "Lưu ý!",
                 description: "Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng",
                 duration: 4,
-                placement: "bottomRight",
+                placement: "bottomLeft",
                 showProgress: true,
                 pauseOnHover: true,
             });
@@ -71,7 +71,7 @@ const NewReleases = () => {
                 message: "Lỗi",
                 description: "Không tìm thấy thông tin sản phẩm",
                 duration: 4,
-                placement: "bottomRight",
+                placement: "bottomLeft",
                 showProgress: true,
                 pauseOnHover: true,
             });
@@ -83,7 +83,7 @@ const NewReleases = () => {
                 message: "Lỗi",
                 description: "Số lượng không hợp lệ!",
                 duration: 4,
-                placement: "bottomRight",
+                placement: "bottomLeft",
                 showProgress: true,
                 pauseOnHover: true,
             });
@@ -122,7 +122,7 @@ const NewReleases = () => {
                 message: "Thành công",
                 description: "Đã thêm sản phẩm vào giỏ hàng",
                 duration: 4,
-                placement: "bottomRight",
+                placement: "bottomLeft",
                 pauseOnHover: true,
             });
         } catch (error) {
@@ -131,7 +131,7 @@ const NewReleases = () => {
                 message: "Lỗi",
                 description: error.message,
                 duration: 4,
-                placement: "bottomRight",
+                placement: "bottomLeft",
                 pauseOnHover: true,
             });
         }
@@ -242,7 +242,7 @@ export default NewReleases;
 //                     message: "Lỗi",
 //                     description: "Không thể tải sản phẩm",
 //                     duration: 4,
-//                     placement: "bottomRight",
+//                     placement: "bottomLeft",
 //                 });
 //             }
 //         };
@@ -268,7 +268,7 @@ export default NewReleases;
 //                 message: "Lưu ý!",
 //                 description: "Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng",
 //                 duration: 4,
-//                 placement: "bottomRight",
+//                 placement: "bottomLeft",
 //                 showProgress: true,
 //                 pauseOnHover: true,
 //             });
@@ -281,7 +281,7 @@ export default NewReleases;
 //                 message: "Lỗi",
 //                 description: "Không tìm thấy thông tin sản phẩm",
 //                 duration: 4,
-//                 placement: "bottomRight",
+//                 placement: "bottomLeft",
 //                 showProgress: true,
 //                 pauseOnHover: true,
 //             });
@@ -320,7 +320,7 @@ export default NewReleases;
 //                 message: "Thành công",
 //                 description: "Đã thêm sản phẩm vào giỏ hàng",
 //                 duration: 4,
-//                 placement: "bottomRight",
+//                 placement: "bottomLeft",
 //                 pauseOnHover: true,
 //             });
 //         } catch (error) {
@@ -329,7 +329,7 @@ export default NewReleases;
 //                 message: "Lỗi",
 //                 description: error.message,
 //                 duration: 4,
-//                 placement: "bottomRight",
+//                 placement: "bottomLeft",
 //                 pauseOnHover: true,
 //             });
 //         } finally {

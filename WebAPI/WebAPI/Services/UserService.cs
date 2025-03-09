@@ -11,18 +11,18 @@ namespace WebAPI.Services
         public UserService(CSDLBanHang context, OrderService orderService)
         {
             _context = context;
-            _orderService= orderService;
+            _orderService = orderService;
         }
 
         public async Task<User> CheckPhoneAsync(string phone)
         {
-          
+
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Phone == phone);
             if (user == null)
             {
                 throw new KeyNotFoundException($"Not Found User with number {phone}");
             }
-         
+
             return user;
         }
 

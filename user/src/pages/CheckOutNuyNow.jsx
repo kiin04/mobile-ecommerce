@@ -63,14 +63,14 @@ const CheckoutBuyNow = () => {
                             message: "Thành công!",
                             description: "Người dùng mới đã được tạo.",
                             duration: 4,
-                            placement: "bottomRight",
+                            placement: "bottomLeft",
                         });
                     } else {
                         notification.error({
                             message: 'Thất bại',
                             description: 'Đã xảy ra lỗi khi tạo người dùng. Vui lòng thử lại.',
                             duration: 4,
-                            placement: "bottomRight",
+                            placement: "bottomLeft",
                             showProgress: true,
                             pauseOnHover: true
                         });
@@ -88,7 +88,7 @@ const CheckoutBuyNow = () => {
                             description:
                                 "Người dùng đã tồn tại, vui lòng đăng nhập",
                             duration: 4,
-                            placement: "bottomRight",
+                            placement: "bottomLeft",
                         });
                     } else {
                         // Người dùng chưa có tài khoản
@@ -154,7 +154,7 @@ const CheckoutBuyNow = () => {
                         message: "Thành công!",
                         description: "Đơn hàng mới đã được tạo",
                         duration: 4,
-                        placement: "bottomRight",
+                        placement: "bottomLeft",
                     });
                     navigate("/my-orders");
                 }
@@ -163,7 +163,7 @@ const CheckoutBuyNow = () => {
                     message: 'Thất bại',
                     description: 'Đã xảy ra lỗi khi tạo đơn hàng. Vui lòng thử lại.',
                     duration: 4,
-                    placement: "bottomRight",
+                    placement: "bottomLeft",
                     showProgress: true,
                     pauseOnHover: true
                 });

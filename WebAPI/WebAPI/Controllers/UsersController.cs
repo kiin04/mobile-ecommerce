@@ -78,8 +78,6 @@ namespace WebAPI.Controllers
                     Phone = userDTO.Phone,
                     Address = userDTO.Address,
                     Role = userDTO.Role,
-                    Email = userDTO.Email,
-                    Password = userDTO.Password,
                     TotalBuy = userDTO.TotalBuy,
                     Account = userDTO.Account,
                     CreatedAt = userDTO.CreatedAt,
@@ -106,15 +104,12 @@ namespace WebAPI.Controllers
         {
             try
             {
-                
                 var user = new User
                 {
                     Name = userDTO.Name,
                     Phone = userDTO.Phone,
                     Address = userDTO.Address,
                     Role = userDTO.Role,
-                    Email = userDTO.Email,
-                    Password = userDTO.Password,
                     TotalBuy = userDTO.TotalBuy,
                     Account = 0,
                 };

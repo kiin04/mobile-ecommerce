@@ -12,15 +12,15 @@ namespace WebAPI.Services
             _context = context;
         }
 
-       
+
         public async Task<List<Comment>> GetByProductAsync(int productId)
         {
             // Lấy danh sách ColorSize theo ProductId
             var Comment = await _context.Comments
-                                           .Where(cs => cs.ProductId == productId)
-                                           .ToListAsync();
+                                        .Where(cs => cs.ProductId == productId)
+                                        .ToListAsync();
 
-         
+
             return Comment ?? new List<Comment>();
         }
 
