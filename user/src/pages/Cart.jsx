@@ -16,7 +16,7 @@ const Cart = () => {
     const navigate = useNavigate();
     const user = useSelector((state) => state.user);
     const userId = user?.id
-    console.log('userId',userId);
+ 
     const fetchCartItems = async () => {
            
         if (!userId) {
@@ -108,16 +108,13 @@ const Cart = () => {
     };
 
     // Xóa sản phẩm khỏi giỏ hàng
-    const removeFromCart = async (productId) => {
-        const userId = localStorage.getItem("userId");
-
-        try {
-            const response = await fetch(`${API_URL}/api/Carts/${userId}`, {
+    const removeFromCart = async (id) => {
+          try {
+            const response = await fetch(`${API_URL}/api/Carts/${id}`, {
                     method: "DELETE",
                     headers: {
                         "Content-Type": "application/json",
                     },
-                    body: JSON.stringify({ productId }),
                 }
             );
 
@@ -125,17 +122,17 @@ const Cart = () => {
                 throw new Error("Failed to remove item from cart");
             }
 
-            setCartItems(prevItems => prevItems.filter(item => item.productId !== productId));
+            setCartItems(prevItems => prevItems.filter(item => item.id !== id));
         } catch (error) {
             console.error("Lỗi khi xóa sản phẩm khỏi giỏ hàng:", error);
         }
     };
 
     // Cập nhật số lượng sản phẩm trong giỏ hàng và kiểm tra tồn kho
-    const updateQuantity = async (productId, newQuantity) => {
+    const updateQuantity = async (id,cart, newQuantity) => {
         const userId = localStorage.getItem("userId");
         const productInCart = cartItems.find(
-            (item) => item.productId === productId
+            (item) => item.id === id
         );
 
         if (newQuantity <= 0) {
@@ -144,26 +141,28 @@ const Cart = () => {
         } else {
             try {
                 const response = await fetch(
-                    `${API_URL}/api/cart/${userId}/update`,
+                    `${API_URL}/api/Carts/${id}`,
                     {
                         method: "PUT",
                         headers: {
                             "Content-Type": "application/json",
                         },
                         body: JSON.stringify({
-                            productId,
+                            ...Cart,
                             quantity: newQuantity,
                         }),
                     }
                 );
 
                 const data = await response.json();
-                if (response.status === 400) {
+                console.log('data ', data);
+                if (response.status == 400) {
                     setOverStockError(data.message); // Hiển thị lỗi nếu vượt quá tồn kho
                 } else {
+                    console.log('update quantity');
                     setCartItems((prevItems) =>
                         prevItems.map((item) =>
-                            item.productId === productId
+                            item.id === id
                                 ? { ...item, quantity: newQuantity }
                                 : item
                         )
@@ -178,23 +177,23 @@ const Cart = () => {
 
     // Xác nhận xóa sản phẩm
     const handleConfirmRemove = () => {
-        removeFromCart(itemToRemove.productId);
+        removeFromCart(itemToRemove.id);
         setShowConfirmDialog(false);
     };
 
     // Tính tổng tiền cho các sản phẩm được chọn
     const calculateSelectedTotal = () => {
         return cartItems
-            .filter((item) => selectedItems.includes(item.productId))
+            .filter((item) => selectedItems.includes(item.id))
             .reduce((total, item) => total + item.price * item.quantity, 0);
     };
 
     // Xử lý chọn/bỏ chọn sản phẩm
-    const handleSelectItem = (productId) => {
+    const handleSelectItem = (id) => {
         setSelectedItems((prev) =>
-            prev.includes(productId)
-                ? prev.filter((id) => id !== productId)
-                : [...prev, productId]
+            prev.includes(id)
+                ? prev.filter((id) => id !== id)
+                : [...prev, id]
         );
     };
 
@@ -232,7 +231,7 @@ const Cart = () => {
     // Sửa hàm navigate để thêm callback xóa giỏ hàng
     const handleCheckout = () => {
         const selectedProducts = cartItems.filter((item) =>
-            selectedItems.includes(item.productId)
+            selectedItems.includes(item.id)
         );
         
 
@@ -282,20 +281,20 @@ const Cart = () => {
                     const color = colorSizes[item.colorSizeId];
                     return (
                         <div
-                            key={`${item.productId}-${item.color}`}
+                            key={`${item.id}`}
                             className="flex justify-between items-center p-4 border rounded-lg"
                         >
                             <div className="flex items-center">
                                 <div
-                                    onClick={() => handleSelectItem(item.productId)}
+                                    onClick={() => handleSelectItem(item.id)}
                                     className={`w-6 h-6 rounded-full border-2 cursor-pointer mr-4 flex items-center justify-center
                                     ${
-                                        selectedItems.includes(item.productId)
+                                        selectedItems.includes(item.id)
                                             ? "border-blue-500 bg-blue-500"
                                             : "border-gray-400"
                                     }`}
                                 >
-                                    {selectedItems.includes(item.productId) && (
+                                    {selectedItems.includes(item.id) && (
                                         <div className="w-3 h-3 bg-white rounded-full"></div>
                                     )}
                                 </div>
@@ -320,20 +319,20 @@ const Cart = () => {
                             </div>
                             <div className="flex items-center space-x-4">
                                 <button
-                                    onClick={() => updateQuantity(item.productId, item.quantity - 1)}
+                                    onClick={() => updateQuantity(item.id, item, item.quantity - 1)}
                                     className="px-3 py-1 border rounded-md"
                                 >
                                     -
                                 </button>
                                 <span>{item.quantity}</span>
                                 <button
-                                    onClick={() => updateQuantity(item.productId, item.quantity + 1)}
+                                    onClick={() => updateQuantity(item.id, item, item.quantity + 1)}
                                     className="px-3 py-1 border rounded-md"
                                 >
                                     +
                                 </button>
                                 <button
-                                    onClick={() => removeFromCart(item.productId)}
+                                    onClick={() => removeFromCart(item.id)}
                                     className="px-4 py-2 text-white bg-blue-500 rounded-lg"
                                 >
                                     Xóa

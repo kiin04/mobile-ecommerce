@@ -82,3 +82,6 @@ GO
 
 -- update 06/03/2025
 update Products set start_rate = 0
+
+-- update 09/03/2025
+alter table Orders  add note NVARCHAR(MAX) NULL

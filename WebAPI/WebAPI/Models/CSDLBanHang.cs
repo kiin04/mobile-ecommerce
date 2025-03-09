@@ -187,6 +187,8 @@ public partial class CSDLBanHang : DbContext
             entity.Property(e => e.Address)
                 .HasMaxLength(255)
                 .HasColumnName("address");
+            entity.Property(e => e.Note)
+                .HasColumnName("note");
             entity.Property(e => e.Name)
                 .HasMaxLength(255)
                 .HasColumnName("name");
