@@ -99,7 +99,7 @@ const UserMenu = () => {
                             }`}
                         />
                         {user.image ? (
-                            <Avatar src={`${API_URL}/${user.image}`} />
+                            <Avatar src={`data:image/jpeg;base64,${user.image}`} />
                         ) : (
                             <UserOutlined />
                         )}
