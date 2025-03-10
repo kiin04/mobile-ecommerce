@@ -127,9 +127,14 @@ const Checkout = () => {
                 const data = await response.json();
                 // Sắp xếp theo phn trăm giảm giá từ cao đến thấp
                 const sortedCodes = data.sort(
-                    (a, b) => b.discountPercent - a.discountPercent
+                    (a, b) => b.value - a.value
                 );
-                setDiscountCodes(sortedCodes);
+                const enableDiscount = sortedCodes.filter(
+                    (discount) => new Date(discount.endAt).getTime() > Date.now()
+                );
+                
+                // Cập nhật lại danh sách mã giảm giá
+                setDiscountCodes(enableDiscount);
             } catch (error) {
                 console.error("Error fetching discount codes:", error);
             }
@@ -141,8 +146,8 @@ const Checkout = () => {
     const handleSelectDiscount = (discount) => {
         setSelectedDiscount(discount);
         const discountAmount = Math.min(
-            Math.floor((totalAmount * discount.discountPercent) / 100),
-            discount.maxDiscountAmount
+            Math.floor((totalAmount * discount.value) / 100),
+            discount.maxValue
         );
         setDiscountedAmount(discountAmount);
         setShowDiscountDialog(false);
@@ -494,7 +499,7 @@ const Checkout = () => {
                                 <p className="text-sm text-gray-600">
                                     Giảm {selectedDiscount.discountPercent}%
                                     (Tối đa{" "}
-                                    {selectedDiscount.maxDiscountAmount.toLocaleString()}
+                                    {selectedDiscount.maxValue.toLocaleString()}
                                     đ)
                                 </p>
                                 <p className="text-green-600 font-medium">
@@ -531,7 +536,7 @@ const Checkout = () => {
                             {discountCodes.map((discount) => {
                                 // Kiểm tra điều kiện áp dụng mã giảm giá
                                 const isApplicable =
-                                    totalAmount >= discount.minOrderValue;
+                                    totalAmount >= discount.minPrice;
 
                                 return (
                                     <div
@@ -554,12 +559,12 @@ const Checkout = () => {
                                                             discount.discountPercent
                                                         }
                                                         % (Tối đa{" "}
-                                                        {discount.maxDiscountAmount.toLocaleString()}
+                                                        {discount.maxValue.toLocaleString()}
                                                         đ)
                                                     </p>
                                                     <p className="text-xs text-gray-500">
                                                         Đơn tối thiểu{" "}
-                                                        {discount.minOrderValue.toLocaleString()}
+                                                        {discount.minPrice.toLocaleString()}
                                                         đ
                                                     </p>
                                                     {!isApplicable && (
