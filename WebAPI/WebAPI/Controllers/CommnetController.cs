@@ -78,6 +78,7 @@ namespace WebAPI.Controllers
         {
             try
             {
+                Comment.CreatedAt = DateTime.UtcNow;
                 await _commentRepository.AddAsync(Comment);
                 return CreatedAtAction(nameof(GetComment), new { id = Comment.Id }, Comment);
             }

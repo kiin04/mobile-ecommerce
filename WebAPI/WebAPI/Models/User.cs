@@ -1,19 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace WebAPI.Models;
 
-public partial class User : BaseEntity, IHasImage
+    public partial class User : BaseEntity, IHasImage
 {
-   
-
     public string Name { get; set; } = null!;
 
     public string? Phone { get; set; }
 
     public string? Address { get; set; }
-
-   
 
     public int? Role { get; set; }
 
@@ -23,5 +20,8 @@ public partial class User : BaseEntity, IHasImage
 
     public int? Account { get; set; }
 
-    
+    [JsonIgnore]
+    public DateTime? DateofBirth { get; set; }
+
+    public string DateofBirthFormatted => DateofBirth?.ToString("dd-MM-yyyy");
 }

@@ -109,7 +109,14 @@ INSERT INTO Promotion (name, value, end_at, code, minPrice) VALUES
 (N'Giảm giá VIP Member', 12, '2025-12-31','VIPMEMBER',20000000);
 
 -- Thêm dữ liệu vào bảng Comments
+<<<<<<< HEAD
 INSERT INTO Comments (userID, product_id, name, content , stars) VALUES
 (1, 1, N'Nguyễn Tùng Lâm', N'Sản phẩm này thật tuyệt vời!',  5),
 (2, 2, N'Cao Xuân Quang', N'Chất lượng sản phẩm rất tốt.',  4),
 (5, 3, N'Huỳnh Minh Quân', N'Dịch vụ khách hàng rất chu đáo.', 3);
+=======
+INSERT INTO Comments (userID, product_id, name, content, created_at, updated_at, stars) VALUES
+(1, 1, N'Nguyễn Tùng Lâm', N'Sản phẩm này thật tuyệt vời!', GETDATE(), GETDATE(), 5),
+(2, 2, N'Cao Xuân Quang', N'Chất lượng sản phẩm rất tốt.', GETDATE(), GETDATE(), 4),
+(5, 3, N'Huỳnh Minh Quân', N'Dịch vụ khách hàng rất chu đáo.', GETDATE(), GETDATE(), 3);
+>>>>>>> bc8ed3872127538da74a92275b4edef5a08d075d

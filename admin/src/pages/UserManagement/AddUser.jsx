@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
     Box,
     TextField,
@@ -14,14 +14,14 @@ import { message, notification } from "antd";
 
 const AddUser = () => {
     const navigate = useNavigate();
-    const [user, setUser] = useState({
+    const [roles, setRoles] = useState([]);
+    const [formData, setFormData] = useState({
         name: "",
         email: "",
         password: "",
         phone: "",
-        dayOfBirth: "",
+        DateofBirth: "",
         role: "",
-        gender: "",
         address: "",
         accountName: "",
         totalBuy: 0,
@@ -29,159 +29,104 @@ const AddUser = () => {
 
     const [errors, setErrors] = useState({});
 
-    const genderOptions = [
-        { value: "Nam", label: "Nam" },
-        { value: "Nữ", label: "Nữ" },
-        { value: "Khác", label: "Khác" },
-    ];
-
-    const roleOptions = [
-        { value: 1, label: "Admin" },
-        { value: 0, label: "User" },
-    ];
+    useEffect(() => {
+        const fetchRole = async () => {
+            try {
+                const response = await axios.get(`${API_URL}/api/Roles`);
+                if (response.status === 200) {
+                    setRoles(response.data);
+                }
+            } catch (error) {
+                console.error("Lỗi khi lấy danh sách vai trò:", error);
+            }
+        };
+        fetchRole();
+    }, []);
 
     const validateForm = () => {
         const newErrors = {};
-
-        // Validate tên
-        if (!user.name.trim()) {
-            newErrors.name = "Vui lòng nhập tên";
-        } else if (user.name.length < 2) {
-            newErrors.name = "Tên phải có ít nhất 2 ký tự";
-        }
-
-        // Validate email
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!user.email) {
-            newErrors.email = "Vui lòng nhập email";
-        } else if (!emailRegex.test(user.email)) {
-            newErrors.email = "Email không hợp lệ";
-        }
-
-        // Validate mật khẩu
-        if (!user.password) {
+        if (!formData.name.trim()) newErrors.name = "Vui lòng nhập tên";
+        if (!formData.email.trim()) newErrors.email = "Vui lòng nhập email";
+        if (!formData.password.trim())
             newErrors.password = "Vui lòng nhập mật khẩu";
-        } else if (user.password.length < 6) {
-            newErrors.password = "Mật khẩu phải có ít nhất 6 ký tự";
-        }
-
-        // Validate số điện thoại
-        const phoneRegex = /(84|0[3|5|7|8|9])+([0-9]{8})\b/;
-        if (!user.phone) {
+        if (!formData.phone.trim())
             newErrors.phone = "Vui lòng nhập số điện thoại";
-        } else if (!phoneRegex.test(user.phone)) {
-            newErrors.phone = "Số điện thoại không hợp lệ";
-        }
-
-        // Validate ngày sinh
-        if (!user.dayOfBirth) {
-            newErrors.dayOfBirth = "Vui lòng chọn ngày sinh";
-        } else {
-            const birthDate = new Date(user.dayOfBirth);
-            const today = new Date();
-            if (birthDate > today) {
-                newErrors.dayOfBirth = "Ngày sinh không hợp lệ";
-            }
-        }
-
-        // Validate giới tính
-        if (!user.gender) {
-            newErrors.gender = "Vui lòng chọn giới tính";
-        }
-
-        // Validate địa chỉ
-        if (!user.address.trim()) {
+        if (!formData.DateofBirth.trim())
+            newErrors.DateofBirth = "Vui lòng chọn ngày sinh";
+        if (!formData.address.trim())
             newErrors.address = "Vui lòng nhập địa chỉ";
-        }
-
-        if (user.role === "") {
-            newErrors.role = "Vui lòng chọn vai trò";
-        }
-
-        // Validate tên tài khoản
-        if (!user.accountName.trim()) {
+        if (!formData.role) newErrors.role = "Vui lòng chọn vai trò";
+        if (!formData.accountName.trim())
             newErrors.accountName = "Vui lòng nhập tên tài khoản";
-        } else if (user.accountName.length < 4) {
-            newErrors.accountName = "Tên tài khoản phải có ít nhất 4 ký tự";
-        }
-
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleChange = (e) => {
+    const handleInputChange = (e) => {
         const { name, value } = e.target;
-        const newValue =
-            name === "role" && value !== "" ? parseInt(value, 10) : value;
-        console.log(`Thay đổi: ${name} =`, newValue);
-        setUser((prev) => ({
-            ...prev,
-            [name]: newValue,
-        }));
+        setFormData({ ...formData, [name]: value });
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        if (!validateForm()) {
-            return;
-        }
+        if (!validateForm()) return;
 
         try {
-            const response = await axios.post(`${API_URL}/api/Users`, user, {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
-            });
-            console.log("Response:", response.data);
+            // Tạo FormData để gửi dữ liệu dạng multipart
+            const formDataToSend = new FormData();
+            formDataToSend.append("Name", formData.name);
+            formDataToSend.append("Phone", formData.phone);
+            formDataToSend.append("Address", formData.address);
+            formDataToSend.append("Role", formData.role);
+            formDataToSend.append("TotalBuy", formData.totalBuy || 0);
 
-            // Kiểm tra nếu response có data hoặc message
+            formDataToSend.append("Password", formData.password);
+            formDataToSend.append("CreatedAt", new Date().toISOString());
+
+            // Gửi dữ liệu người dùng
+            const userResponse = await axios.post(
+                `${API_URL}/api/Users`,
+                formDataToSend,
+                {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
+                }
+            );
+
+            console.log("Response from Users:", userResponse.data);
+            const userId = userResponse.data.id;
+
+            // Gửi dữ liệu tài khoản
+            const accountData = {
+                userId: userId,
+                email: formData.email,
+                password: formData.password,
+            };
+
+            await axios.post(`${API_URL}/api/Accounts`, accountData, {
+                headers: { "Content-Type": "application/json" },
+            });
+
             notification.success({
-                message: 'Thành công',
-                description: response.data?.message || "Tạo tài khoản thành công!",
+                message: "Thành công",
+                description: "Tạo tài khoản và người dùng thành công!",
                 duration: 4,
                 placement: "bottomRight",
-                showProgress: true,
-                pauseOnHover: true
             });
-            if (response.status === 201) {
-                navigate("/user-management");
-            }
-        } catch (error) {
-            console.error("Lỗi khi tạo tài khoản:", error);
-            if (error.response?.data?.message) {
-                // Hiển thị thông báo lỗi cụ thể từ server
-                message.error(error.response.data.message);
 
-                // Nếu có lỗi về trùng lặp, cập nhật trạng thái lỗi
-                if (error.response.data.emailExists) {
-                    setErrors((prev) => ({
-                        ...prev,
-                        email: "Email đã tồn tại",
-                    }));
-                }
-                if (error.response.data.phoneExists) {
-                    setErrors((prev) => ({
-                        ...prev,
-                        phone: "Số điện thoại đã tồn tại",
-                    }));
-                }
-                if (error.response.data.accountNameExists) {
-                    setErrors((prev) => ({
-                        ...prev,
-                        accountName: "Tên tài khoản đã tồn tại",
-                    }));
-                }
-            } else {
-                notification.error({
-                    message: 'Thất bại',
-                    description: "Đã xảy ra lỗi khi tạo tài khoản",
-                    duration: 4,
-                    placement: "bottomRight",
-                    showProgress: true,
-                    pauseOnHover: true
-                });
-            }
+            navigate("/user-management");
+        } catch (error) {
+            console.error(
+                "Lỗi khi tạo tài khoản hoặc người dùng:",
+                error.response?.data || error
+            );
+            notification.error({
+                message: "Thất bại",
+                description: "Đã xảy ra lỗi khi tạo tài khoản hoặc người dùng.",
+                duration: 4,
+                placement: "bottomRight",
+            });
         }
     };
 
@@ -196,8 +141,8 @@ const AddUser = () => {
                         <TextField
                             label="Tên"
                             name="name"
-                            value={user.name}
-                            onChange={handleChange}
+                            value={formData.name}
+                            onChange={handleInputChange}
                             fullWidth
                             required
                             margin="normal"
@@ -208,50 +153,27 @@ const AddUser = () => {
                     <Grid item xs={12}>
                         <TextField
                             label="Ngày sinh"
-                            name="dayOfBirth"
+                            name="DateofBirth"
                             type="date"
                             InputLabelProps={{
                                 shrink: true,
                             }}
-                            value={user.dayOfBirth}
-                            onChange={handleChange}
+                            value={formData.DateofBirth}
+                            onChange={handleInputChange}
                             fullWidth
                             required
                             margin="normal"
-                            error={!!errors.dayOfBirth}
-                            helperText={errors.dayOfBirth}
+                            error={!!errors.DateofBirth}
+                            helperText={errors.DateofBirth}
                         />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <TextField
-                            select
-                            label="Giới tính"
-                            name="gender"
-                            value={user.gender}
-                            onChange={handleChange}
-                            fullWidth
-                            required
-                            margin="normal"
-                            error={!!errors.gender}
-                            helperText={errors.gender}
-                        >
-                            {genderOptions.map((option) => (
-                                <MenuItem
-                                    key={option.value}
-                                    value={option.value}
-                                >
-                                    {option.label}
-                                </MenuItem>
-                            ))}
-                        </TextField>
                     </Grid>
                     <Grid item xs={6}>
                         <TextField
                             label="Email"
                             name="email"
                             type="email"
-                            value={user.email}
-                            onChange={handleChange}
+                            value={formData.email}
+                            onChange={handleInputChange}
                             fullWidth
                             required
                             margin="normal"
@@ -263,8 +185,8 @@ const AddUser = () => {
                         <TextField
                             label="Số điện thoại"
                             name="phone"
-                            value={user.phone}
-                            onChange={handleChange}
+                            value={formData.phone}
+                            onChange={handleInputChange}
                             fullWidth
                             required
                             margin="normal"
@@ -276,8 +198,8 @@ const AddUser = () => {
                         <TextField
                             label="Tên tài khoản"
                             name="accountName"
-                            value={user.accountName}
-                            onChange={handleChange}
+                            value={formData.accountName}
+                            onChange={handleInputChange}
                             fullWidth
                             required
                             margin="normal"
@@ -290,8 +212,8 @@ const AddUser = () => {
                             label="Mật khẩu"
                             name="password"
                             type="password"
-                            value={user.password}
-                            onChange={handleChange}
+                            value={formData.password}
+                            onChange={handleInputChange}
                             fullWidth
                             required
                             margin="normal"
@@ -304,20 +226,17 @@ const AddUser = () => {
                             select
                             label="Vai trò"
                             name="role"
-                            value={user.role}
-                            onChange={handleChange}
+                            value={formData.role}
+                            onChange={handleInputChange}
                             fullWidth
                             required
                             margin="normal"
                             error={!!errors.role}
                             helperText={errors.role}
                         >
-                            {roleOptions.map((option) => (
-                                <MenuItem
-                                    key={option.value}
-                                    value={option.value}
-                                >
-                                    {option.label}
+                            {roles.map((role) => (
+                                <MenuItem key={role.id} value={role.id}>
+                                    {role.name}
                                 </MenuItem>
                             ))}
                         </TextField>
@@ -327,8 +246,8 @@ const AddUser = () => {
                         <TextField
                             label="Địa chỉ"
                             name="address"
-                            value={user.address}
-                            onChange={handleChange}
+                            value={formData.address}
+                            onChange={handleInputChange}
                             fullWidth
                             required
                             margin="normal"

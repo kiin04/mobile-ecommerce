@@ -2,19 +2,25 @@
 using Microsoft.EntityFrameworkCore;
 using WebAPI.Models;
 using WebAPI.Services;
+using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddNewtonsoftJson(options =>
+    {
+        options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+    });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 IConfigurationRoot cf = new ConfigurationBuilder().SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
-                                                   .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true).Build();
+                                                  .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true).Build();
 builder.Services.AddDbContext<CSDLBanHang>(otp => otp.UseSqlServer(cf.GetConnectionString("DefaultConnection")));
 
 builder.Services.Configure<FormOptions>(options =>
@@ -23,7 +29,7 @@ builder.Services.Configure<FormOptions>(options =>
 });
 
 
-builder.Services.AddScoped<ColorSizesService>(); 
+builder.Services.AddScoped<ColorSizesService>();
 builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<CategoriesService>();
 builder.Services.AddScoped<OrderService>();

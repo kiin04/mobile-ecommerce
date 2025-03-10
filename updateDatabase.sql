@@ -34,35 +34,6 @@ alter table Products
 add start_rate INT NULL;
 GO
 
-create table Comments(
-	id INT PRIMARY KEY IDENTITY(1,1),
-    userID NVARCHAR(255) NOT NULL,
-	product_id INT,
-    name NVARCHAR(255),
-	start INT NULL,
-	created_at DATETIME DEFAULT GETDATE(),
-    updated_at DATETIME DEFAULT GETDATE()
-);
-
--- update 09/03/2025
-ALTER TABLE Comments
-ADD content NVARCHAR(250) NULL;
-
-ALTER TABLE Comments
-ALTER COLUMN userID INT NOT NULL;
-
-ALTER TABLE Comments
-ALTER COLUMN product_id INT NOT NULL;
-
-ALTER TABLE Comments
-ADD CONSTRAINT FK_Comments_Users FOREIGN KEY (userID) REFERENCES Users(id);
-
-ALTER TABLE Comments
-ADD CONSTRAINT FK_Comments_Products FOREIGN KEY (product_id) REFERENCES Products(id);
-
-EXEC sp_rename 'Comments.start', 'stars', 'COLUMN';
-
-
 -- update 04/03/2025
 alter table Promotion
 add code VARCHAR(10) NULL;
@@ -83,5 +54,45 @@ GO
 -- update 06/03/2025
 update Products set start_rate = 0
 
+-- update-2 09/03/2025
+CREATE TABLE Comments(
+    id INT PRIMARY KEY IDENTITY(1,1),
+    userID INT NOT NULL,
+    product_id INT NOT NULL,
+    name NVARCHAR(255),
+    stars DECIMAL(2,1) NOT NULL,
+    content NVARCHAR(250) NULL,
+    created_at DATETIME DEFAULT GETDATE(),
+    updated_at DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (userID) REFERENCES Users(id),
+    FOREIGN KEY (product_id) REFERENCES Products(id)
+);
+
+-- update-3 09/03/2025
+alter table  Users
+add DateofBirth DATE NULL;
+
+alter table Accounts
+add username NVARCHAR(20);
+
 -- update 09/03/2025
-alter table Orders  add note NVARCHAR(MAX) NULL
+alter table Orders  add note NVARCHAR(MAX) NULL;
+
+-- update 10/03/2025
+UPDATE Users
+SET DateofBirth = '2004-06-20';
+
+UPDATE Accounts
+SET username = CASE
+    WHEN id = 1 THEN 'lamnt108'
+    WHEN id = 2 THEN 'qcao'
+    WHEN id = 3 THEN 'dnghia'
+    WHEN id = 4 THEN 'nsong'
+    WHEN id = 5 THEN 'minhquan'
+    ELSE username
+END
+WHERE id IN (1, 2, 3, 4, 5);
+
+-- update-2 10/03/2025
+alter table Comments
+alter column stars float
