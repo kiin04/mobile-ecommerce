@@ -20,9 +20,8 @@ const AddUser = () => {
         email: "",
         password: "",
         phone: "",
-        dayOfBirth: "",
+        DateofBirth: "",
         role: "",
-        gender: "",
         address: "",
         accountName: "",
         totalBuy: 0,
@@ -44,12 +43,6 @@ const AddUser = () => {
         fetchRole();
     }, []);
 
-    const genderOptions = [
-        { value: "Nam", label: "Nam" },
-        { value: "Nữ", label: "Nữ" },
-        { value: "Khác", label: "Khác" },
-    ];
-
     const validateForm = () => {
         const newErrors = {};
         if (!formData.name.trim()) newErrors.name = "Vui lòng nhập tên";
@@ -58,9 +51,8 @@ const AddUser = () => {
             newErrors.password = "Vui lòng nhập mật khẩu";
         if (!formData.phone.trim())
             newErrors.phone = "Vui lòng nhập số điện thoại";
-        if (!formData.dayOfBirth.trim())
-            newErrors.dayOfBirth = "Vui lòng chọn ngày sinh";
-        if (!formData.gender) newErrors.gender = "Vui lòng chọn giới tính";
+        if (!formData.DateofBirth.trim())
+            newErrors.DateofBirth = "Vui lòng chọn ngày sinh";
         if (!formData.address.trim())
             newErrors.address = "Vui lòng nhập địa chỉ";
         if (!formData.role) newErrors.role = "Vui lòng chọn vai trò";
@@ -161,42 +153,19 @@ const AddUser = () => {
                     <Grid item xs={12}>
                         <TextField
                             label="Ngày sinh"
-                            name="dayOfBirth"
+                            name="DateofBirth"
                             type="date"
                             InputLabelProps={{
                                 shrink: true,
                             }}
-                            value={formData.dayOfBirth}
+                            value={formData.DateofBirth}
                             onChange={handleInputChange}
                             fullWidth
                             required
                             margin="normal"
-                            error={!!errors.dayOfBirth}
-                            helperText={errors.dayOfBirth}
+                            error={!!errors.DateofBirth}
+                            helperText={errors.DateofBirth}
                         />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <TextField
-                            select
-                            label="Giới tính"
-                            name="gender"
-                            value={formData.gender}
-                            onChange={handleInputChange}
-                            fullWidth
-                            required
-                            margin="normal"
-                            error={!!errors.gender}
-                            helperText={errors.gender}
-                        >
-                            {genderOptions.map((option) => (
-                                <MenuItem
-                                    key={option.value}
-                                    value={option.value}
-                                >
-                                    {option.label}
-                                </MenuItem>
-                            ))}
-                        </TextField>
                     </Grid>
                     <Grid item xs={6}>
                         <TextField
