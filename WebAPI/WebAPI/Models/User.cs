@@ -23,5 +23,5 @@ namespace WebAPI.Models;
     [JsonIgnore]
     public DateTime? DateofBirth { get; set; }
 
-    public string DateofBirthFormatted => DateofBirth?.ToString("dd-MM-yyyy");
+    //public string DateofBirthFormatted => DateofBirth?.ToString("dd-MM-yyyy");
 }

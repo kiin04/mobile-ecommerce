@@ -96,3 +96,9 @@ WHERE id IN (1, 2, 3, 4, 5);
 -- update-2 10/03/2025
 alter table Comments
 alter column stars float
+
+-- update 10/3
+alter table Promotion
+add maxValue Decimal(18,2);
+GO
+update Promotion set maxValue = 2500000;

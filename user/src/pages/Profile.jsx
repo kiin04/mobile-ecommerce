@@ -64,7 +64,7 @@ const Profile = () => {
         name: "",
         email: "",
         phone: "",
-        dayOfBirth: "",
+         dateofBirth: "",
         password: "",
     });
 
@@ -98,7 +98,7 @@ const Profile = () => {
             name: "",
             email: "",
             phone: "",
-            dayOfBirth: "",
+             dateofBirth: "",
             password: "",
         });
 
@@ -121,8 +121,8 @@ const Profile = () => {
             hasErrors = true;
         }
 
-        // if (!validateAge(userData.dayOfBirth)) {
-        //     newErrors.dayOfBirth = "Bạn phải đủ 18 tuổi";
+        // if (!validateAge(userData. dateofBirth)) {
+        //     newErrors. dateofBirth = "Bạn phải đủ 18 tuổi";
         //     hasErrors = true;
         // }
 
@@ -151,8 +151,8 @@ const Profile = () => {
         formData.append("name", userData.name);
         //formData.append("email", userData.email);
         formData.append("phone", userData.phone);
-        //formData.append("dayOfBirth", userData.dayOfBirth);
-        //formData.append("gender", userData.gender);
+        //formData.append(" dateofBirth", userData. dateofBirth);
+        //formData.append("dateofBirthFormatted", userData. dateofBirth.toString('dd-MM-yyyy'));
         formData.append("address", userData.address);
         formData.append("account", user.account);
         formData.append("totalBuy", user.totalBuy);
@@ -440,34 +440,34 @@ const Profile = () => {
                                                 <input
                                                     type="date"
                                                     className={`border rounded-lg p-2 w-full text-left ${
-                                                        validationErrors.dayOfBirth
+                                                        validationErrors. dateofBirth
                                                             ? "border-red-500"
                                                             : ""
                                                     }`}
-                                                    name="dayOfBirth"
-                                                    value={userData.dayOfBirth}
+                                                    name=" dateofBirth"
+                                                    value={userData. dateofBirth}
                                                     onChange={(e) =>
                                                         setUserData({
                                                             ...userData,
-                                                            dayOfBirth:
+                                                             dateofBirth:
                                                                 e.target.value,
                                                         })
                                                     }
                                                     required
                                                 />
-                                                {validationErrors.dayOfBirth && (
+                                                {validationErrors. dateofBirth && (
                                                     <p className="text-red-500 text-sm absolute right-0 mt-1">
                                                         {
-                                                            validationErrors.dayOfBirth
+                                                            validationErrors. dateofBirth
                                                         }
                                                     </p>
                                                 )}
                                             </>
                                         ) : (
-                                            <p>{userData.dayOfBirth}</p>
+                                            <p>{userData. dateofBirth}</p>
                                         )}
                                     </div>
-                                </div> */}
+                                </div>  */}
 
                                 {/* <div className="flex justify-between items-start">
                                     <label className="font-medium">
