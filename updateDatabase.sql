@@ -92,3 +92,7 @@ SET username = CASE
     ELSE username
 END
 WHERE id IN (1, 2, 3, 4, 5);
+
+-- update-2 10/03/2025
+alter table Comments
+alter column stars float

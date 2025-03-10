@@ -11,33 +11,6 @@ import PropTypes from "prop-types";
 import { Fragment, useState, useEffect } from "react";
 import { API_URL } from "../../config";
 
-const review = [
-	{
-		img: "https://cdn.easyfrontend.com/pictures/users/user18.jpg",
-		name: "Freya Kemp",
-		rating: 4.8,
-		date: "Jan 24,2020",
-		content:
-			"Well received seems solid.",
-	},
-	{
-		img: "https://cdn.easyfrontend.com/pictures/users/user4.jpg",
-		name: "Issy Won",
-		rating: 4.5,
-		date: "June 10,2020",
-		content:
-			"A wonderful I should be.",
-	},
-	{
-		img: "https://cdn.easyfrontend.com/pictures/users/user17.jpg",
-		name: "Sophia Dunkley",
-		rating: 3.9,
-		date: "Sep 19,2020",
-		content:
-			"Sed velit.",
-	},
-];
-
 const Rating = ({ rating, showLabel, className, ...rest }) => (
 	<p className={classNames("text-sm", className)} {...rest}>
 		<span className="text-yellow-500">
@@ -64,7 +37,8 @@ Rating.propTypes = {
 };
 
 const ReviewItem = ({ item }) => {
-    const formattedDate = new Date(item.created_at).toLocaleDateString("vi-VN", {
+    const createdAt = item.createdAt
+    const formattedDate = new Date(createdAt).toLocaleDateString("vi-VN", {
         day: "numeric",
         month: "short",
         year: "numeric",
@@ -80,7 +54,7 @@ const ReviewItem = ({ item }) => {
 			<div>
 				<div className="flex items-center mb-6">
 					<div className="w-12 h-12 rounded-full mr-2 overflow-hidden">
-						<img src={item.imageUrl} alt={item.name} className="max-w-full h-auto mx-auto" />
+						<img src={imageUrl} alt={item.name} className="max-w-full h-auto mx-auto" />
 					</div>
 					<div className="flex flex-grow justify-between">
 						<div>
@@ -100,45 +74,6 @@ ReviewItem.propTypes = {
 	item: PropTypes.object.isRequired,
 };
 
-// const BarItem = ({ info }) => {
-// 	const progressBarStyle = {
-// 		width: info.width,
-// 	};
-
-// 	return (
-// 		<div className="flex justify-around items-center sm:w-1/2 mb-2">
-// 			<div className="mr-3">
-// 				<p className="text-sm font-bold mb-0">
-// 					<span className="opacity-50">{info.star}</span>
-// 					<span className="text-blue-600 ml-1">
-// 						<FontAwesomeIcon icon={faStar} />
-// 					</span>
-// 				</p>
-// 			</div>
-// 			<div className="flex-grow mr-3">
-// 				<div className="w-full bg-gray-200 dark:bg-slate-700 rounded-full h-1.5 overflow-hidden">
-// 					<div
-// 						className="w-8/12 h-full bg-blue-600"
-// 						style={progressBarStyle}
-// 					></div>
-// 				</div>
-// 			</div>
-// 			<div>
-// 				<p className="text-sm opacity-50 mb-0">{info.count}</p>
-// 			</div>
-// 		</div>
-// 	);
-// };
-
-// BarItem.propTypes = {
-// 	info: PropTypes.shape({
-// 		star: PropTypes.string.isRequired,
-// 		value: PropTypes.string.isRequired,
-// 		width: PropTypes.string.isRequired,
-// 		count: PropTypes.string.isRequired,
-// 	}).isRequired,
-// };
-
 export const ReviewsSection = () => {
     const [comments, setComments] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -146,7 +81,7 @@ export const ReviewsSection = () => {
     useEffect(() => {
         const fetchComments = async () => {
             try {
-                const response = await axios.get(`${API_URL}/api/Comment`);
+                const response = await axios.get(`${API_URL}/api/Comments`);
                 setComments(response.data);
                 setLoading(false);
             } catch (error) {

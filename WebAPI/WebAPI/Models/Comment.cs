@@ -12,8 +12,9 @@ public partial class Comment : BaseEntity
 
     public string Name { get; set; }
 
-    public int Stars { get; set; }
+    public float Stars { get; set; }
 
     public string? Content { get; set; }
 
+    public DateTime CreatedAt { get; set; }
 }

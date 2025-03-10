@@ -301,7 +301,9 @@ public partial class CSDLBanHang : DbContext
             entity.Property(e => e.ProductId).HasColumnName("product_id");
             entity.Property(e => e.UserId).HasColumnName("userID");
             entity.Property(e => e.Name).HasColumnName("name");
-            entity.Property(e => e.Stars).HasColumnName("stars");
+            entity.Property(e => e.Stars)
+                .HasColumnName("stars")
+                .HasColumnType("float");
             entity.Property(e => e.Content).HasMaxLength(250)
                 .HasColumnName("content");
             entity.Property(e => e.CreatedAt)
