@@ -23,6 +23,7 @@ const Checkout = () => {
     const [discountCodes, setDiscountCodes] = useState([]);
     const [selectedDiscount, setSelectedDiscount] = useState(null);
     const [discountedAmount, setDiscountedAmount] = useState(0);
+    const [error, setError] = useState(null);
 
     const userId = localStorage.getItem("userId");
 

@@ -15,6 +15,7 @@ const ProductDetails = () => {
     const [details, setDetails] = useState(null);
     const [quantity, setQuantity] = useState(1);
     const [error, setError] = useState("");
+    const [loading, setLoading] = useState(true);
     const user = useSelector((state) => state.user);
     const userId = user?.id;
 
@@ -105,7 +106,7 @@ const ProductDetails = () => {
             }
         };
         const fetchCartItems = async () => {
-           
+
             if (!userId) {
                 console.error("Xin hãy đăng nhập để sử dụng tính năng này");
             }

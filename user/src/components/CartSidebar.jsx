@@ -217,7 +217,7 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
     }, [cartItems]);
     return (
         <Drawer
-            title = <p className="text-xl font-bold">Giỏ Hàng</p>
+            title ={<p className="text-xl font-bold">Giỏ Hàng</p>}
             onClose={() => setCartOpen(false)}
             open={cartOpen}
             width={600}
