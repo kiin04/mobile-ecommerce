@@ -286,7 +286,7 @@ const EditOrder = () => {
                     <Grid item xs={12} sm={6}>
                         <TextField
                             label="Tên khách hàng"
-                            name="customerName"
+                            name="name"
                             value={order?.name || ""}
                             onChange={handleChange}
                             fullWidth

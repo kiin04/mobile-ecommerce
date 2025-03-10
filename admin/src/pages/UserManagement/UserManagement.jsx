@@ -398,9 +398,9 @@ const UserManagement = () => {
                                             Ngày sinh
                                         </Typography>
                                         <Typography className="value">
-                                            {new Date(
-                                                selectedUser.dayOfBirth
-                                            ).toLocaleDateString("vi-VN")}
+                                           
+                                               { selectedUser.dateofBirthFormatted}
+                                           
                                         </Typography>
                                     </Box>
 

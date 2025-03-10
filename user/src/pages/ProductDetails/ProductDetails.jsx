@@ -24,6 +24,8 @@ const ProductDetails = () => {
     const [chooseColor, setChooseColor] = useState("");
     const [selectedColor, setSelectedColor] = useState("");
 
+    const [cartItems, setCartItems] = useState([]);
+
     useEffect(() => {
         const fetchProduct = async () => {
             try {
@@ -102,7 +104,26 @@ const ProductDetails = () => {
                 //
             }
         };
-
+        const fetchCartItems = async () => {
+           
+            if (!userId) {
+                console.error("Xin hãy đăng nhập để sử dụng tính năng này");
+            }
+            try {
+                const response = await fetch(`${API_URL}/api/Carts/User/${user.id}`);
+                if (!response.ok) {
+                    throw new Error("Failed to fetch cart items");
+                }
+                const data = await response.json();
+                setCartItems(data);
+                setLoading(false);
+            } catch (error) {
+                console.error("Error fetching cart items:", error);
+                setError(error.message);
+                setLoading(false);
+            }
+        };
+        fetchCartItems();
         fetchColorSize();
         fetchProduct();
         fetchDetails();
@@ -127,7 +148,11 @@ const ProductDetails = () => {
 
         return stock;
     };
-
+    const checkCartItem =(cartItem)=>{
+        const check = cartItems.find((item) => item.productId == cartItem.productId && item.colorSizeId == cartItem.colorSizeId);
+       
+        return check;
+    }
     const handleQuantityChange = (e) => {
         const value = parseInt(e.target.value, 10);
         if (value > selectedColor.quantity) {
@@ -160,7 +185,7 @@ const ProductDetails = () => {
             // window.location.href = "/login";
             return;
         }
-
+      
         if (!product || !product.id) {
             notification.error({
                 message: "Lỗi",
@@ -189,18 +214,24 @@ const ProductDetails = () => {
             productId: product.id,
             userId: userId,
             price: product.price,
-            colorSizeId: selectedColor.id,
+            colorSizeId: selectedColor ? selectedColor.id : colorSizes[0]?.id,
             quantity: parseInt(quantity),
             // image: product.image,
         };
-
+       const check = checkCartItem(cartItem)
+       console.log('check cart ',check);
+       if (check){
+        const updatedData = {
+            ...check,
+            quantity: check.quantity + cartItem.quantity, 
+        };
         try {
-            const response = await fetch(`${API_URL}/api/Carts`, {
-                method: "POST",
+            const response = await fetch(`${API_URL}/api/Carts/${check?.id}`, {
+                method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify(cartItem),
+                body: JSON.stringify(updatedData),
                 cache: "no-store",
             });
 
@@ -233,6 +264,49 @@ const ProductDetails = () => {
                 pauseOnHover: true,
             });
         }
+       }else{
+            try {
+                const response = await fetch(`${API_URL}/api/Carts`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(cartItem),
+                    cache: "no-store",
+                });
+
+                if (!response.ok) {
+                    const data = await response.json();
+                    throw new Error(
+                        data.message || "Có lỗi xảy ra khi thêm vào giỏ hàng"
+                    );
+                }
+
+                notification.success({
+                    message: "Thành công",
+                    description: "Đã thêm sản phẩm vào giỏ hàng",
+                    duration: 4,
+                    placement: "bottomLeft",
+                    showProgress: true,
+                    pauseOnHover: true,
+                });
+
+                // Reset quantity sau khi thêm thành công
+                setQuantity(1);
+            } catch (error) {
+                console.error("Error adding to cart:", error);
+                notification.error({
+                    message: "Lỗi",
+                    description: error.message,
+                    duration: 4,
+                    placement: "bottomLeft",
+                    showProgress: true,
+                    pauseOnHover: true,
+                });
+            }
+       }
+
+        
     };
     const handleBuyNow = () => {
         if (selectedColor) {
