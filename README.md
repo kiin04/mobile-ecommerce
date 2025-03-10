@@ -150,29 +150,10 @@ Thanks to these awesome people for contributing to this project:
 <table>
   <tr>
     <td align="center">
-      <a href="https://github.com/ThePinkKitten">
-        <img src="https://avatars.githubusercontent.com/u/61980152?v=4" width="100px;" alt="ThePinkKitten"/><br />
-        <sub><b>ThePinkKitten</b></sub>
-      </a>
-    </td>
-    <td align="center">
       <a href="https://github.com/Tequinzyy">
         <img src="https://avatars.githubusercontent.com/u/116754124?v=4" width="100px;" alt="Tequinzyy"/><br />
         <sub><b>Tequinzyy</b></sub>
       </a>
-    </td>
-    <td align="center">
-      <a href="https://github.com/KevzCz">
-        <img src="https://avatars.githubusercontent.com/u/130611225?v=4" width="100px;" alt="KevzCz"/><br />
-        <sub><b>KevzCz</b></sub>
-      </a>
-    </td>
-    <td align="center">
-      <a href="https://github.com/Phatds357">
-        <img src="https://avatars.githubusercontent.com/u/161195912?v=4" width="100px;" alt="Phatds357"/><br />
-        <sub><b>Phatds357</b></sub>
-      </a>
-    </td>
   </tr>
 </table>
 

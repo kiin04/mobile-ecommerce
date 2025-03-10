@@ -1,0 +1,240 @@
+name: CI/CD for project
+
+on:
+  push:
+    branches: [main]
+
+## =======================================================================================
+## ======================================== Admin ========================================
+## =======================================================================================
+## Stage 1: Check code quality
+jobs:
+  check-code-quality-admin:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2.0.1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies for admin
+        working-directory: ./admin
+        run: bun install
+
+      - name: Run ESLint for admin
+        working-directory: ./admin
+        run: |
+          echo "Running ESLint in normal mode"
+          bunx eslint .
+          echo "Running ESLint in debug mode"
+          bunx eslint . --debug
+          echo "Running ESLint with auto-fix"
+          bunx eslint . --fix
+
+## Stage 2: Build and push docker
+  push_to_registry_admin:
+    needs: check-code-quality-admin
+    name: Build and push admin docker image to hub
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Login to docker registry
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push docker image to registry
+        uses: docker/build-push-action@v5
+        with:
+          context: ./admin
+          push: true
+          tags: nupniichan/wbdt-admin:latest
+
+## Stage 3: Pull docker image
+  pull_project_admin:
+    needs: push_to_registry_admin
+    name: Pull project from registry
+    runs-on: [self-hosted, Linux, X64]
+    steps:
+      - name: Login to docker registry
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Pull docker image from registry
+        run: |
+          docker pull nupniichan/wbdt-admin:latest
+
+## Stage 4: Deploy
+  deploy_admin:
+    needs: pull_project_admin
+    name: Deploy admin project
+    runs-on: [self-hosted, Linux, X64]
+    steps:
+      - name: Remove current running Docker container and run docker
+        run: |
+          docker rm -f wbdt-admin || true
+          docker run --name wbdt-admin -dp 5174:5174 nupniichan/wbdt-admin:latest
+
+## =======================================================================================
+## ======================================== User ========================================
+## =======================================================================================
+## Stage 1: Check code quality
+  check-code-quality-user:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2.0.1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies for user
+        working-directory: ./user
+        run: bun install
+
+      - name: Run ESLint for user
+        working-directory: ./user
+        run: |
+          echo "Running ESLint in normal mode"
+          bunx eslint .
+          echo "Running ESLint in debug mode"
+          bunx eslint . --debug
+          echo "Running ESLint with auto-fix"
+          bunx eslint . --fix
+
+## Stage 2: Build and push docker
+  push_to_registry_user:
+    needs: check-code-quality-user
+    name: Build and push user docker image to hub
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Login to docker registry
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push docker image to registry
+        uses: docker/build-push-action@v5
+        with:
+          context: ./user
+          push: true
+          tags: nupniichan/wbdt-user:latest
+
+## Stage 3: Pull docker image
+  pull_project_user:
+    needs: push_to_registry_user
+    name: Pull user from registry
+    runs-on: [self-hosted, Linux, X64]
+    steps:
+      - name: Login to docker registry
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Pull docker image from registry
+        run: |
+          docker pull nupniichan/wbdt-user:latest
+
+## Stage 4: Deploy
+  deploy_user:
+    needs: pull_project_user
+    name: Deploy user project
+    runs-on: [self-hosted, Linux, X64]
+    steps:
+      - name: Remove current running Docker container and run
+        run: |
+          docker rm -f wbdt-user || true
+          docker run --name wbdt-user -dp 5173:5173 nupniichan/wbdt-user:latest
+
+## =======================================================================================
+## ======================================== Server =======================================
+## =======================================================================================
+## Stage 1: Check code quality
+  check-code-quality-server:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2.0.1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies for server
+        working-directory: ./server
+        run: bun install
+
+      - name: Run ESLint for server
+        working-directory: ./server
+        run: |
+          echo "Running ESLint in normal mode"
+          bunx eslint .
+          echo "Running ESLint in debug mode"
+          bunx eslint . --debug
+          echo "Running ESLint with auto-fix"
+          bunx eslint . --fix
+
+## Stage 2: Build and push docker
+  push_to_registry_server:
+    needs: check-code-quality-server
+    name: Build and push server docker image to hub
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Login to docker registry
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push docker image to registry
+        uses: docker/build-push-action@v5
+        with:
+          context: ./server
+          push: true
+          tags: nupniichan/wbdt-server:latest
+
+## Stage 3: Pull docker image
+  pull_project_server:
+    needs: push_to_registry_server
+    name: Pull server from registry
+    runs-on: [self-hosted, Linux, X64]
+    steps:
+      - name: Login to docker registry
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Pull docker image from registry
+        run: |
+          docker pull nupniichan/wbdt-server:latest
+
+## Stage 4: Deploy
+  deploy_server:
+    needs: pull_project_server
+    runs-on: [self-hosted, Linux, X64]
+    name: Deploy server project
+    steps:
+      - name: Remove current running Docker container and run
+        run: |
+          docker rm -f wbdt-server || true
+          docker run --name wbdt-server -dp 5000:5000 nupniichan/wbdt-server:latest
