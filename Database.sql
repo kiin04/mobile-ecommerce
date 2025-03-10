@@ -1,4 +1,8 @@
-﻿CREATE DATABASE DBShop USE DBShop
+﻿
+CREATE DATABASE DBShop
+GO 
+USE DBShop
+GO
 -- Bảng Categories
 CREATE TABLE
     Categories (
@@ -17,24 +21,26 @@ CREATE TABLE
         name NVARCHAR (255) NOT NULL,
         description NVARCHAR (MAX),
         price DECIMAL(18, 2) NOT NULL,
-        --promo int,
+        promo int,
         unit NVARCHAR (50),
         brand NVARCHAR (50),
         sold INT default 0,
         rate INT default 0,
+		start_rate INT default 0,
         image VARBINARY(MAX),
         category_id INT NOT NULL,
         created_at DATETIME DEFAULT GETDATE (),
         updated_at DATETIME DEFAULT GETDATE (),
         FOREIGN KEY (category_id) REFERENCES Categories (id)
-    );
+);
 
--- Bảng ColorSizes
+-- Bảng ColorSize
 CREATE TABLE
-    ColorSizes (
+    ColorSize (
         id INT PRIMARY KEY IDENTITY (1, 1),
         product_id INT NOT NULL,
         color NVARCHAR (50) NOT NULL,
+		code NVARCHAR (50) NOT NULL,
         size NVARCHAR (10) NOT NULL,
         quantity INT NOT NULL,
         price DECIMAL(18, 2),
@@ -91,6 +97,10 @@ CREATE TABLE
         name NVARCHAR (255) NULL,
         phone NVARCHAR (15) NULL,
         address NVARCHAR (255) NULL,
+		paymentStatus NVARCHAR(70) NUll,
+		paymentMethod NVARCHAR(70) NUll,
+		cancellationReason NVARCHAR(255) NUll,
+		note NVARCHAR(MAX) NUll
     );
 
 -- Bảng OrderDetails
@@ -102,7 +112,7 @@ CREATE TABLE
         quantity INT NOT NULL,
         price DECIMAL(18, 2) NOT NULL,
         FOREIGN KEY (order_id) REFERENCES Orders (id),
-        FOREIGN KEY (color_size_id) REFERENCES ColorSizes (id),
+        FOREIGN KEY (color_size_id) REFERENCES ColorSize (id),
         productId INT,
         created_at DATETIME DEFAULT GETDATE (),
         updated_at DATETIME DEFAULT GETDATE ()
@@ -140,7 +150,9 @@ CREATE TABLE
         ScreenResolution NVARCHAR (100) NULL, -- Screen resolution
         ChargingTechnology NVARCHAR (50) NULL, -- Charging technology
         ProductId INT, -- Foreign key to the Products table
-        FOREIGN KEY (ProductId) REFERENCES Products (id)
+        FOREIGN KEY (ProductId) REFERENCES Products (id),
+		created_at DATETIME DEFAULT GETDATE (),
+        updated_at DATETIME DEFAULT GETDATE ()
     );
 
 -- Bảng Promotion
@@ -149,7 +161,22 @@ CREATE TABLE
         id INT PRIMARY KEY IDENTITY (1, 1),
         name NVARCHAR (255) NOT NULL,
         value DECIMAL(18, 2) NOT NULL,
+		minPrice DECIMAL(18, 2) NOT NULL,
+		code NVARCHAR (20) NOT NULL,
         created_at DATETIME DEFAULT GETDATE (),
         updated_at DATETIME DEFAULT GETDATE (),
         end_at DATETIME
-    );
+);
+
+create table Comments(
+	id INT PRIMARY KEY IDENTITY(1,1),
+    userID int NOT NULL,
+	product_id INT,
+    name NVARCHAR(255),
+	stars INT ,
+	created_at DATETIME DEFAULT GETDATE(),
+    updated_at DATETIME DEFAULT GETDATE(),
+	content NVARCHAR(250) 
+);
+
+
