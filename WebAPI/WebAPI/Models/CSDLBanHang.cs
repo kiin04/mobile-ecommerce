@@ -310,14 +310,7 @@ public partial class CSDLBanHang : DbContext
                 .HasColumnType("datetime")
                 .HasColumnName("updated_at");
 
-            // entity.HasOne(c => c.User)
-            //     .WithMany()
-            //     .HasForeignKey(c => c.UserId)
-            //     .HasConstraintName("FK_Comments_Users");
-            // entity.HasOne(c => c.Product)
-            //     .WithMany()
-            //     .HasForeignKey(c => c.ProductId)
-            //     .HasConstraintName("FK_Comments_Products");
+           
         });
 
 
@@ -340,7 +333,7 @@ public partial class CSDLBanHang : DbContext
                 .HasMaxLength(255)
                 .HasColumnName("name");
             entity.Property(e => e.Code)
-             .HasMaxLength(10)
+             .HasMaxLength(20)
              .HasColumnName("code");
             entity.Property(e => e.UpdatedAt)
                 .HasDefaultValueSql("(getdate())")
