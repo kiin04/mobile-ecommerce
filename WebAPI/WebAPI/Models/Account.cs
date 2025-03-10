@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace WebAPI.Models;
 
-public partial class Account:BaseEntity
+public partial class Account : BaseEntity
 {
-   
+
 
     public int UserId { get; set; }
 
@@ -13,5 +13,5 @@ public partial class Account:BaseEntity
 
     public string Password { get; set; } = null!;
 
-   
+    public string Username { get; set; } = null!;
 }

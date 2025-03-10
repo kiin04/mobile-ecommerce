@@ -4,6 +4,7 @@ using WebAPI.DTO;
 using WebAPI.Factory;
 using WebAPI.Models;
 using WebAPI.Services;
+using Newtonsoft.Json;
 
 namespace WebAPI.Controllers
 {
@@ -51,11 +52,11 @@ namespace WebAPI.Controllers
             {
                 // Gọi phương thức CheckPhoneAsync từ service
                 var user = await _UserService.CheckPhoneAsync(phone);
-              
+
                 return Ok(user);
             }
             catch (KeyNotFoundException ex)
-            {  
+            {
                 return NotFound(new { message = ex.Message });
             }
             catch (Exception ex)
@@ -80,6 +81,7 @@ namespace WebAPI.Controllers
                     Role = userDTO.Role,
                     TotalBuy = userDTO.TotalBuy,
                     Account = userDTO.Account,
+                    DateofBirth = userDTO.DateofBirth,
                     CreatedAt = userDTO.CreatedAt,
                 };
                 if (userDTO.CreatedAt == null)
@@ -112,6 +114,7 @@ namespace WebAPI.Controllers
                     Role = userDTO.Role,
                     TotalBuy = userDTO.TotalBuy,
                     Account = 0,
+                    DateofBirth = userDTO.DateofBirth,
                 };
                 if (image == null)
                 {
@@ -136,7 +139,7 @@ namespace WebAPI.Controllers
 
             try
             {
-               await _UserService.DeleteDependencieAsync(id);
+                await _UserService.DeleteDependencieAsync(id);
                 return NoContent();
             }
             catch (KeyNotFoundException ex)

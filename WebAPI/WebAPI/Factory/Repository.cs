@@ -31,13 +31,13 @@ namespace WebAPI.Factory
         {
             try
             {
-               
+
                 // Kiểm tra nếu entity có ảnh
                 if (entity is IHasImage entityWithImage && image != null)
                 {
                     using var memoryStream = new MemoryStream();
                     await image.CopyToAsync(memoryStream);
-                    entityWithImage.Image = memoryStream.ToArray(); 
+                    entityWithImage.Image = memoryStream.ToArray();
                 }
 
                 await _dbSet.AddAsync(entity);
