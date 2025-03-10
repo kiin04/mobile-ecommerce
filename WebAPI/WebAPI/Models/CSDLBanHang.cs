@@ -351,6 +351,9 @@ public partial class CSDLBanHang : DbContext
             entity.Property(e => e.MinPrice)
                 .HasColumnName("minPrice")
                 .HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.MaxValue)
+               .HasColumnName("maxValue")
+               .HasColumnType("decimal(18, 2)");
         });
 
         modelBuilder.Entity<Role>(entity =>
