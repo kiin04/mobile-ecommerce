@@ -1,0 +1,4 @@
+[build]
+  base = ""  # root directory of build process
+  publish = "dist"  # output directory of build process
+  command = "bun build src/main.jsx"  # entry point
