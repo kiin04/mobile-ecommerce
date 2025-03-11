@@ -11,6 +11,7 @@ const userSlice = createSlice({
         account:"",
         phone:"",
         address: "",
+        dateofBirth:"",
         totalBuy: 0,
         isLoggedIn: false,
     },
@@ -28,6 +29,7 @@ const userSlice = createSlice({
                 role: "",
                 address: "",
                 phone:"",
+                dateofBirth:"",
                 totalBuy: 0,
                 isLoggedIn: false,
             };
