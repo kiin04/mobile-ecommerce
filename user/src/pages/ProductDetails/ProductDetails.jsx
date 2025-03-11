@@ -106,12 +106,13 @@ const ProductDetails = () => {
             }
         };
         const fetchCartItems = async () => {
-
             if (!userId) {
                 console.error("Xin hãy đăng nhập để sử dụng tính năng này");
             }
             try {
-                const response = await fetch(`${API_URL}/api/Carts/User/${user.id}`);
+                const response = await fetch(
+                    `${API_URL}/api/Carts/User/${user.id}`
+                );
                 if (!response.ok) {
                     throw new Error("Failed to fetch cart items");
                 }
@@ -149,11 +150,15 @@ const ProductDetails = () => {
 
         return stock;
     };
-    const checkCartItem =(cartItem)=>{
-        const check = cartItems.find((item) => item.productId == cartItem.productId && item.colorSizeId == cartItem.colorSizeId);
-       
+    const checkCartItem = (cartItem) => {
+        const check = cartItems.find(
+            (item) =>
+                item.productId == cartItem.productId &&
+                item.colorSizeId == cartItem.colorSizeId
+        );
+
         return check;
-    }
+    };
     const handleQuantityChange = (e) => {
         const value = parseInt(e.target.value, 10);
         if (value > selectedColor.quantity) {
@@ -174,19 +179,19 @@ const ProductDetails = () => {
     };
 
     const handleAddCart = async () => {
-        if (!userId) {
-            notification.warning({
-                message: "Lưu ý",
-                description: "Vui lòng đăng nhập để sử dụng giỏ hàng",
-                duration: 4,
-                placement: "bottomLeft",
-                showProgress: true,
-                pauseOnHover: true,
-            });
-            // window.location.href = "/login";
-            return;
-        }
-      
+        // if (!userId) {
+        //     notification.warning({
+        //         message: "Lưu ý",
+        //         description: "Vui lòng đăng nhập để sử dụng giỏ hàng",
+        //         duration: 4,
+        //         placement: "bottomLeft",
+        //         showProgress: true,
+        //         pauseOnHover: true,
+        //     });
+        //     // window.location.href = "/login";
+        //     return;
+        // }
+
         if (!product || !product.id) {
             notification.error({
                 message: "Lỗi",
@@ -219,53 +224,56 @@ const ProductDetails = () => {
             quantity: parseInt(quantity),
             // image: product.image,
         };
-       const check = checkCartItem(cartItem)
-       console.log('check cart ',check);
-       if (check){
-        const updatedData = {
-            ...check,
-            quantity: check.quantity + cartItem.quantity, 
-        };
-        try {
-            const response = await fetch(`${API_URL}/api/Carts/${check?.id}`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(updatedData),
-                cache: "no-store",
-            });
-
-            if (!response.ok) {
-                const data = await response.json();
-                throw new Error(
-                    data.message || "Có lỗi xảy ra khi thêm vào giỏ hàng"
+        const check = checkCartItem(cartItem);
+        console.log("check cart ", check);
+        if (check) {
+            const updatedData = {
+                ...check,
+                quantity: check.quantity + cartItem.quantity,
+            };
+            try {
+                const response = await fetch(
+                    `${API_URL}/api/Carts/${check?.id}`,
+                    {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(updatedData),
+                        cache: "no-store",
+                    }
                 );
+
+                if (!response.ok) {
+                    const data = await response.json();
+                    throw new Error(
+                        data.message || "Có lỗi xảy ra khi thêm vào giỏ hàng"
+                    );
+                }
+
+                notification.success({
+                    message: "Thành công",
+                    description: "Đã thêm sản phẩm vào giỏ hàng",
+                    duration: 4,
+                    placement: "bottomLeft",
+                    showProgress: true,
+                    pauseOnHover: true,
+                });
+
+                // Reset quantity sau khi thêm thành công
+                setQuantity(1);
+            } catch (error) {
+                console.error("Error adding to cart:", error);
+                notification.error({
+                    message: "Lỗi",
+                    description: error.message,
+                    duration: 4,
+                    placement: "bottomLeft",
+                    showProgress: true,
+                    pauseOnHover: true,
+                });
             }
-
-            notification.success({
-                message: "Thành công",
-                description: "Đã thêm sản phẩm vào giỏ hàng",
-                duration: 4,
-                placement: "bottomLeft",
-                showProgress: true,
-                pauseOnHover: true,
-            });
-
-            // Reset quantity sau khi thêm thành công
-            setQuantity(1);
-        } catch (error) {
-            console.error("Error adding to cart:", error);
-            notification.error({
-                message: "Lỗi",
-                description: error.message,
-                duration: 4,
-                placement: "bottomLeft",
-                showProgress: true,
-                pauseOnHover: true,
-            });
-        }
-       }else{
+        } else {
             try {
                 const response = await fetch(`${API_URL}/api/Carts`, {
                     method: "POST",
@@ -273,7 +281,7 @@ const ProductDetails = () => {
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify(cartItem),
-                    cache: "no-store",
+                    cache: "no-store"
                 });
 
                 if (!response.ok) {
@@ -305,9 +313,7 @@ const ProductDetails = () => {
                     pauseOnHover: true,
                 });
             }
-       }
-
-        
+        }
     };
     const handleBuyNow = () => {
         if (selectedColor) {

@@ -31,7 +31,7 @@ GO
 
 -- update 03/03/2025
 alter table Products
-add start_rate INT NULL;
+add stars_rate INT NULL;
 GO
 
 -- update 04/03/2025
@@ -52,7 +52,7 @@ set code = '#000000';
 GO
 
 -- update 06/03/2025
-update Products set start_rate = 0
+update Products set stars_rate = 0
 
 -- update-2 09/03/2025
 CREATE TABLE Comments(
@@ -97,8 +97,11 @@ WHERE id IN (1, 2, 3, 4, 5);
 alter table Comments
 alter column stars float
 
--- update 10/3
+-- update 11/03/2025
+EXEC sp_rename 'Products.start_rate', 'stars_rate', 'COLUMN';
 alter table Promotion
-add maxValue Decimal(18,2);
-GO
-update Promotion set maxValue = 2500000;
+add maxValue DECIMAL(18, 2);
+update Promotion
+set maxValue = 2500000;
+alter table promotion
+alter column maxValue DECIMAL(18, 2) NOT NULL;
