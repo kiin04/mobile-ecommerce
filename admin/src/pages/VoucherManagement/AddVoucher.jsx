@@ -9,12 +9,11 @@ const AddVoucher = () => {
     const navigate = useNavigate();
     const [voucher, setVoucher] = useState({
         name: "",
-        startDate: "",
-        endDate: "",
-        discountPercent: "",
+        endAt: "",
+        value: "",
         code: "",
-        minOrderValue: "",
-        maxDiscountAmount: "",
+        minPrice: "",
+        maxValue: "",
     });
 
     const [errors, setErrors] = useState({});
@@ -29,30 +28,22 @@ const AddVoucher = () => {
             newErrors.name = "Tên voucher phải có ít nhất 3 ký tự";
         }
 
-        // Validate ngày bắt đầu
-        if (!voucher.startDate) {
-            // Đổi tên field
-            newErrors.startDate = "Vui lòng chọn ngày bắt đầu";
-        }
-
         // Validate ngày kết thúc
-        if (!voucher.endDate) {
+        if (!voucher.endAt) {
             // Đổi tên field
-            newErrors.endDate = "Vui lòng chọn ngày kết thúc";
-        } else if (new Date(voucher.endDate) <= new Date(voucher.startDate)) {
-            newErrors.endDate = "Ngày kết thúc phải sau ngày bắt đầu";
-        }
+            newErrors.endAt = "Vui lòng chọn ngày kết thúc";
+        } 
 
         // Validate tỷ lệ giảm giá
-        const discountPercent = Number(voucher.discountPercent);
-        if (!voucher.discountPercent) {
-            newErrors.discountPercent = "Vui lòng nhập tỷ lệ giảm giá";
+        const value = Number(voucher.value);
+        if (!voucher.value) {
+            newErrors.value = "Vui lòng nhập tỷ lệ giảm giá";
         } else if (
-            isNaN(discountPercent) ||
-            discountPercent <= 0 ||
-            discountPercent > 100
+            isNaN(value) ||
+            value <= 0 ||
+            value > 100
         ) {
-            newErrors.discountPercent = "Tỷ lệ giảm giá phải từ 1% đến 100%";
+            newErrors.value = "Tỷ lệ giảm giá phải từ 1% đến 100%";
         }
 
         // Validate mã áp dụng
@@ -65,18 +56,18 @@ const AddVoucher = () => {
         }
 
         // Validate giá trị đơn hàng tối thiểu
-        if (!voucher.minOrderValue) {
-            newErrors.minOrderValue =
+        if (!voucher.maxValue) {
+            newErrors.maxValue =
                 "Vui lòng nhập giá trị đơn hàng tối thiểu";
-        } else if (Number(voucher.minOrderValue) < 0) {
-            newErrors.minOrderValue = "Giá trị đơn hàng tối thiểu không thể âm";
+        } else if (Number(voucher.maxValue) < 0) {
+            newErrors.maxValue = "Giá trị đơn hàng tối thiểu không thể âm";
         }
 
         // Validate số tiền giảm tối đa
-        if (!voucher.maxDiscountAmount) {
-            newErrors.maxDiscountAmount = "Vui lòng nhập số tiền giảm tối đa";
-        } else if (Number(voucher.maxDiscountAmount) < 0) {
-            newErrors.maxDiscountAmount = "Số tiền giảm tối đa không thể âm";
+        if (!voucher.maxValue) {
+            newErrors.maxValue = "Vui lòng nhập số tiền giảm tối đa";
+        } else if (Number(voucher.maxValue) < 0) {
+            newErrors.maxValue = "Số tiền giảm tối đa không thể âm";
         }
 
         setErrors(newErrors);
@@ -104,22 +95,16 @@ const AddVoucher = () => {
         if (!validateForm()) {
             return;
         }
-
+        const formattedVoucher = {
+            ...voucher,
+            endAt: `${voucher.endAt}T00:00:00`, 
+        };
+        console.log('promotion data: ', formattedVoucher);
         try {
-            // Chuyển đổi dữ liệu để khớp với model
-            const voucherData = {
-                name: voucher.name,
-                code: voucher.code, // Đổi từ applicableCode sang code
-                discountPercent: Number(voucher.discountPercent), // Đổi từ discountRate sang discountPercent
-                startDate: voucher.startDate, // Đổi từ usageDate sang startDate
-                endDate: voucher.endDate, // Đổi từ expirationDate sang endDate
-                minOrderValue: Number(voucher.minOrderValue), // Thêm các trường bắt buộc theo model
-                maxDiscountAmount: Number(voucher.maxDiscountAmount),
-            };
-
+           
             const response = await axios.post(
-                `${API_URL}/api/addDiscountCode`,
-                voucherData,
+                `${API_URL}/api/Promotions`,
+                formattedVoucher,
                 {
                     headers: { "Content-Type": "application/json" },
                 }
@@ -159,7 +144,9 @@ const AddVoucher = () => {
             });
         }
     };
-
+    const formatDateForInput = (dateString) => {
+        return dateString.split('T')[0]; 
+    };
     return (
         <Box padding={3}>
             <Typography variant="h4" gutterBottom>
@@ -180,29 +167,13 @@ const AddVoucher = () => {
                             helperText={errors.name}
                         />
                     </Grid>
-                    <Grid item xs={12} sm={6}>
-                        <TextField
-                            label="Ngày bắt đầu"
-                            name="startDate"
-                            type="date"
-                            value={voucher.startDate}
-                            onChange={handleInputChange}
-                            fullWidth
-                            required
-                            margin="normal"
-                            InputLabelProps={{
-                                shrink: true,
-                            }}
-                            error={!!errors.startDate}
-                            helperText={errors.startDate}
-                        />
-                    </Grid>
+                   
                     <Grid item xs={12} sm={6}>
                         <TextField
                             label="Ngày kết thúc"
-                            name="endDate"
+                            name="endAt"
                             type="date"
-                            value={voucher.endDate}
+                            value={voucher.endAt}
                             onChange={handleInputChange}
                             fullWidth
                             required
@@ -210,26 +181,26 @@ const AddVoucher = () => {
                             InputLabelProps={{
                                 shrink: true,
                             }}
-                            error={!!errors.endDate}
-                            helperText={errors.endDate}
+                            error={!!errors.endAt}
+                            helperText={errors.endAt}
                         />
                     </Grid>
                     <Grid item xs={12} sm={6}>
                         <TextField
                             label="Tỷ lệ giảm giá (%)"
-                            name="discountPercent"
+                            name="value"
                             type="number"
-                            value={voucher.discountPercent}
+                            value={voucher.value}
                             onChange={handleInputChange}
                             fullWidth
                             required
                             margin="normal"
                             inputProps={{ min: 1, max: 100 }}
-                            error={!!errors.discountPercent}
-                            helperText={errors.discountPercent}
+                            error={!!errors.value}
+                            helperText={errors.value}
                         />
                     </Grid>
-                    <Grid item xs={12}>
+                    <Grid item xs={6}>
                         <TextField
                             label="Mã áp dụng"
                             name="code"
@@ -247,31 +218,31 @@ const AddVoucher = () => {
                     <Grid item xs={12} sm={6}>
                         <TextField
                             label="Giá trị đơn hàng tối thiểu"
-                            name="minOrderValue"
+                            name="minPrice"
                             type="number"
-                            value={voucher.minOrderValue}
+                            value={voucher.minPrice}
                             onChange={handleInputChange}
                             fullWidth
                             required
                             margin="normal"
                             inputProps={{ min: 0 }}
-                            error={!!errors.minOrderValue}
-                            helperText={errors.minOrderValue}
+                            error={!!errors.minPrice}
+                            helperText={errors.minPrice}
                         />
                     </Grid>
                     <Grid item xs={12} sm={6}>
                         <TextField
                             label="Số tiền giảm tối đa"
-                            name="maxDiscountAmount"
+                            name="maxValue"
                             type="number"
-                            value={voucher.maxDiscountAmount}
+                            value={voucher.maxValue}
                             onChange={handleInputChange}
                             fullWidth
                             required
                             margin="normal"
                             inputProps={{ min: 0 }}
-                            error={!!errors.maxDiscountAmount}
-                            helperText={errors.maxDiscountAmount}
+                            error={!!errors.maxValue}
+                            helperText={errors.maxValue}
                         />
                     </Grid>
                 </Grid>
