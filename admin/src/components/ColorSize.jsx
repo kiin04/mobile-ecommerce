@@ -327,7 +327,7 @@ const ColorSize = ({ productId }) => {
                     <label style={{ marginLeft: "4px" }}>Mã màu </label>
                     <TextField
                         label="Mã màu"
-                        type="code"
+                        type="test"
                         value={newColorSize?.code || ""}
                         onChange={(e) =>
                             setNewColorSize({
@@ -341,7 +341,7 @@ const ColorSize = ({ productId }) => {
                     <Input
                         label="Mã màu"
                         type="color"
-                        value={selectedColor?.code || ""}
+                        value={newColorSize?.code || ""}
                         onChange={(e) =>
                             setNewColorSize({
                                 ...newColorSize,
@@ -363,19 +363,7 @@ const ColorSize = ({ productId }) => {
                         fullWidth
                         margin="normal"
                     />
-                    <TextField
-                        label="Giá phiên bản"
-                        type="number"
-                        value={newColorSize.price}
-                        onChange={(e) =>
-                            setNewColorSize({
-                                ...newColorSize,
-                                price: e.target.value,
-                            })
-                        }
-                        fullWidth
-                        margin="normal"
-                    />
+                    
                     <TextField
                         label="Số lượng"
                         type="number"
