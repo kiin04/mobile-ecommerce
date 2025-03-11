@@ -56,7 +56,7 @@ const ColorSize = ({ productId }) => {
         color: "",
         size: "",
         quantity: "",
-        price: "",
+        price: 0,
     });
 
     const queryClient = useQueryClient();
@@ -102,8 +102,7 @@ const ColorSize = ({ productId }) => {
         if (
             !selectedColor.color ||
             !selectedColor.size ||
-            !selectedColor.quantity ||
-            !selectedColor.price
+            !selectedColor.quantity 
         ) {
             message.warning("Vui lòng nhập đầy đủ thông tin!");
             return;
@@ -181,9 +180,7 @@ const ColorSize = ({ productId }) => {
                                 >
                                     Màu: {item.color} - {item.size}
                                 </Typography>
-                                <Typography variant="body">
-                                    Giá: {item.price}
-                                </Typography>
+                              
                                 <Typography variant="body2">
                                     Số lượng: {item.quantity}
                                 </Typography>
@@ -243,19 +240,7 @@ const ColorSize = ({ productId }) => {
                         fullWidth
                         margin="normal"
                     />
-                    <TextField
-                        label="Giá"
-                        type="number"
-                        value={selectedColor?.price || ""}
-                        onChange={(e) =>
-                            setSelectedColor({
-                                ...selectedColor,
-                                price: e.target.value,
-                            })
-                        }
-                        fullWidth
-                        margin="normal"
-                    />
+                  
                     <label style={{ marginLeft: "4px" }}>Mã màu </label>
                     <TextField
                         label="Mã màu"
