@@ -277,7 +277,7 @@ public partial class CSDLBanHang : DbContext
                 .HasDefaultValue(0)
                 .HasColumnName("rate");
             entity.Property(e => e.StartRate)
-                .HasColumnName("start_rate");
+                .HasColumnName("stars_rate");
             entity.Property(e => e.Sold)
                 .HasDefaultValue(0)
                 .HasColumnName("sold");
