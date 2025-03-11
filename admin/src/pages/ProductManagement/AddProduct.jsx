@@ -40,7 +40,8 @@ const AddProduct = () => {
         sold: 0,
         price: 0,
         categortId: 1,
-        brand: "",
+        brand: "SphoneC",
+        start_rate : 0,
         description: "",
         image: null,
     });
@@ -94,6 +95,7 @@ const AddProduct = () => {
             formData.append("image", product.image);
         }
         console.log("product:", formData);
+        validateForm();
         try {
             const response = await fetch(`${API_URL}/api/Products`, {
                 method: "POST",
@@ -143,30 +145,7 @@ const AddProduct = () => {
         "Xám",
     ];
     const osOptions = ["Android", "IOS"];
-    const brandOptions = [
-        "Apple",
-        "Samsung",
-        "Oppo",
-        "Xiaomi",
-        "Vivo",
-        "Realme",
-        "Huawei",
-        "Nokia",
-        "LG",
-        "Lenovo",
-        "Asus",
-        "Google",
-        "Microsoft",
-        "BlackBerry",
-        "HTC",
-        "Sony",
-        "Motorola",
-        "OnePlus",
-        "Razer",
-        "ZTE",
-        "Meizu",
-        "Nubia",
-    ];
+    
     const screenTechOptions = [
         "OLED",
         "AMOLED",
@@ -233,29 +212,7 @@ const AddProduct = () => {
                             margin="normal"
                         />
                     </Grid>
-                    <Grid item xs={12} sm={6}>
-                        <Autocomplete
-                            freeSolo
-                            options={brandOptions}
-                            value={product.brand}
-                            onChange={(event, newValue) => {
-                                setProduct({
-                                    ...product,
-                                    brand: newValue || "",
-                                });
-                            }}
-                            renderInput={(params) => (
-                                <TextField
-                                    {...params}
-                                    label="Thương hiệu"
-                                    name="brand"
-                                    required
-                                    margin="normal"
-                                    fullWidth
-                                />
-                            )}
-                        />
-                    </Grid>
+                 
                     <Grid item xs={12} sm={6}>
                         <TextField
                             select
@@ -278,6 +235,19 @@ const AddProduct = () => {
                             ))}
                         </TextField>
                     </Grid>
+                    <Grid item xs={12} sm={6}>
+                                            <TextField
+                                                label="Giảm giá"
+                                                name="promo"
+                                                type="number"
+                                                value={product?.promo}
+                                                onChange={handleChange}
+                                                fullWidth
+                                                required
+                                                margin="normal"
+                                                inputProps={{ min: 0 }}
+                                            />
+                     </Grid>
 
                     <Grid item xs={12} sm={4}>
                         <Typography variant="subtitle1" gutterBottom>
