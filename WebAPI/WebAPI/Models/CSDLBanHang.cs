@@ -405,8 +405,8 @@ public partial class CSDLBanHang : DbContext
                 .HasColumnType("datetime")
                 .HasColumnName("updated_at");
             entity.Property(e => e.DateofBirth)
-                .HasColumnName("DateofBirth")
-                .HasColumnType("date");
+                .HasColumnName("dateofBirth");
+               
         });
 
         OnModelCreatingPartial(modelBuilder);

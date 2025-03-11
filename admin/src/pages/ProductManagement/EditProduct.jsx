@@ -295,7 +295,7 @@ const EditProduct = () => {
                         />
                     </Grid>
 
-                    <Grid item xs={12} sm={3}>
+                    <Grid item xs={12} sm={6}>
                         <TextField
                             label="Giá"
                             name="price"
@@ -308,40 +308,6 @@ const EditProduct = () => {
                             inputProps={{ min: 0 }}
                         />
                     </Grid>
-
-                    <Grid item xs={12} sm={3}>
-                        <TextField
-                            label="Giảm giá"
-                            name="promo"
-                            type="number"
-                            value={product?.promo}
-                            onChange={handleChange}
-                            fullWidth
-                            required
-                            margin="normal"
-                            inputProps={{ min: 0 }}
-                        />
-                    </Grid>
-
-                    <Grid item xs={12} sm={6}>
-                        <TextField
-                            select
-                            label="Thương hiệu"
-                            name="brand"
-                            value={product?.brand || ""}
-                            onChange={handleChange}
-                            fullWidth
-                            required
-                            margin="normal"
-                        >
-                            {brandOptions.map((option) => (
-                                <MenuItem key={option} value={option}>
-                                    {option}
-                                </MenuItem>
-                            ))}
-                        </TextField>
-                    </Grid>
-
                     <Grid item xs={12} sm={6}>
                         <TextField
                             select
@@ -364,6 +330,41 @@ const EditProduct = () => {
                             ))}
                         </TextField>
                     </Grid>
+                    <Grid item xs={12} sm={6}>
+                        <TextField
+                            label="Giảm giá"
+                            name="promo"
+                            type="number"
+                            value={product?.promo}
+                            onChange={handleChange}
+                            fullWidth
+                            required
+                            margin="normal"
+                            inputProps={{ min: 0 }}
+                        />
+                    </Grid>
+
+                  {/* <Grid item xs={12} sm={6}>
+                        <TextField
+                            select
+                            label="Thương hiệu"
+                            name="brand"
+                            value={product?.brand || ""}
+                            onChange={handleChange}
+                            fullWidth
+                            required
+                            margin="normal"
+                        >
+                            {brandOptions.map((option) => (
+                                <MenuItem key={option} value={option}>
+                                    {option}
+                                </MenuItem>
+                            ))}
+                        </TextField>
+                    </Grid>*/ }  
+                 
+
+                 
 
                     <Grid item xs={12} sm={4}>
                         <input

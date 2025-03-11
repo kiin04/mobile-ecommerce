@@ -81,7 +81,7 @@ namespace WebAPI.Controllers
                     Role = userDTO.Role,
                     TotalBuy = userDTO.TotalBuy,
                     Account = userDTO.Account,
-                    DateofBirth = userDTO.DateofBirth,
+                    //DateofBirth = userDTO.DateofBirth,
                     CreatedAt = userDTO.CreatedAt,
                 };
                 if (userDTO.CreatedAt == null)
@@ -114,7 +114,7 @@ namespace WebAPI.Controllers
                     Role = userDTO.Role,
                     TotalBuy = userDTO.TotalBuy,
                     Account = 0,
-                    DateofBirth = userDTO.DateofBirth,
+                   // DateofBirth = userDTO.DateofBirth,
                 };
                 if (image == null)
                 {
