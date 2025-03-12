@@ -83,8 +83,7 @@ const CategoryManager = () => {
     const fetchApiColorSizes = async () => {
         try {
             const res = await axios.get(`${API_URL}/api/ColorSizes`);
-            // console.log('Fetched colors:', res.data);
-            return res.data; // Đảm bảo đây là một mảng
+            return res.data; 
         } catch (error) {
             console.error("Error fetching data:", error);
             throw error;
@@ -116,13 +115,11 @@ const CategoryManager = () => {
                     (total, item) => total + (getStockOfProduct(item.id) || 0),
                     0
                 );
-            console.log(products.filter((item) => item.categoryId === id)); // Optional log
         }
 
         return stock;
     };
     const getProduct = (id) => {
-        console.log(products.filter((item) => item.categoryId === id));
         return products.filter((item) => item.categoryId === id);
     };
 
@@ -173,7 +170,7 @@ const CategoryManager = () => {
     };
 
     const handleAddCategory = () => {
-        navigate("/add-product");
+        navigate("/add-category");
     };
 
     const handleEditCategory = (categoryId) => {
@@ -221,7 +218,7 @@ const CategoryManager = () => {
                     color="primary"
                     onClick={handleAddCategory}
                 >
-                    Thêm sản phẩm
+                    Thêm danh mục
                 </Button>
             </Box>
 

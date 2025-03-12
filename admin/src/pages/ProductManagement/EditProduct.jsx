@@ -84,6 +84,7 @@ const EditProduct = () => {
                     setProductImage(
                         data.image ? `data:image/jpeg;base64,${data.image}` : ""
                     );
+                    console.log('product detail ', data);
                 } else {
                     throw new Error("Failed to fetch product");
                 }
@@ -196,11 +197,6 @@ const EditProduct = () => {
         // Validate giá
         if (!product?.price || product.price <= 0) {
             newErrors.price = "Giá phải lớn hơn 0";
-        }
-
-        // Validate thương hiệu
-        if (!product?.brand) {
-            newErrors.brand = "Vui lòng chọn thương hiệu";
         }
         // Validate cấu hình
         if (product?.cauhinh) {
