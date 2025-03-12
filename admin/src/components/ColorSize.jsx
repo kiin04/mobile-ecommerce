@@ -76,9 +76,10 @@ const ColorSize = ({ productId }) => {
     const mutation = useMutation({
         mutationFn: addColorSize,
         onSuccess: () => {
-            queryClient.invalidateQueries(["colorsizes", productId]); // Cập nhật danh sách
+            queryClient.invalidateQueries(["colorsizes", productId]); 
+            fetchColorSize();
             setOpenAddDialog(false); // Đóng dialog sau khi thêm
-            setNewColorSize({ color: "", size: "", quantity: "", price: "" }); // Reset form
+            setNewColorSize({ color: "", size: "", quantity: "", price: 0 }); // Reset form
         },
     });
     // Mutation để cập nhật màu
@@ -136,12 +137,13 @@ const ColorSize = ({ productId }) => {
             message.warning("Vui lòng nhập đầy đủ thông tin!");
             return;
         }
+        console.log("Dữ liệu gửi lên:", { ...newColorSize, productId });
         mutation.mutate({ ...newColorSize, productId });
     };
 
     return (
-        <Grid item xs={12} sm={8}>
-            <Typography variant="h6" sx={{ mt: 2, mb: 2 }}>
+        <Grid item xs={12} sm={8} >
+            <Typography variant="h6" sx={{ mt: 2, mb: 2, ml:2 }}>
                 Màu và phiên bản
                 <Button
                     variant="contained"
@@ -162,7 +164,7 @@ const ColorSize = ({ productId }) => {
                 </Typography>
             ) : ColorSizes.length > 0 ? (
                 ColorSizes.map((item) => (
-                    <Grid item xs={12} sm={12} key={item.id}>
+                    <Grid item xs={10} sm={10} mx={3} key={item.id} >
                         <Card
                             variant="outlined"
                             sx={{
