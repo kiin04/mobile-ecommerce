@@ -179,18 +179,18 @@ const ProductDetails = () => {
     };
 
     const handleAddCart = async () => {
-        if (!userId) {
-            notification.warning({
-                message: "Lưu ý",
-                description: "Vui lòng đăng nhập để sử dụng giỏ hàng",
-                duration: 4,
-                placement: "bottomLeft",
-                showProgress: true,
-                pauseOnHover: true,
-            });
-            // window.location.href = "/login";
-            return;
-        }
+        // if (!userId) {
+        //     notification.warning({
+        //         message: "Lưu ý",
+        //         description: "Vui lòng đăng nhập để sử dụng giỏ hàng",
+        //         duration: 4,
+        //         placement: "bottomLeft",
+        //         showProgress: true,
+        //         pauseOnHover: true,
+        //     });
+        //     // window.location.href = "/login";
+        //     return;
+        // }
 
         if (!product || !product.id) {
             notification.error({
@@ -281,7 +281,7 @@ const ProductDetails = () => {
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify(cartItem),
-                    cache: "no-store",
+                    cache: "no-store"
                 });
 
                 if (!response.ok) {
@@ -328,16 +328,17 @@ const ProductDetails = () => {
                 price: product?.price,
             };
             navigate("/checkout-buynow", { state: { product: productBuyNow } });
-        } else {
-            notification.error({
-                message: "Lỗi",
-                description: "Vui lòng chọn màu trước khi mua",
-                duration: 4,
-                placement: "bottomLeft",
-                showProgress: true,
-                pauseOnHover: true,
-            });
         }
+        // else {
+        //     notification.error({
+        //         message: "Lỗi",
+        //         description: "Vui lòng chọn màu trước khi mua",
+        //         duration: 4,
+        //         placement: "bottomLeft",
+        //         showProgress: true,
+        //         pauseOnHover: true,
+        //     });
+        // }
     };
     if (!product) {
         return (

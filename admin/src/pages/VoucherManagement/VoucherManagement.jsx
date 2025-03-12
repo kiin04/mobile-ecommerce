@@ -61,8 +61,8 @@ const VoucherManagement = () => {
     const handleDeleteVoucher = async (voucherId) => {
         try {
             const response = await axios.delete(`${API_URL}/api/Promotions/${voucherId}`);
-            if (response.status === 200) {
-                setPromotion(Promotion.filter((voucher) => voucher.id !== voucherId));
+            if (response.status === 204) {
+                setPromotion(promotion.filter((voucher) => voucher.id !== voucherId));
             } else {
                 console.error("Failed to delete voucher");
             }

@@ -3,19 +3,13 @@ import { message, notification } from "antd";
 import { Box, TextField, Button, CircularProgress, Grid, Typography } from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
+import {format} from "date-fns";
 import { API_URL } from "../../config";
 
 const EditVoucher = () => {
     const { voucherId } = useParams();
     const navigate = useNavigate();
     const [voucher, setVoucher] = useState({
-        name: '',
-        createdAt: '',
-        endAt: '',
-        value: 0,
-        code: '',
-        minPrice: 0,
-       // maxDiscountAmount: 0
     });
     const [loading, setLoading] = useState(true);
     const [errors, setErrors] = useState({});
@@ -24,18 +18,11 @@ const EditVoucher = () => {
         const fetchVoucher = async () => {
             try {
                 const response = await axios.get(`${API_URL}/api/Promotions/${voucherId}`);
-                if (response.data) {
-                    const voucherData = {
-                        id: response.data.id,
-                        name: response.data.name || '',
-                        createdAt: response.data.createdAt ? new Date(response.data.createdAt).toISOString().split('T')[0] : '',
-                        endAt: response.data.endAt ? new Date(response.data.endAt).toISOString().split('T')[0] : '',
-                        value: response.data.value || 0,
-                        code: response.data.code || '',
-                        minPrice: response.data.minPrice || 0,
-                        //maxDiscountAmount: response.data.maxDiscountAmount || 0
-                    };
-                    setVoucher(voucherData);
+                console.log(response.data);
+                if (response.status == 200) {
+                    const data = await response.data;
+                    console.log('voucher data', data);
+                    setVoucher(data);
                 }
             } catch (error) {
                 console.error("Lỗi khi tải voucher:", error);
@@ -58,11 +45,6 @@ const EditVoucher = () => {
             newErrors.name = 'Vui lòng nhập tên voucher';
         } else if (voucher.name.length < 3) {
             newErrors.name = 'Tên voucher phải có ít nhất 3 ký tự';
-        }
-
-        // Validate ngày sử dụng
-        if (!voucher?.createdAt) {
-            newErrors.createdAt = 'Vui lòng chọn ngày bắt đầu';
         }
 
         // Validate ngày hết hạn
@@ -94,12 +76,12 @@ const EditVoucher = () => {
             newErrors.minPrice = 'Giá trị đơn hàng tối thiểu không thể âm';
         }
 
-        // // Validate số tiền giảm tối đa
-        // if (!voucher?.maxDiscountAmount && voucher?.maxDiscountAmount !== 0) {
-        //     newErrors.maxDiscountAmount = 'Vui lòng nhập số tiền giảm tối đa';
-        // } else if (Number(voucher.maxDiscountAmount) < 0) {
-        //     newErrors.maxDiscountAmount = 'Số tiền giảm tối đa không thể âm';
-        // }
+        // Validate số tiền giảm tối đa
+        if (!voucher?.maxValue && voucher?.maxValue !== 0) {
+            newErrors.maxValue = 'Vui lòng nhập số tiền giảm tối đa';
+        } else if (Number(voucher.maxValue) < 0) {
+            newErrors.maxValue = 'Số tiền giảm tối đa không thể âm';
+        }
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -128,18 +110,10 @@ const EditVoucher = () => {
         }
 
         try {
-            const updateData = {
-                name: voucher.name,
-                createdAt: voucher.createdAt,
-                endAt: voucher.endAt,
-                value: Number(voucher.value),
-                code: voucher.code,
-                minPrice: Number(voucher.minPrice),
-                //maxDiscountAmount: Number(voucher.maxDiscountAmount)
-            };
+          
 
             const response = await axios.put(
-                `${API_URL}/api/Promotions/${voucherId}`,updateData,
+                `${API_URL}/api/Promotions/${voucherId}`,voucher,
                 {headers: { "Content-Type": "application/json" },}
             );
             console.log('response update', response);
@@ -169,7 +143,9 @@ const EditVoucher = () => {
 
     if (loading) return <CircularProgress />;
     if (!voucher) return <div>Không tìm thấy voucher</div>;
-
+    const formatDateForInput = (dateString) => {
+        return dateString.split('T')[0]; 
+    };
     return (
         <Box padding={3}>
             <Typography variant="h4" gutterBottom>
@@ -192,19 +168,18 @@ const EditVoucher = () => {
                     </Grid>
                     <Grid item xs={12} sm={6}>
                         <TextField
-                            label="Ngày bắt đầu"
-                            name="createdAt"
-                            type="date"
-                            value={voucher.createdAt}
-                            onChange={handleInputChange}
+                            label="Ngày tạo"
+                          
+                            value={formatDateForInput(voucher.createdAt)} 
                             fullWidth
                             required
+                            aria-readonly:true
                             margin="normal"
                             InputLabelProps={{
                                 shrink: true,
                             }}
-                            error={!!errors.createdAt}
-                            helperText={errors.createdAt}
+                            error={!!errors.endAt}
+                            helperText={errors.endAt}
                         />
                     </Grid>
                     <Grid item xs={12} sm={6}>
@@ -212,8 +187,9 @@ const EditVoucher = () => {
                             label="Ngày hết hạn"
                             name="endAt"
                             type="date"
-                            value={voucher.endAt}
+                            value={formatDateForInput(voucher.endAt)} 
                             onChange={handleInputChange}
+                          
                             fullWidth
                             required
                             margin="normal"
@@ -267,21 +243,21 @@ const EditVoucher = () => {
                             helperText={errors.minPrice}
                         />
                     </Grid>
-                    {/* <Grid item xs={12} sm={6}>
+                    <Grid item xs={12} sm={6}>
                         <TextField
                             label="Số tiền giảm tối đa"
-                            name="maxDiscountAmount"
+                            name="maxValue"
                             type="number"
-                            value={voucher.maxDiscountAmount}
+                            value={voucher.maxValue}
                             onChange={handleInputChange}
                             fullWidth
                             required
                             margin="normal"
                             inputProps={{ min: 0 }}
-                            error={!!errors.maxDiscountAmount}
-                            helperText={errors.maxDiscountAmount}
+                            error={!!errors.maxValue}
+                            helperText={errors.maxValue}
                         />
-                    </Grid> */}
+                    </Grid>
                 </Grid>
 
                 <Box mt={3}>

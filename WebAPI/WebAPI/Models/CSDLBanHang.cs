@@ -276,8 +276,8 @@ public partial class CSDLBanHang : DbContext
             entity.Property(e => e.Rate)
                 .HasDefaultValue(0)
                 .HasColumnName("rate");
-            entity.Property(e => e.StartRate)
-                .HasColumnName("start_rate");
+            entity.Property(e => e.StarsRate)
+                .HasColumnName("stars_rate");
             entity.Property(e => e.Sold)
                 .HasDefaultValue(0)
                 .HasColumnName("sold");
@@ -405,8 +405,8 @@ public partial class CSDLBanHang : DbContext
                 .HasColumnType("datetime")
                 .HasColumnName("updated_at");
             entity.Property(e => e.DateofBirth)
-                .HasColumnName("DateofBirth")
-                .HasColumnType("date");
+                .HasColumnName("dateofBirth");
+               
         });
 
         OnModelCreatingPartial(modelBuilder);

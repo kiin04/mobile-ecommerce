@@ -11,7 +11,7 @@ INSERT INTO Categories (name, description) VALUES
 (N'Phụ kiện', N'Các phụ kiện hỗ trợ Apple devices');
 GO
 -- Thêm dữ liệu vào bảng Products
-INSERT INTO Products (name, description, price, unit, category_id, sold, rate,  start_rate) VALUES
+INSERT INTO Products (name, description, price, unit, category_id, sold, rate,  stars_rate) VALUES
 (N'iPhone 19 Pro Max', N'Flagship mới nhất của Apple', 33990000, N'Cái', 1,0,0,0),
 (N'iPhone 14 Pro', N'Phiên bản Pro với camera 48MP', 27990000, N'Cái', 1,0,0,0),
 (N'iPhone 13', N'Hiệu suất mạnh mẽ với giá hợp lý', 18990000, N'Cái', 1,0,0,0),
@@ -109,14 +109,7 @@ INSERT INTO Promotion (name, value, end_at, code, minPrice) VALUES
 (N'Giảm giá VIP Member', 12, '2025-12-31','VIPMEMBER',20000000);
 
 -- Thêm dữ liệu vào bảng Comments
-<<<<<<< HEAD
-INSERT INTO Comments (userID, product_id, name, content , stars) VALUES
-(1, 1, N'Nguyễn Tùng Lâm', N'Sản phẩm này thật tuyệt vời!',  5),
-(2, 2, N'Cao Xuân Quang', N'Chất lượng sản phẩm rất tốt.',  4),
-(5, 3, N'Huỳnh Minh Quân', N'Dịch vụ khách hàng rất chu đáo.', 3);
-=======
 INSERT INTO Comments (userID, product_id, name, content, created_at, updated_at, stars) VALUES
 (1, 1, N'Nguyễn Tùng Lâm', N'Sản phẩm này thật tuyệt vời!', GETDATE(), GETDATE(), 5),
 (2, 2, N'Cao Xuân Quang', N'Chất lượng sản phẩm rất tốt.', GETDATE(), GETDATE(), 4),
 (5, 3, N'Huỳnh Minh Quân', N'Dịch vụ khách hàng rất chu đáo.', GETDATE(), GETDATE(), 3);
->>>>>>> bc8ed3872127538da74a92275b4edef5a08d075d
