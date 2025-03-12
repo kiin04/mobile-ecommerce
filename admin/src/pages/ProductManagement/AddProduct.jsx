@@ -41,7 +41,7 @@ const AddProduct = () => {
         price: 0,
         categortId: 1,
         brand: "SphoneC",
-        start_rate : 0,
+        startRate : 0,
         description: "",
         image: null,
     });
@@ -91,6 +91,7 @@ const AddProduct = () => {
         formData.append("categoryId", product.categortId);
         formData.append("sold", 0);
         formData.append("rate", 0);
+        formData.append("startRate", 0);
         if (product.image) {
             formData.append("image", product.image);
         }

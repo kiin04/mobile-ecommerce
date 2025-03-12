@@ -20,6 +20,7 @@ import AddUser from './pages/UserManagement/AddUser.jsx';
 import KhoManagement from './pages/KhoManagement/KhoManagement.jsx';
 import AddKho from './pages/KhoManagement/AddKho.jsx';
 import EditKho from './pages/KhoManagement/EditKho.jsx';
+import AddCategory from './pages/CategoryManager/AddCategory.jsx';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import './index.css';
@@ -65,6 +66,7 @@ function App() {
                     <Route path="/product-management" element= <ProductManagement /> />
                     <Route path="/category-management" element= <CategoryManager /> />
                     <Route path="/edit-category/:categoryId" element= <EditCategory /> />
+                    <Route path="/add-category" element= <AddCategory /> />
                     <Route path="/order-management" element= <OrderManagement /> />
                     <Route path="/add-product" element= <AddProduct /> />
                     <Route path="/edit-product/:productId" element= <EditProduct /> />
