@@ -221,7 +221,7 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
             onClose={() => setCartOpen(false)}
             open={cartOpen}
             width={600}
-            footer=<div className="flex items-center justify-between">
+            footer={<div className="flex items-center justify-between">
                 {/* Subtotal section */}
                 <div className="flex items-center justify-between gap-2">
                     <span className="text-xl font-bold">Tạm tính:</span>
@@ -251,7 +251,7 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
                         Thanh toán
                     </button>
                 </div>
-            </div>
+            </div>}
         >
             <div className="flex flex-col h-full overflow-y-auto">
                 <section className="flex-1">
