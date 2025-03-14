@@ -103,5 +103,3 @@ alter table Promotion
 add maxValue DECIMAL(18, 2);
 update Promotion
 set maxValue = 2500000;
-alter table promotion
-alter column maxValue DECIMAL(18, 2) NOT NULL;
