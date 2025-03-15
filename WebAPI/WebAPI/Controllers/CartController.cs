@@ -104,7 +104,7 @@ namespace WebAPI.Controllers
             catch (KeyNotFoundException ex)
             {
                 return NotFound(new { message = ex.Message });
-            }
+            } 
         }
         [HttpDelete("ByUser/{id}")]
         public async Task<IActionResult> DeleteAllCart(int id)
