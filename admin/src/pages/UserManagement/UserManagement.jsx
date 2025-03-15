@@ -395,21 +395,19 @@ const UserManagement = () => {
                                 >
                                     <Box className="info-item">
                                         <Typography className="label">
-                                            Ngày sinh
+                                           Thành viên
                                         </Typography>
                                         <Typography className="value">
-                                           
-                                               { selectedUser.dateofBirthFormatted}
-                                           
+                                               { getRoleNameById(selectedUser.role)}
                                         </Typography>
                                     </Box>
 
                                     <Box className="info-item">
                                         <Typography className="label">
-                                            Giới tính
+                                            Đã mua
                                         </Typography>
                                         <Typography className="value">
-                                            {selectedUser.gender || ""}
+                                            {selectedUser.totalBuy || ""} VNĐ
                                         </Typography>
                                     </Box>
 
