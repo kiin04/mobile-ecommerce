@@ -357,10 +357,7 @@ const EditProduct = () => {
                                 </MenuItem>
                             ))}
                         </TextField>
-                    </Grid>*/ }  
-                 
-
-                 
+                    </Grid>*/ }
 
                     <Grid item xs={12} sm={4}>
                         <input

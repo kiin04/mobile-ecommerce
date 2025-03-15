@@ -1,22 +1,28 @@
-import React, { useState } from "react";
 import {
+    Autocomplete,
     Box,
-    TextField,
     Button,
-    Typography,
     Grid,
     IconButton,
-    Autocomplete,
+    MenuItem,
+    TextField,
+    Typography,
 } from "@mui/material";
+import { useQuery } from "@tanstack/react-query";
+import { message, notification } from "antd";
+import axios from "axios";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import apiConfigInstance from "../../../SingletonParttern.js";
-const API_URL = apiConfigInstance.getApiUrl();
-import { MenuItem } from "@mui/material";
-import axios from "axios";
-import { useQuery } from "@tanstack/react-query";
 import Detail from "../../components/Detail.jsx";
-import { message, notification } from "antd";
+import ColorSize from "../../components/ColorSize.jsx";
+const API_URL = apiConfigInstance.getApiUrl();
+
 const AddProduct = () => {
+    const [productImage, setProductImage] = useState(
+                product?.image ? `data:image/jpeg;base64,${product.image}` : ""
+            );
+
     const navigate = useNavigate();
     // Fetch dữ liệu từ API
     const fetchCategory = async () => {
@@ -146,7 +152,6 @@ const AddProduct = () => {
         "Xám",
     ];
     const osOptions = ["Android", "IOS"];
-    
     const screenTechOptions = [
         "OLED",
         "AMOLED",
@@ -270,6 +275,41 @@ const AddProduct = () => {
                             </Box>
                         )}
                     </Grid>
+
+                    <Grid item xs={12} sm={4}>
+                                            <input
+                                                accept="image/*"
+                                                type="file"
+                                                onChange={handleFileChange}
+                                                style={{ display: "none" }}
+                                                id="image-upload"
+                                            />
+                                            <label htmlFor="image-upload">
+                                                <Button variant="contained" component="span">
+                                                    Chọn hình ảnh
+                                                </Button>
+                                            </label>
+                                            {imagePreview ? (
+                                                <Box mt={4}>
+                                                    <img
+                                                        src={imagePreview}
+                                                        alt="Preview"
+                                                        style={{ maxWidth: "400px" }}
+                                                    />
+                                                </Box>
+                                            ) : (
+                                                productImage && (
+                                                    <Box mt={4}>
+                                                        <img
+                                                            src={productImage}
+                                                            alt="Preview"
+                                                            style={{ maxWidth: "400px" }}
+                                                        />
+                                                    </Box>
+                                                )
+                                            )}
+                                        </Grid>
+                    <ColorSize productId={product.id}></ColorSize>
 
                     <Grid item xs={12}>
                         <TextField
