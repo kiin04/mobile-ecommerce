@@ -215,7 +215,7 @@ const EditOrder = () => {
             });
             console.log("response update order", response);
             if (response.ok) {
-                if(order.status == 'Đã xác nhận'){
+                if(order.status == 'Đã giao hàng'){
                     await updateUser();
                 }
                 notification.success({
