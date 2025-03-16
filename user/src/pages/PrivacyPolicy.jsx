@@ -11,7 +11,7 @@ const PrivacyPolicy = () => {
                 <p className="text-gray-700 mb-4">
                     Quyền riêng tư của bạn rất quan trọng với chúng tôi. Chính sách này nêu rõ những thông tin cá nhân chúng tôi thu thập và cách chúng tôi sử dụng chúng.
                 </p>
-                
+
                 <h2 className="text-2xl font-semibold mt-6 mb-3">1. Thông Tin Thu Thập</h2>
                 <p className="text-gray-600 mb-4">
                     Chúng tôi thu thập thông tin mà bạn trực tiếp cung cấp cho chúng tôi khi tạo tài khoản, mua hàng hoặc liên hệ với chúng tôi.

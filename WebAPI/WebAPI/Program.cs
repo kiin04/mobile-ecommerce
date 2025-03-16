@@ -2,8 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using WebAPI.Models;
 using WebAPI.Services;
-using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Serialization;
+using WebAPI.Decorator;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,7 +20,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 IConfigurationRoot cf = new ConfigurationBuilder().SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
-                                                  .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true).Build();
+                                                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true).Build();
 builder.Services.AddDbContext<CSDLBanHang>(otp => otp.UseSqlServer(cf.GetConnectionString("DefaultConnection")));
 
 builder.Services.Configure<FormOptions>(options =>
@@ -31,7 +31,7 @@ builder.Services.Configure<FormOptions>(options =>
 
 builder.Services.AddScoped<ColorSizesService>();
 builder.Services.AddScoped<ProductService>();
-builder.Services.AddScoped<CategoriesService>();
+builder.Services.AddScoped<CategoriesService, LoggingCategoriesService>();
 builder.Services.AddScoped<OrderService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<RoleService>();

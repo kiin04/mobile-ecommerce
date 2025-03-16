@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Box, TextField, Button, Grid, Typography } from "@mui/material";
+import { Box, TextField, Button, Typography } from "@mui/material";
+import Grid from '@mui/material/Grid2';
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { API_URL } from "../../config";

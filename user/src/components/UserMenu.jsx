@@ -18,12 +18,15 @@ const UserMenu = () => {
     const user = useSelector((state) => state.user);
 
     useEffect(() => {
-        if (user.isLoggedIn) {
+        const hasShownWelcomeMessage = sessionStorage.getItem("hasShownWelcomeMessage");
+        if (user.isLoggedIn && !hasShownWelcomeMessage) {
             message.success("Welcome back!");
+            sessionStorage.setItem("hasShownWelcomeMessage", "true"); // Set the flag
         }
     }, [user.isLoggedIn]);
 
     const handleLogout = () => {
+        sessionStorage.removeItem("hasShownWelcomeMessage");
         localStorage.removeItem("userId");
         dispatch(logoutUser());
 

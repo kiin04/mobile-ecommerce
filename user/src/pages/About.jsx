@@ -48,63 +48,62 @@ const About = () => {
             </section>
 
             {/* Phần thành viên đội ngũ */}
-            <section className="team-section py-16 px-8 text-center">
+            {/* <section className="team-section py-16 px-8 text-center">
                 <h2 className="text-4xl font-bold mb-8">Đội Ngũ Của Chúng Tôi</h2>
                 <div className="container mx-auto">
-                    {/* Hàng đầu tiên - 3 thành viên */}
+
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
                         <div className="team-member">
-                            <img 
-                                src={Avatar1} 
+                            <img
+                                src={Avatar1}
                                 alt="N.Phát"
-                                className="rounded-full w-32 h-32 mx-auto mb-4 object-cover border-4 border-primary hover:scale-110 transition-transform duration-300" 
+                                className="rounded-full w-32 h-32 mx-auto mb-4 object-cover border-4 border-primary hover:scale-110 transition-transform duration-300"
                             />
                             <h3 className="text-xl font-semibold">Hồng Phát</h3>
                             <p className="text-gray-600">Scrum Master</p>
                         </div>
                         <div className="team-member">
-                            <img 
-                                src={Avatar5} 
+                            <img
+                                src={Avatar5}
                                 alt="H.Phát"
-                                className="rounded-full w-32 h-32 mx-auto mb-4 object-cover border-4 border-primary hover:scale-110 transition-transform duration-300" 
+                                className="rounded-full w-32 h-32 mx-auto mb-4 object-cover border-4 border-primary hover:scale-110 transition-transform duration-300"
                             />
                             <h3 className="text-xl font-semibold">Quốc Bảo</h3>
                             <p className="text-gray-600">Trưởng Nhóm</p>
                         </div>
                         <div className="team-member">
-                            <img 
-                                src={Avatar2} 
+                            <img
+                                src={Avatar2}
                                 alt="Q.Bảo"
-                                className="rounded-full w-32 h-32 mx-auto mb-4 object-cover border-4 border-primary hover:scale-110 transition-transform duration-300" 
+                                className="rounded-full w-32 h-32 mx-auto mb-4 object-cover border-4 border-primary hover:scale-110 transition-transform duration-300"
                             />
                             <h3 className="text-xl font-semibold">Minh Quân</h3>
                             <p className="text-gray-600">Product Owner</p>
                         </div>
                     </div>
 
-                    {/* Hàng thứ hai - 2 thành viên căn giữa */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-2xl mx-auto">
                         <div className="team-member">
-                            <img 
-                                src={Avatar4} 
+                            <img
+                                src={Avatar4}
                                 alt="M.Quân"
-                                className="rounded-full w-32 h-32 mx-auto mb-4 object-cover border-4 border-primary hover:scale-110 transition-transform duration-300" 
+                                className="rounded-full w-32 h-32 mx-auto mb-4 object-cover border-4 border-primary hover:scale-110 transition-transform duration-300"
                             />
                             <h3 className="text-xl font-semibold">Nhật Phát</h3>
                             <p className="text-gray-600">Lập Trình Viên</p>
                         </div>
                         <div className="team-member">
-                            <img 
-                                src={Avatar3} 
+                            <img
+                                src={Avatar3}
                                 alt="H.Tha"
-                                className="rounded-full w-32 h-32 mx-auto mb-4 object-cover border-4 border-primary hover:scale-110 transition-transform duration-300" 
+                                className="rounded-full w-32 h-32 mx-auto mb-4 object-cover border-4 border-primary hover:scale-110 transition-transform duration-300"
                             />
                             <h3 className="text-xl font-semibold">Hoàng Thanh</h3>
                             <p className="text-gray-600">Lập Trình Viên</p>
                         </div>
                     </div>
                 </div>
-            </section>
+            </section> */}
 
             {/* Kêu gọi hành động */}
             <section className="cta-section py-16 px-8 bg-primary text-white text-center">

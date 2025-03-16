@@ -328,16 +328,17 @@ const ProductDetails = () => {
                 price: product?.price,
             };
             navigate("/checkout-buynow", { state: { product: productBuyNow } });
-        } else {
-            notification.error({
-                message: "Lỗi",
-                description: "Vui lòng chọn màu trước khi mua",
-                duration: 4,
-                placement: "bottomLeft",
-                showProgress: true,
-                pauseOnHover: true,
-            });
         }
+        // else {
+        //     notification.error({
+        //         message: "Lỗi",
+        //         description: "Vui lòng chọn màu trước khi mua",
+        //         duration: 4,
+        //         placement: "bottomLeft",
+        //         showProgress: true,
+        //         pauseOnHover: true,
+        //     });
+        // }
     };
     if (!product) {
         return (
