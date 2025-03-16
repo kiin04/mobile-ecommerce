@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { notification, message } from "antd";
 import PathNames from "../PathNames.js";
 import { useDispatch, useSelector } from "react-redux";
+
 const CheckoutBuyNow = () => {
     const location = useLocation();
     const navigate = useNavigate();

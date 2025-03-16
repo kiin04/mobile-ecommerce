@@ -4,11 +4,10 @@ import {
     Box,
     TextField,
     Button,
-    Grid,
     Typography,
-    MenuItem,
     Autocomplete,
 } from "@mui/material";
+import Grid from '@mui/material/Grid2';
 import { useNavigate } from "react-router-dom";
 import { API_URL } from "../../config.js";
 

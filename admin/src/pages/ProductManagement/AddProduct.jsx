@@ -1,13 +1,11 @@
 import {
-    Autocomplete,
     Box,
     Button,
-    Grid,
-    IconButton,
     MenuItem,
     TextField,
     Typography,
 } from "@mui/material";
+import Grid from '@mui/material/Grid2';
 import { useQuery } from "@tanstack/react-query";
 import { message, notification } from "antd";
 import axios from "axios";
@@ -218,7 +216,7 @@ const AddProduct = () => {
                             margin="normal"
                         />
                     </Grid>
-                 
+
                     <Grid item xs={12} sm={6}>
                         <TextField
                             select

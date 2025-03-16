@@ -34,37 +34,26 @@ const NewReleases = () => {
     const NReleaseProducts = getProductsById();
     console.log("NReleaseProducts: ",NReleaseProducts);
 
-    // const handleQuantityChange = (e) => {
-    //     const value = parseInt(e.target.value, 10);
-    //     if (value > product.quantity) {
-    //         setError("Số lượng bạn chọn đã đạt mức tối đa của sản phẩm này");
-    //         notification.warning({
-    //             message: "Lưu ý",
-    //             description:
-    //                 "Số lượng bạn chọn đã đạt mức tối đa của sản phẩm này",
-    //             duration: 4,
-    //             placement: "bottomLeft",
-    //             showProgress: true,
-    //             pauseOnHover: true,
-    //         });
-    //     } else {
-    //         setError("");
-    //     }
-    //     setQuantity(value);
-    // };
+    const handleQuantityChange = (e) => {
+        const value = parseInt(e.target.value, 10);
+        if (value > products.quantity) {
+            setError("Số lượng bạn chọn đã đạt mức tối đa của sản phẩm này");
+            notification.warning({
+                message: "Lưu ý",
+                description:
+                    "Số lượng bạn chọn đã đạt mức tối đa của sản phẩm này",
+                duration: 4,
+                placement: "bottomLeft",
+                showProgress: true,
+                pauseOnHover: true,
+            });
+        } else {
+            setError("");
+        }
+        setQuantity(value);
+    };
 
     const handleAddtoCart = async (selectedProduct) => {
-        // if (!userId) {
-        //     notification.warning({
-        //         message: "Lưu ý!",
-        //         description: "Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng",
-        //         duration: 4,
-        //         placement: "bottomLeft",
-        //         showProgress: true,
-        //         pauseOnHover: true,
-        //     });
-        //     return;
-        // }
 
         if (!selectedProduct || !selectedProduct.id) {
             notification.error({
