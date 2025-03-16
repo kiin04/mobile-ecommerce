@@ -29,12 +29,6 @@ namespace WebAPI.Builder
             return this;
         }
 
-        public CategoryBuilder SetCreatedAt(DateTime? createdAt)
-        {
-            _category.CreatedAt = createdAt;
-            return this;
-        }
-
         public Category Build()
         {
             return _category;

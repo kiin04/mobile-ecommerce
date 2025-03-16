@@ -6,15 +6,18 @@ namespace WebAPI.Services
 {
     public class CategoriesService
     {
-        private readonly CSDLBanHang _context;
-        private readonly ProductService _ProductService;
+        protected readonly CSDLBanHang _context;
+        protected readonly ProductService _productService;
 
-        public CategoriesService(CSDLBanHang context, ProductService ProductService)
+        // Constructor
+        public CategoriesService(CSDLBanHang context, ProductService productService)
         {
             _context = context;
-            _ProductService = ProductService;
+            _productService = productService;
         }
-        public async Task DeleteDependencieAsync(int id)
+
+        // Virtual method for deletion
+        public virtual async Task DeleteDependencieAsync(int id)
         {
             var category = await _context.Categories.FindAsync(id);
             if (category == null) return;
@@ -24,15 +27,15 @@ namespace WebAPI.Services
                 .Select(p => p.Id)
                 .ToListAsync();
 
-            // Xóa tất cả sản phẩm cùng lúc
-            if (productIds.Any()) {
-                await Task.WhenAll(productIds.Select(proId => _ProductService.DeleteDependencieAsync(proId)));
+            // Delete all related products
+            if (productIds.Any())
+            {
+                await Task.WhenAll(productIds.Select(proId => _productService.DeleteDependencieAsync(proId)));
             }
 
             _context.Categories.Remove(category);
             await _context.SaveChangesAsync();
         }
-
     }
 
 }
