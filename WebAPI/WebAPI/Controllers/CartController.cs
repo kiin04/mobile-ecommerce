@@ -48,8 +48,6 @@ namespace WebAPI.Controllers
             try
             {
                 var carts = await _cartService.GetByUserAsync(userId);
-               
-
                 return Ok(carts);
             }
             catch (Exception ex)
@@ -104,7 +102,7 @@ namespace WebAPI.Controllers
             catch (KeyNotFoundException ex)
             {
                 return NotFound(new { message = ex.Message });
-            } 
+            }
         }
         [HttpDelete("ByUser/{id}")]
         public async Task<IActionResult> DeleteAllCart(int id)
