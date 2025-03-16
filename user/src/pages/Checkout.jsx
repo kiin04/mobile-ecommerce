@@ -458,7 +458,6 @@ const Checkout = () => {
                     value={paymentMethod}
                     onChange={(e) => setPaymentMethod(e.target.value)}
                 >
-                    
                     <option value="COD">Thanh toán khi nhận hàng</option>
                     <option value="MoMo">Thanh toán qua MOMO</option>
                     <option value="Thanh toán qua VNpay">
