@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using WebAPI.Builder;
 using WebAPI.DTO;
 using WebAPI.Factory;
 using WebAPI.Models;
@@ -74,12 +75,24 @@ namespace WebAPI.Controllers
         {
             try
             {
-                var category = new Category
-                {
-                    Name = categoryDTO.Name,
-                    Description = categoryDTO.Description,
-                };
+                // var category = new Category
+                // {
+                //     Name = categoryDTO.Name,
+                //     Description = categoryDTO.Description,
+                // };
 
+                // Build the Category using the Builder Pattern
+                var category = new CategoryBuilder()
+                    .SetName(categoryDTO.Name)
+                    .SetDescription(categoryDTO.Description)
+                    .Build();
+
+                if (image != null)
+                {
+                    using var memoryStream = new MemoryStream();
+                    await image.CopyToAsync(memoryStream);
+                    category.Image = memoryStream.ToArray();
+                }
 
                 await _CategoryRepository.AddAsync(category, image);
                 return CreatedAtAction(nameof(GetCategory), new { id = category.Id }, category);

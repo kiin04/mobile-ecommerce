@@ -23,6 +23,7 @@ const Checkout = () => {
     const [discountCodes, setDiscountCodes] = useState([]);
     const [selectedDiscount, setSelectedDiscount] = useState(null);
     const [discountedAmount, setDiscountedAmount] = useState(0);
+    const [error, setError] = useState(null);
 
     const userId = localStorage.getItem("userId");
 
@@ -457,7 +458,6 @@ const Checkout = () => {
                     value={paymentMethod}
                     onChange={(e) => setPaymentMethod(e.target.value)}
                 >
-                    
                     <option value="COD">Thanh toán khi nhận hàng</option>
                     <option value="MoMo">Thanh toán qua MOMO</option>
                     <option value="Thanh toán qua VNpay">

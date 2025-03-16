@@ -1,41 +1,43 @@
 import { useState, useEffect } from "react";
 import AccountSidebar from "../components/AccountSidebar.jsx";
-import { Modal, Button, Input } from "antd"; // Import Modal, Button, and Input from Ant Design
-import axios from "axios"; // Import Axios for API calls
+import { Modal, Button, Input } from "antd";
+import axios from "axios";
 import { API_URL } from "../config.js";
 import { useDispatch, useSelector } from "react-redux";
 const MyOrders = () => {
     const [orders, setOrders] = useState([]);
-    const [products, setProducts] = useState([]); // State for products
+    const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
-    const [ordersPerPage] = useState(5); // Display 5 orders per page
-    const [selectedOrder, setSelectedOrder] = useState(null); // Selected order for details
-    const [productOrder, setProductOrder] = useState([])
-    const [isModalVisible, setIsModalVisible] = useState(false); // State for modal visibility
+    const [ordersPerPage] = useState(5);
+    const [selectedOrder, setSelectedOrder] = useState(null);
+    const [orderDetails, setOrderDetails] = useState([]);
+    const [productOrder, setProductOrder] = useState([]);
+    const [isModalVisible, setIsModalVisible] = useState(false);
     const [cancelModalVisible, setCancelModalVisible] = useState(false);
     const [cancelReason, setCancelReason] = useState("");
     const [cancellingOrder, setCancellingOrder] = useState(null);
     const [refreshTrigger, setRefreshTrigger] = useState(0);
     const user = useSelector((state) => state.user);
-    const [userId, setUderId] = useState( user?.id)
+    const [userId, setUserId] = useState(user?.id);
 
-    useEffect(()=>{
-        setUderId(  user?.id )
-    },user)
+    useEffect(() => {
+        setUserId(user?.id);
+    }, [user]);
+
     const fetchOrders = async (id) => {
-        if (userId == "") {
+        if (!id) {
             setError("User is not logged in");
             setLoading(false);
             return;
         }
         try {
-            const response = await fetch(
-                `${API_URL}/api/Orders/User/${user.id}`
-            );
+            const response = await fetch(`${API_URL}/api/Orders/User/${id}`);
+            if (!response.ok) {
+                throw new Error(await response.text());
+            }
             const data = await response.json();
-            console.log('data', data);
             setOrders(data);
             setLoading(false);
         } catch (err) {
@@ -43,55 +45,60 @@ const MyOrders = () => {
             setLoading(false);
         }
     };
-  
+
     useEffect(() => {
         const fetchProducts = async () => {
             try {
                 const response = await axios.get(`${API_URL}/api/products`);
                 if (response.status === 200) {
-                    const data = response.data;
-                    //console.log("Fetched products:", data); // Log the products
-                    setProducts(data); // Set the products state
-                } else {
-                    console.error(
-                        `Failed to fetch products: ${response.status} ${response.statusText}`
-                    );
+                    setProducts(response.data);
                 }
             } catch (error) {
                 console.error("Error fetching products:", error);
             }
         };
-
         fetchProducts();
-    }, [userId,refreshTrigger]);
-    useEffect(()=>{
-        if (userId) {
-            fetchOrders(userId)
-        }
-    },[userId])
+    }, [userId, refreshTrigger]);
 
-    // Get current orders for the current page
+    useEffect(() => {
+        if (userId) {
+            fetchOrders(userId);
+        } else {
+            setLoading(false);
+        }
+    }, [userId]);
+
+    // Pagination
     const indexOfLastOrder = currentPage * ordersPerPage;
     const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
     const currentOrders = orders.slice(indexOfFirstOrder, indexOfLastOrder);
-
-    // Change page
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-    // Show modal with order details
-    const showOrderDetails = (order) => {
-        setSelectedOrder(order);
-        setIsModalVisible(true);
-        
+    // Modal handlers
+    const showOrderDetails = async (order) => {
+        try {
+            const response = await axios.get(
+                `${API_URL}/api/OrderDetails/ByOrder/${order.id}`
+            );
+            if (response.status === 200) {
+                setOrderDetails(response.data);
+                setSelectedOrder(order);
+                setIsModalVisible(true);
+            }
+        } catch (error) {
+            setError(
+                error.response?.data.message || "Failed to load order details"
+            );
+        }
     };
 
-    // Close modal
     const handleCancel = () => {
         setIsModalVisible(false);
-        setSelectedOrder(null); // Clear selected order when modal is closed
+        setSelectedOrder(null);
+        setOrderDetails([]);
     };
 
-    // Thêm hàm format tiền tệ Việt Nam
+    // Format utilities
     const formatCurrency = (amount) => {
         return new Intl.NumberFormat("vi-VN", {
             style: "currency",
@@ -99,7 +106,6 @@ const MyOrders = () => {
         }).format(amount);
     };
 
-    // Thêm hàm format ngày tháng kiểu Việt Nam
     const formatDate = (dateString) => {
         return new Date(dateString).toLocaleDateString("vi-VN", {
             day: "2-digit",
@@ -110,7 +116,6 @@ const MyOrders = () => {
         });
     };
 
-    // Thêm hàm getStatusStyle
     const getStatusStyle = (status) => {
         const styles = {
             "Chờ xác nhận": {
@@ -162,14 +167,13 @@ const MyOrders = () => {
         return styles[status] || styles["Chờ xác nhận"];
     };
 
-    // Thêm hàm xử lý hủy đơn hàng
+    // Cancel handlers
     const handleCancelOrder = async (order, e) => {
-        e.stopPropagation(); // Ngăn không cho mở modal chi tiết
+        e.stopPropagation();
         setCancellingOrder(order);
         setCancelModalVisible(true);
     };
 
-    // Hàm xử lý submit hủy đơn
     const handleCancelSubmit = async () => {
         if (!cancelReason.trim()) {
             Modal.error({
@@ -178,27 +182,27 @@ const MyOrders = () => {
             });
             return;
         }
-
         try {
-            const response = await axios.post(
-                `${API_URL}/api/orders/${cancellingOrder.id}/cancel`,
-                { cancellationReason: cancelReason }
+            const response = await axios.delete(
+                `${API_URL}/api/Orders/${cancellingOrder.id}`
             );
-
-            if (response.status === 200) {
+            if (response.status === 204) {
                 Modal.success({
                     title: "Thành công",
                     content: "Đơn hàng đã được hủy thành công",
                 });
-
-                // Trigger fetch lại dữ liệu
+                setOrders((prevOrders) =>
+                    prevOrders.filter(
+                        (order) => order.id !== cancellingOrder.id
+                    )
+                );
                 setRefreshTrigger((prev) => prev + 1);
             }
         } catch (error) {
             Modal.error({
                 title: "Lỗi",
                 content:
-                    error.response?.data?.message || "Không thể hủy đơn hàng",
+                    error.response?.data.message || "Không thể hủy đơn hàng",
             });
         } finally {
             setCancelModalVisible(false);
@@ -240,7 +244,7 @@ const MyOrders = () => {
 
                                         return (
                                             <li
-                                                key={order._id}
+                                                key={order.id}
                                                 className="bg-white border border-gray-200 p-6 rounded-lg hover:shadow-lg transition-all duration-300 cursor-pointer"
                                                 onClick={() =>
                                                     showOrderDetails(order)
@@ -261,7 +265,7 @@ const MyOrders = () => {
                                                         <p className="text-md text-gray-500">
                                                             Ngày đặt:{" "}
                                                             {formatDate(
-                                                                order?.createdAt
+                                                                order.createdAt
                                                             )}
                                                         </p>
                                                     </div>
@@ -274,7 +278,15 @@ const MyOrders = () => {
                                                     </div>
                                                 </div>
                                                 <div className="flex gap-2 mt-4">
-                                                    <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-300">
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            showOrderDetails(
+                                                                order
+                                                            );
+                                                        }}
+                                                        className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-300"
+                                                    >
                                                         Xem chi tiết
                                                     </button>
                                                     {canCancel && (
@@ -335,7 +347,7 @@ const MyOrders = () => {
                                             <div className="grid grid-cols-2 gap-4 mb-6">
                                                 <div>
                                                     <p className="text-gray-600">
-                                                        Ngày đặt hàng
+                                                        Thời gian đặt hàng
                                                     </p>
                                                     <p className="font-semibold">
                                                         {formatDate(
@@ -352,9 +364,11 @@ const MyOrders = () => {
                                                             getStatusStyle(
                                                                 selectedOrder.status
                                                             ).text
-                                                        } 
-                                                ${getStatusStyle(selectedOrder.status).bg} 
-                                                px-3 py-1 rounded-full inline-block mt-1`}
+                                                        } ${
+                                                            getStatusStyle(
+                                                                selectedOrder.status
+                                                            ).bg
+                                                        } px-3 py-1 rounded-full inline-block mt-1`}
                                                     >
                                                         {selectedOrder.status}
                                                     </p>
@@ -374,9 +388,7 @@ const MyOrders = () => {
                                                         Địa chỉ giao hàng
                                                     </p>
                                                     <p className="font-semibold">
-                                                        {
-                                                            selectedOrder.address
-                                                        }
+                                                        {selectedOrder.address}
                                                     </p>
                                                 </div>
                                                 <div>
@@ -413,24 +425,24 @@ const MyOrders = () => {
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    {selectedOrder.items.map(
-                                                        (item) => {
+                                                    {orderDetails.map(
+                                                        (detail) => {
                                                             const product =
                                                                 products.find(
                                                                     (prod) =>
                                                                         prod.id ===
-                                                                        item.productId
-                                                                ); // Get product details using productId
+                                                                        detail.productId
+                                                                );
                                                             return (
                                                                 <tr
                                                                     key={
-                                                                        item.productId
+                                                                        detail.id
                                                                     }
                                                                     className="hover:bg-gray-200 transition-colors duration-200"
                                                                 >
                                                                     <td className="border px-4 py-2">
                                                                         {
-                                                                            item.productId
+                                                                            detail.productId
                                                                         }
                                                                     </td>
                                                                     <td className="border px-4 py-2">
@@ -440,15 +452,13 @@ const MyOrders = () => {
                                                                     </td>
                                                                     <td className="border px-4 py-2">
                                                                         {
-                                                                            item.quantity
+                                                                            detail.quantity
                                                                         }
                                                                     </td>
                                                                     <td className="border px-4 py-2">
-                                                                        {product
-                                                                            ? formatCurrency(
-                                                                                  product.price
-                                                                              )
-                                                                            : "N/A"}
+                                                                        {formatCurrency(
+                                                                            detail.price
+                                                                        )}
                                                                     </td>
                                                                 </tr>
                                                             );

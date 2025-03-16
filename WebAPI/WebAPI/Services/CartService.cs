@@ -14,9 +14,10 @@ namespace WebAPI.Services
 
         public async Task<List<Cart>> GetByUserAsync(int id)
         {
-            var carts = await _context.Carts
-           .Where(cart => cart.UserId == id)
-           .ToListAsync();
+            var carts = await _context
+                                    .Carts
+                                    .Where(cart => cart.UserId == id)
+                                    .ToListAsync();
 
             return carts;
         }
@@ -37,7 +38,7 @@ namespace WebAPI.Services
             {
                 throw new ArgumentException("The list of IDs to delete cannot be null or empty.", nameof(ids));
             }
-           
+
             var carts = await _context.Carts
                 .Where(cart => cart.UserId == userId && ids.Contains(cart.Id))
                 .ToListAsync();
@@ -47,7 +48,6 @@ namespace WebAPI.Services
                 throw new KeyNotFoundException($"No carts found for User with ID: {userId} and provided IDs.");
             }
 
-            
             await _context.Carts
                 .Where(cart => cart.UserId == userId && ids.Contains(cart.Id))
                 .ExecuteDeleteAsync();

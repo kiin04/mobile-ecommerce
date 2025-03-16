@@ -59,7 +59,6 @@ namespace WebAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutOrderDetail(int id, OrderDetail OrderDetail)
         {
-           
             try
             {
                 OrderDetail.Id = id;

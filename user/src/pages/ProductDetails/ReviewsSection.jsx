@@ -92,11 +92,13 @@ export const ReviewsSection = () => {
         fetchComments();
     }, []);
 
-    const averageRating =
-        comments.length > 0
-            ? comments.reduce((sum, comment) => sum + comment.stars, 0) / comments.length
-            : 0;
+    const roundToHalf = (num) => {
+        return Math.round(num * 2) / 2;
+    };
 
+    const averageRating = comments.length > 0
+        ? roundToHalf(comments.reduce((sum, comment) => sum + comment.stars, 0) / comments.length)
+        : 0;
 
 	return (
 		<section className="py-14 md:py-24 bg-white dark:bg-[#0b1727] text-zinc-900 dark:text-white relative overflow-hidden z-10">
@@ -106,7 +108,7 @@ export const ReviewsSection = () => {
 						<div>
 							<div className="p-3 md:p-6">
 								<div className="flex flex-wrap items-center">
-									<span className="text-[40px]">4.5</span>
+									<span className="text-[40px]">{averageRating}</span>
 									<Rating
 										rating={averageRating}
 										showLabel={false}
