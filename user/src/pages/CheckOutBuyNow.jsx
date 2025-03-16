@@ -121,6 +121,7 @@ const CheckoutBuyNow = () => {
                 totalPrice: finalAmount,
                 paymentMethod: paymentMethod,
                 phone: customerInfo.phone,
+                note: notes,
                 paymentStatus: "Chưa thanh toán",
                 status: "Chờ xác nhận",
                 address:

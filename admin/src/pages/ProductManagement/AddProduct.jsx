@@ -251,7 +251,7 @@ const AddProduct = () => {
                                                 margin="normal"
                                                 inputProps={{ min: 0 }}
                                             />
-                     </Grid>
+                    </Grid>
 
                     <Grid item xs={12} sm={4}>
                         <Typography variant="subtitle1" gutterBottom>
