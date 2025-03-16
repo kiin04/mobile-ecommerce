@@ -83,12 +83,25 @@ namespace WebAPI.Controllers
 
         // POST: api/Orders
         [HttpPost]
-        public async Task<ActionResult<Order>> PostOrder(Order Order)
+        public async Task<ActionResult<Order>> PostOrder(Order order)
         {
             try
             {
-                await _OrderRepository.AddAsync(Order);
-                return CreatedAtAction(nameof(GetOrder), new { id = Order.Id }, Order);
+                // Sử dụng OrderBuilder để tạo đối tượng Order
+                var orderBuild = new OrderBuilder()
+                    .WithUserId(order.UserId)
+                    .WithTotalPrice(order.TotalPrice)
+                    .WithStatus(order.Status)
+                    .WithName(order.Name)
+                    .WithPaymentMethod(order.PaymentMethod)
+                    .WithPaymentStatus(order.PaymentStatus)
+                    .WithCancellationReason(order.CancellationReason)
+                    .WithNote(order.Note)
+                    .WithPhone(order.Phone)
+                    .WithAddress(order.Address)
+                    .Build();
+                await _OrderRepository.AddAsync(orderBuild);
+                return CreatedAtAction(nameof(GetOrder), new { id = orderBuild.Id }, orderBuild);
             }
             catch (InvalidOperationException ex)
             {
