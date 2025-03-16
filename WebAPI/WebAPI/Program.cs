@@ -25,7 +25,7 @@ builder.Services.AddDbContext<CSDLBanHang>(otp => otp.UseSqlServer(cf.GetConnect
 
 builder.Services.Configure<FormOptions>(options =>
 {
-    options.MultipartBodyLengthLimit = 20 * 1024 * 1024; // Cho phép file tối đa 10MB
+    options.MultipartBodyLengthLimit = 40 * 1024 * 1024; // Cho phép file tối đa 10MB
 });
 
 
