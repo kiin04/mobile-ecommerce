@@ -28,7 +28,6 @@ namespace WebAPI.Services
             if (productIds.Any()) {
                 await Task.WhenAll(productIds.Select(proId => _ProductService.DeleteDependencieAsync(proId)));
             }
-          
 
             _context.Categories.Remove(category);
             await _context.SaveChangesAsync();

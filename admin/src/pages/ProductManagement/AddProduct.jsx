@@ -9,7 +9,7 @@ import Grid from '@mui/material/Grid2';
 import { useQuery } from "@tanstack/react-query";
 import { message, notification } from "antd";
 import axios from "axios";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import apiConfigInstance from "../../../SingletonParttern.js";
 import Detail from "../../components/Detail.jsx";
@@ -45,7 +45,7 @@ const AddProduct = () => {
         price: 0,
         categortId: 1,
         brand: "SphoneC",
-        startRate : 0,
+        starsRate : 0,
         description: "",
         image: null,
     });
@@ -95,7 +95,7 @@ const AddProduct = () => {
         formData.append("categoryId", product.categortId);
         formData.append("sold", 0);
         formData.append("rate", 0);
-        formData.append("startRate", 0);
+        formData.append("starsRate", 0);
         if (product.image) {
             formData.append("image", product.image);
         }
