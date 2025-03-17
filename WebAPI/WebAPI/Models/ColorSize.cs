@@ -5,7 +5,6 @@ namespace WebAPI.Models;
 
 public partial class ColorSize : BaseEntity
 {
-   
 
     public int ProductId { get; set; }
 
