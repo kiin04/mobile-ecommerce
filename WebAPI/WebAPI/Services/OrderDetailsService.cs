@@ -3,15 +3,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace WebAPI.Services
 {
-    public class OrderDetailService
+    public class OrderDetailsService
     {
         private readonly CSDLBanHang _context;
 
-        public OrderDetailService(CSDLBanHang context)
+        public OrderDetailsService(CSDLBanHang context)
         {
             _context = context;
         }
-        public async Task<List<OrderDetail>> GetByOrderId(int orderid)
+        public async Task<List<OrderDetails>> GetByOrderId(int orderid)
         {
             var orders = await _context.OrderDetails
                 .Where(o => o.OrderId == orderid)

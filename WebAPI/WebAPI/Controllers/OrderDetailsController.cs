@@ -10,30 +10,30 @@ namespace WebAPI.Controllers
     [ApiController]
     public class OrderDetailsController : ControllerBase
     {
-        private readonly IRepository<OrderDetail> _OrderDetailRepository;
-        OrderDetailService _ordererService;
+        private readonly IRepository<OrderDetails> _OrderDetailsRepository;
+        OrderDetailsService _ordererService;
 
-        public OrderDetailsController(CSDLBanHang context , OrderDetailService orderDetailService)
+        public OrderDetailsController(CSDLBanHang context , OrderDetailsService orderDetailsService)
         {
-            _OrderDetailRepository = RepositoryFactory.CreateRepository<OrderDetail>(context);
-            _ordererService = orderDetailService;
+            _OrderDetailsRepository = RepositoryFactory.CreateRepository<OrderDetails>(context);
+            _ordererService = orderDetailsService;
         }
 
         // GET: api/OrderDetails
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<OrderDetail>>> GetOrderDetails()
+        public async Task<ActionResult<IEnumerable<OrderDetails>>> GetOrderDetails()
         {
-            return Ok(await _OrderDetailRepository.GetAllAsync());
+            return Ok(await _OrderDetailsRepository.GetAllAsync());
         }
 
         // GET: api/OrderDetails/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<OrderDetail>> GetOrderDetail(int id)
+        public async Task<ActionResult<OrderDetails>> GetOrderDetails(int id)
         {
             try
             {
-                var OrderDetail = await _OrderDetailRepository.GetByIdAsync(id);
-                return Ok(OrderDetail);
+                var OrderDetails = await _OrderDetailsRepository.GetByIdAsync(id);
+                return Ok(OrderDetails);
             }
             catch (KeyNotFoundException ex)
             {
@@ -42,12 +42,12 @@ namespace WebAPI.Controllers
         }
         // GET: apiByOrder/OrderDetails/5
         [HttpGet("ByOrder/{id}")]
-        public async Task<ActionResult<OrderDetail>> GetByOrderId(int id)
+        public async Task<ActionResult<OrderDetails>> GetByOrderId(int id)
         {
             try
             {
-                var OrderDetail = await _ordererService.GetByOrderId(id);
-                return Ok(OrderDetail);
+                var OrderDetails = await _ordererService.GetByOrderId(id);
+                return Ok(OrderDetails);
             }
             catch (KeyNotFoundException ex)
             {
@@ -57,12 +57,12 @@ namespace WebAPI.Controllers
 
         // PUT: api/OrderDetails/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutOrderDetail(int id, OrderDetail OrderDetail)
+        public async Task<IActionResult> PutOrderDetails(int id, OrderDetails OrderDetails)
         {
             try
             {
-                OrderDetail.Id = id;
-                await _OrderDetailRepository.UpdateAsync(OrderDetail);
+                OrderDetails.Id = id;
+                await _OrderDetailsRepository.UpdateAsync(OrderDetails);
                 return NoContent();
             }
             catch (DbUpdateConcurrencyException ex)
@@ -77,12 +77,12 @@ namespace WebAPI.Controllers
 
         // POST: api/OrderDetails
         [HttpPost]
-        public async Task<ActionResult<OrderDetail>> PostOrderDetail(OrderDetail OrderDetail)
+        public async Task<ActionResult<OrderDetails>> PostOrderDetails(OrderDetails OrderDetails)
         {
             try
             {
-                await _OrderDetailRepository.AddAsync(OrderDetail);
-                return CreatedAtAction(nameof(GetOrderDetail), new { id = OrderDetail.Id }, OrderDetail);
+                await _OrderDetailsRepository.AddAsync(OrderDetails);
+                return CreatedAtAction(nameof(GetOrderDetails), new { id = OrderDetails.Id }, OrderDetails);
             }
             catch (InvalidOperationException ex)
             {
@@ -92,11 +92,11 @@ namespace WebAPI.Controllers
 
         // DELETE: api/OrderDetails/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteOrderDetail(int id)
+        public async Task<IActionResult> DeleteOrderDetails(int id)
         {
             try
             {
-                await _OrderDetailRepository.DeleteAsync(id);
+                await _OrderDetailsRepository.DeleteAsync(id);
                 return NoContent();
             }
             catch (KeyNotFoundException ex)

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace WebAPI.Models;
 
-public partial class OrderDetail : BaseEntity
+public partial class OrderDetails : BaseEntity
 {
-  
+
 
     public int OrderId { get; set; }
 
@@ -17,5 +17,5 @@ public partial class OrderDetail : BaseEntity
 
     public int? ProductId { get; set; }
 
-    
+
 }
