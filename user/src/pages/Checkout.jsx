@@ -181,17 +181,18 @@ const Checkout = () => {
             paymentStatus: "Chưa thanh toán",
             status: "Chờ xác nhận",
             address:
+
                     shippingOption === "store"
                         ? storeAddress
                         : customerInfo.address,
             discountCode: selectedDiscount ? selectedDiscount.code : null,
             discountAmount: discountedAmount,
 
-            // items: cartItems.map((item) => ({
-            //     productId: item.productId,
-            //     quantity: item.quantity,
-            //     price: productItems[item.productId]?.price || item.price, // Use fetched price or fallback
-            // })),
+          
+                shippingOption === "store"
+                    ? storeAddress
+                    : customerInfo.address,
+
         };
         console.log(paymentData);
         if (paymentMethod === "MoMo") {
@@ -251,6 +252,32 @@ const Checkout = () => {
                 });
 
                 if (orderResponse.ok) {
+                    const orderRes = await orderResponse.json();
+                    for (const item of cartItems) {
+                        const orderDetail = {
+                            orderId: orderRes.id,
+                            productId: item.productId,
+                            colorSizeId: item.colorSizeId,
+                            price: item.price,
+                            quantity: item.quantity,
+                        };
+    
+                        // Gọi API tạo chi tiết đơn hàng
+                        const orderDetailResponse = await fetch(`${API_URL}/api/OrderDetails`, {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify(orderDetail),
+                        });
+    
+                        if (!orderDetailResponse.ok) {
+                            console.error("Lỗi khi tạo chi tiết đơn hàng:", await orderDetailResponse.json());
+                            throw new Error("Lỗi khi tạo chi tiết đơn hàng");
+                        }
+                       
+                    
+                    }
                     // Xóa sản phẩm khỏi giỏ hàng
                     const ids = cartItems.map((item) => item.id);
                     console.log("IDs to delete:", ids);
@@ -281,7 +308,7 @@ const Checkout = () => {
                         showProgress: true,
                         pauseOnHover: true,
                     });
-                    navigate("/payment-history");
+                    navigate("/my-orders");
                 } else {
                     throw new Error("Lỗi khi tạo đơn hàng");
                 }
