@@ -337,7 +337,7 @@ const MyOrders = () => {
                                 {selectedOrder && (
                                     <Modal
                                         title={`Chi tiết đơn hàng #${selectedOrder.id}`}
-                                        visible={isModalVisible}
+                                        open={isModalVisible}
                                         onCancel={handleCancel}
                                         footer={null}
                                         width={800}
@@ -473,7 +473,7 @@ const MyOrders = () => {
                                 {/* Modal hủy đơn hàng */}
                                 <Modal
                                     title="Hủy đơn hàng"
-                                    visible={cancelModalVisible}
+                                    open={cancelModalVisible}
                                     onCancel={() => {
                                         setCancelModalVisible(false);
                                         setCancelReason("");

@@ -47,7 +47,7 @@ const Checkout = () => {
 
         if (location.state?.cartItems) {
             setCartItems(location.state.cartItems);
-            console.log('cartItem', location.state.cartItems);
+            console.log("cartItem", location.state.cartItems);
             setTotalAmount(location.state.total);
         } else {
             navigate(PathNames.CART);
@@ -65,7 +65,9 @@ const Checkout = () => {
     const fetchProducts = async () => {
         try {
             const promises = cartItems.map(async (item) => {
-                const response = await fetch(`${API_URL}/api/Products/${item.productId}`);
+                const response = await fetch(
+                    `${API_URL}/api/Products/${item.productId}`
+                );
                 if (!response.ok) {
                     throw new Error("Failed to fetch product");
                 }
@@ -74,10 +76,13 @@ const Checkout = () => {
             });
 
             const results = await Promise.all(promises);
-            const productsMap = results.reduce((acc, { productId, product }) => {
-                acc[productId] = product;
-                return acc;
-            }, {});
+            const productsMap = results.reduce(
+                (acc, { productId, product }) => {
+                    acc[productId] = product;
+                    return acc;
+                },
+                {}
+            );
 
             setProductItems(productsMap);
         } catch (error) {
@@ -86,11 +91,13 @@ const Checkout = () => {
         }
     };
     const [colorSizes, setColorSizes] = useState({});
-     // Hàm lấy dữ liệu color
-     const fetchColorSizes = async () => {
+    // Hàm lấy dữ liệu color
+    const fetchColorSizes = async () => {
         try {
             const promises = cartItems.map(async (item) => {
-                const response = await fetch(`${API_URL}/api/ColorSizes/${item.colorSizeId}`);
+                const response = await fetch(
+                    `${API_URL}/api/ColorSizes/${item.colorSizeId}`
+                );
                 if (!response.ok) {
                     throw new Error("Failed to fetch product");
                 }
@@ -127,13 +134,12 @@ const Checkout = () => {
                 }
                 const data = await response.json();
                 // Sắp xếp theo phn trăm giảm giá từ cao đến thấp
-                const sortedCodes = data.sort(
-                    (a, b) => b.value - a.value
-                );
+                const sortedCodes = data.sort((a, b) => b.value - a.value);
                 const enableDiscount = sortedCodes.filter(
-                    (discount) => new Date(discount.endAt).getTime() > Date.now()
+                    (discount) =>
+                        new Date(discount.endAt).getTime() > Date.now()
                 );
-                
+
                 // Cập nhật lại danh sách mã giảm giá
                 setDiscountCodes(enableDiscount);
             } catch (error) {
@@ -175,14 +181,23 @@ const Checkout = () => {
             paymentStatus: "Chưa thanh toán",
             status: "Chờ xác nhận",
             address:
+
+                    shippingOption === "store"
+                        ? storeAddress
+                        : customerInfo.address,
+            discountCode: selectedDiscount ? selectedDiscount.code : null,
+            discountAmount: discountedAmount,
+
+          
                 shippingOption === "store"
                     ? storeAddress
                     : customerInfo.address,
+
         };
         console.log(paymentData);
         if (paymentMethod === "MoMo") {
             try {
-                // Gọi API tạo thanh toán MOMO
+                // Gọi API tạo thanh toán
                 const paymentResponse = await fetch(`${API_URL}/payment`, {
                     method: "POST",
                     headers: {
@@ -265,18 +280,24 @@ const Checkout = () => {
                     }
                     // Xóa sản phẩm khỏi giỏ hàng
                     const ids = cartItems.map((item) => item.id);
-                    console.log("IDs to delete:", ids); 
-                    const deleteResponse = await fetch(`${API_URL}/api/Carts/BySelectedItem/${userId}`, {
-                        method: "DELETE",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify(ids),
-                    });
+                    console.log("IDs to delete:", ids);
+                    const deleteResponse = await fetch(
+                        `${API_URL}/api/Carts/BySelectedItem/${userId}`,
+                        {
+                            method: "DELETE",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify(ids),
+                        }
+                    );
                     if (!deleteResponse.ok) {
                         const errorData = await deleteResponse.json();
                         console.error("Lỗi API:", errorData);
-                        throw new Error(errorData.message || "Lỗi khi xóa sản phẩm khỏi giỏ hàng");
+                        throw new Error(
+                            errorData.message ||
+                                "Lỗi khi xóa sản phẩm khỏi giỏ hàng"
+                        );
                     }
                     notification.success({
                         message: "Đặt hàng thành công",
@@ -323,42 +344,42 @@ const Checkout = () => {
 
             {/* Hiển thị sản phẩm trong giỏ hàng của user */}
             {cartItems.length > 0 ? (
-                cartItems.map((item) =>{
-                        const product = productItems[item.productId];
-                        const color = colorSizes[item.colorSizeId];
-                        return (
-                            <div
-                                key={item.productId}
-                                className="bg-white p-4 rounded-lg shadow mb-4"
-                            >
-                                <div className="flex items-center">
-                                    {product ? (
-                                        <img
-                                            src={`data:image/jpeg;base64,${product?.image}`}
-                                            alt={product?.name}
-                                            className="object-cover w-20 h-20"
-                                        />
-                                    ) : (
-                                        <p>Đang tải...</p>
-                                    )}
-                                    <div className="ml-4">
-                                        <h3 className="text-lg font-semibold">
-                                            {product?.name} -  {color?.color} - {color?.size}
-                                        </h3>
-                                     
-                                        <p className="text-red-500">
-                                            {item.price.toLocaleString()}{" "}
-                                            <span className="line-through text-gray-500">
-                                                {item.price?.toLocaleString()}
-                                            </span>
-                                        </p>
-                                        <p>Số lượng: {item.quantity}</p>
-                                    </div>
+                cartItems.map((item) => {
+                    const product = productItems[item.productId];
+                    const color = colorSizes[item.colorSizeId];
+                    return (
+                        <div
+                            key={item.productId}
+                            className="bg-white p-4 rounded-lg shadow mb-4"
+                        >
+                            <div className="flex items-center">
+                                {product ? (
+                                    <img
+                                        src={`data:image/jpeg;base64,${product?.image}`}
+                                        alt={product?.name}
+                                        className="object-cover w-20 h-20"
+                                    />
+                                ) : (
+                                    <p>Đang tải...</p>
+                                )}
+                                <div className="ml-4">
+                                    <h3 className="text-lg font-semibold">
+                                        {product?.name} - {color?.color} -{" "}
+                                        {color?.size}
+                                    </h3>
+
+                                    <p className="text-red-500">
+                                        {item.price.toLocaleString()}{" "}
+                                        <span className="line-through text-gray-500">
+                                            {item.price?.toLocaleString()}
+                                        </span>
+                                    </p>
+                                    <p>Số lượng: {item.quantity}</p>
                                 </div>
                             </div>
-                        )
-                    } 
-                )
+                        </div>
+                    );
+                })
             ) : (
                 <p>Giỏ hàng của bạn trống. Hãy mua gì đó rồi quay lại nhé</p>
             )}
