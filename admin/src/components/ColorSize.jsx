@@ -56,7 +56,7 @@ const ColorSize = ({ productId }) => {
         color: "",
         size: "",
         quantity: "",
-        price: "",
+        price: 0,
     });
 
     const queryClient = useQueryClient();
@@ -76,9 +76,10 @@ const ColorSize = ({ productId }) => {
     const mutation = useMutation({
         mutationFn: addColorSize,
         onSuccess: () => {
-            queryClient.invalidateQueries(["colorsizes", productId]); // Cập nhật danh sách
+            queryClient.invalidateQueries(["colorsizes", productId]); 
+            fetchColorSize();
             setOpenAddDialog(false); // Đóng dialog sau khi thêm
-            setNewColorSize({ color: "", size: "", quantity: "", price: "" }); // Reset form
+            setNewColorSize({ color: "", size: "", quantity: "", price: 0 }); // Reset form
         },
     });
     // Mutation để cập nhật màu
@@ -102,8 +103,7 @@ const ColorSize = ({ productId }) => {
         if (
             !selectedColor.color ||
             !selectedColor.size ||
-            !selectedColor.quantity ||
-            !selectedColor.price
+            !selectedColor.quantity 
         ) {
             message.warning("Vui lòng nhập đầy đủ thông tin!");
             return;
@@ -137,12 +137,13 @@ const ColorSize = ({ productId }) => {
             message.warning("Vui lòng nhập đầy đủ thông tin!");
             return;
         }
+        console.log("Dữ liệu gửi lên:", { ...newColorSize, productId });
         mutation.mutate({ ...newColorSize, productId });
     };
 
     return (
-        <Grid item xs={12} sm={8}>
-            <Typography variant="h6" sx={{ mt: 2, mb: 2 }}>
+        <Grid item xs={12} sm={8} >
+            <Typography variant="h6" sx={{ mt: 2, mb: 2, ml:2 }}>
                 Màu và phiên bản
                 <Button
                     variant="contained"
@@ -163,7 +164,7 @@ const ColorSize = ({ productId }) => {
                 </Typography>
             ) : ColorSizes.length > 0 ? (
                 ColorSizes.map((item) => (
-                    <Grid item xs={12} sm={12} key={item.id}>
+                    <Grid item xs={10} sm={10} mx={3} key={item.id} >
                         <Card
                             variant="outlined"
                             sx={{
@@ -181,9 +182,7 @@ const ColorSize = ({ productId }) => {
                                 >
                                     Màu: {item.color} - {item.size}
                                 </Typography>
-                                <Typography variant="body">
-                                    Giá: {item.price}
-                                </Typography>
+                              
                                 <Typography variant="body2">
                                     Số lượng: {item.quantity}
                                 </Typography>
@@ -243,19 +242,7 @@ const ColorSize = ({ productId }) => {
                         fullWidth
                         margin="normal"
                     />
-                    <TextField
-                        label="Giá"
-                        type="number"
-                        value={selectedColor?.price || ""}
-                        onChange={(e) =>
-                            setSelectedColor({
-                                ...selectedColor,
-                                price: e.target.value,
-                            })
-                        }
-                        fullWidth
-                        margin="normal"
-                    />
+                  
                     <label style={{ marginLeft: "4px" }}>Mã màu </label>
                     <TextField
                         label="Mã màu"
@@ -342,7 +329,7 @@ const ColorSize = ({ productId }) => {
                     <label style={{ marginLeft: "4px" }}>Mã màu </label>
                     <TextField
                         label="Mã màu"
-                        type="code"
+                        type="test"
                         value={newColorSize?.code || ""}
                         onChange={(e) =>
                             setNewColorSize({
@@ -356,7 +343,7 @@ const ColorSize = ({ productId }) => {
                     <Input
                         label="Mã màu"
                         type="color"
-                        value={selectedColor?.code || ""}
+                        value={newColorSize?.code || ""}
                         onChange={(e) =>
                             setNewColorSize({
                                 ...newColorSize,
@@ -378,19 +365,7 @@ const ColorSize = ({ productId }) => {
                         fullWidth
                         margin="normal"
                     />
-                    <TextField
-                        label="Giá phiên bản"
-                        type="number"
-                        value={newColorSize.price}
-                        onChange={(e) =>
-                            setNewColorSize({
-                                ...newColorSize,
-                                price: e.target.value,
-                            })
-                        }
-                        fullWidth
-                        margin="normal"
-                    />
+                    
                     <TextField
                         label="Số lượng"
                         type="number"

@@ -48,8 +48,6 @@ namespace WebAPI.Controllers
             try
             {
                 var carts = await _cartService.GetByUserAsync(userId);
-               
-
                 return Ok(carts);
             }
             catch (Exception ex)

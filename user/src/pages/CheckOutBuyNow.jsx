@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { API_URL } from "../config.js";
 import { useLocation, useNavigate } from "react-router-dom";
 import { notification, message } from "antd";
 import PathNames from "../PathNames.js";
 import { useDispatch, useSelector } from "react-redux";
+
 const CheckoutBuyNow = () => {
     const location = useLocation();
     const navigate = useNavigate();
@@ -23,6 +24,11 @@ const CheckoutBuyNow = () => {
     const [shippingOption, setShippingOption] = useState("store");
     const [totalAmount, setTotalAmount] = useState(productBuyNow?.price);
     const [notes, setNotes] = useState(""); // Lưu trữ ghi chú từ người dùng
+
+    const [showDiscountDialog, setShowDiscountDialog] = useState(false);
+    const [discountCodes, setDiscountCodes] = useState([]);
+    const [selectedDiscount, setSelectedDiscount] = useState(null);
+    const [discountedAmount, setDiscountedAmount] = useState(0);
 
     const handleContinue = async () => {
         const finalAmount = totalAmount;
@@ -106,6 +112,8 @@ const CheckoutBuyNow = () => {
                 }
             }
 
+            
+
             // Tạo dữ liệu đơn hàng
             const paymentData = {
                 userId: userIdToUse,
@@ -113,12 +121,15 @@ const CheckoutBuyNow = () => {
                 totalPrice: finalAmount,
                 paymentMethod: paymentMethod,
                 phone: customerInfo.phone,
+                note: notes,
                 paymentStatus: "Chưa thanh toán",
                 status: "Chờ xác nhận",
                 address:
                     shippingOption === "store"
                         ? storeAddress
                         : customerInfo.address,
+                discountCode: selectedDiscount ? selectedDiscount.code : null,
+                discountAmount: discountedAmount,
             };
 
             // Gửi yêu cầu tạo đơn hàng
@@ -173,6 +184,45 @@ const CheckoutBuyNow = () => {
             message.error("Đã xảy ra lỗi. Vui lòng thử lại sau.");
         }
     };
+
+    useEffect(() => {
+        const fetchDiscountCodes = async () => {
+            try {
+                const response = await fetch(`${API_URL}/api/Promotions`);
+                if (!response.ok) {
+                    throw new Error("Failed to fetch discount codes");
+                }
+                const data = await response.json();
+                const sortedCodes = data.sort((a, b) => b.value - a.value);
+                const enableDiscount = sortedCodes.filter(
+                    (discount) => new Date(discount.endAt).getTime() > Date.now()
+                );
+                setDiscountCodes(enableDiscount);
+            } catch (error) {
+                console.error("Error fetching discount codes:", error);
+            }
+        };
+        fetchDiscountCodes();
+    }, []);
+// Handler khi chọn mã giảm giá
+    const handleSelectDiscount = (discount) => {
+        setSelectedDiscount(discount);
+        const discountAmount = Math.min(
+            Math.floor((productBuyNow.price * discount.value) / 100),
+            discount.maxValue
+        );
+        setDiscountedAmount(discountAmount);
+        setTotalAmount(productBuyNow.price - discountAmount);
+        setShowDiscountDialog(false);
+    };
+
+    // Handler để xóa mã giảm giá
+    const handleRemoveDiscount = () => {
+        setSelectedDiscount(null);
+        setDiscountedAmount(0);
+        setTotalAmount(productBuyNow?.price);
+    };
+
 
     const storeAddress = "806 QL22, ấp Mỹ Hoà 3, Hóc Môn, Hồ Chí Minh";
 
@@ -399,14 +449,103 @@ const CheckoutBuyNow = () => {
                 </select>
             </div>
 
+            {/* Mã giảm giá */}
+            <div className="bg-white p-4 rounded-lg shadow mb-4">
+                <div className="flex justify-between items-center">
+                    <h3 className="text-lg font-semibold">Mã giảm giá</h3>
+                    {!selectedDiscount ? (
+                        <button onClick={() => setShowDiscountDialog(true)} className="text-blue-500 hover:text-blue-700">
+                            Chọn mã giảm giá
+                        </button>
+                    ) : (
+                        <button onClick={handleRemoveDiscount} className="text-red-500 hover:text-red-700">
+                            Xóa mã giảm giá
+                        </button>
+                    )}
+                </div>
+                <p className="text-sm text-gray-500 mt-1">* Đơn hàng chỉ được sử dụng 1 mã giảm giá</p>
+                {selectedDiscount && (
+                    <div className="mt-2 p-2 bg-blue-50 rounded">
+                        <div className="flex justify-between items-center">
+                            <div>
+                                <p className="font-medium">{selectedDiscount.name}</p>
+                                <p className="text-sm text-gray-600">
+                                    Giảm {selectedDiscount.value}% (Tối đa {selectedDiscount.maxValue.toLocaleString()}đ)
+                                </p>
+                                <p className="text-green-600 font-medium">-{discountedAmount.toLocaleString()}đ</p>
+                            </div>
+                            <button onClick={handleRemoveDiscount} className="text-gray-500 hover:text-gray-700">✕</button>
+                        </div>
+                    </div>
+                )}
+            </div>
+
+            {/* Dialog mã giảm giá */}
+            {showDiscountDialog && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg p-6 w-96 max-h-[75vh] overflow-y-auto">
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-xl font-semibold">Chọn mã giảm giá</h3>
+                            <button onClick={() => setShowDiscountDialog(false)} className="text-gray-500 hover:text-gray-700">✕</button>
+                        </div>
+                        <div className="space-y-4">
+                            {discountCodes.map((discount) => {
+                                const isApplicable = productBuyNow.price >= discount.minPrice;
+                                return (
+                                    <div key={discount.id} className={`border rounded p-3 ${isApplicable ? "hover:bg-gray-50" : "opacity-50"}`}>
+                                        <div className="flex justify-between items-center">
+                                            <div className="flex-1">
+                                                <h4 className="font-semibold text-lg">{discount.name}</h4>
+                                                <div className="space-y-1 mt-1">
+                                                    <p className="text-sm text-gray-600">
+                                                        Giảm {discount.value}% (Tối đa {discount.maxValue.toLocaleString()}đ)
+                                                    </p>
+                                                    <p className="text-xs text-gray-500">
+                                                        Đơn tối thiểu {discount.minPrice.toLocaleString()}đ
+                                                    </p>
+                                                    {!isApplicable && (
+                                                        <p className="text-xs text-red-500">Đơn hàng chưa đạt giá trị tối thiểu</p>
+                                                    )}
+                                                    {discount.endAt && (
+                                                        <p className="text-xs text-gray-500">
+                                                            HSD: {new Date(discount.endAt).toLocaleDateString("vi-VN")}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            </div>
+                                            <div className="ml-4 flex items-center">
+                                                <button
+                                                    className={`px-4 py-1.5 rounded text-sm w-32 ${isApplicable ? "bg-blue-500 hover:bg-blue-600 text-white" : "bg-gray-300 text-gray-500 cursor-not-allowed"}`}
+                                                    onClick={() => isApplicable && handleSelectDiscount(discount)}
+                                                    disabled={!isApplicable}
+                                                >
+                                                    {isApplicable ? "Áp dụng" : "Không đủ điều kiện"}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Cập nhật phần tổng tiền */}
             <div className="bg-white p-4 rounded-lg shadow mb-4">
                 <h3 className="text-lg font-semibold mb-2">Tổng tiền</h3>
                 <div className="space-y-2">
                     <div className="flex justify-between">
                         <span>Tạm tính:</span>
-                        <span>{totalAmount.toLocaleString()}đ</span>
+                        <span>{productBuyNow?.price.toLocaleString()}đ</span>
                     </div>
+
+                    {selectedDiscount && (
+                        <div className="flex justify-between text-green-600">
+                            <span>Giảm giá:</span>
+                            <span>-{discountedAmount.toLocaleString()}đ</span>
+                        </div>
+                    )}
 
                     <div className="flex justify-between font-semibold text-xl">
                         <span>Tổng cộng:</span>
@@ -421,7 +560,7 @@ const CheckoutBuyNow = () => {
                 onClick={handleContinue}
                 className="w-full bg-blue-500 text-white p-4 rounded-lg text-center text-lg font-semibold"
             >
-                Tiếp tục
+                Tiếp theo
             </button>
         </div>
     );

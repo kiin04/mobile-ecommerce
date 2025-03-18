@@ -7,8 +7,13 @@ import { TrendingUp, TrendingDown, Users, Package, DollarSign, Clock } from 'luc
 import '../styles/Dashboard.css';
 import { API_URL } from '../config';
 import { useNavigate } from 'react-router-dom';
+import axios from "axios";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
+
+
+
+
 
 const StatCard = ({ title, value, change, icon: Icon, changeType }) => (
   <Card style={{ flex: 1, margin: '0 8px' }}>
@@ -72,6 +77,13 @@ const Dashboard = () => {
     monthlyRevenue: [],
     recentOrders: []
   });
+
+
+  const [orders, setOrders] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [orderChart, setOrderChart] = useState([]);
+  const [userChart, setUserChart] = useState([]);
+  const [revenueChart, setRevenueChart] = useState([]);
   const [loading, setLoading] = useState(true);
   const chartRef = useRef(null);
   const navigate = useNavigate();
@@ -82,22 +94,42 @@ const Dashboard = () => {
   });
 
   useEffect(() => {
-    const fetchDashboardData = async () => {
+    
+    const fetchOrders = async () => {
       try {
-        const response = await fetch(`${API_URL}/api/dashboard/stats`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch dashboard data');
-        }
-        const data = await response.json();
-        setDashboardData(data);
+          const response = await axios.get(`${API_URL}/api/Orders`);
+          console.log("res order", response);
+          if (response.status == 200) {
+              const data = response.data;
+              setOrders(data);
+          } else {
+              console.error("Failed to fetch orders");
+          }
       } catch (error) {
-        console.error('Error fetching dashboard data:', error);
-      } finally {
-        setLoading(false);
+          console.error("Error fetching orders:", error);
       }
     };
-
-    fetchDashboardData();
+    const fetchUsers = async () => {
+      try {
+          const response = await axios.get(`${API_URL}/api/Users`);
+          if (response.status === 200) {
+              const data = response.data;
+              console.log("Fetched users:", data);
+              setUsers(data);
+          } else {
+              console.error(
+                  `Failed to fetch users: ${response.status} ${response.statusText}`
+              );
+              setUsers([]);
+          }
+      } catch (error) {
+          console.error("Error fetching users:", error);
+          setUsers([]);
+      }
+    };
+        
+    fetchOrders()
+    fetchUsers()
 
     const handleResize = () => {
       if (chartRef.current) {
@@ -108,6 +140,93 @@ const Dashboard = () => {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  const getOrderInMonth = () => {
+    const currentDate = new Date();
+    const currentMonth = currentDate.getMonth(); 
+    const previousMonth = currentMonth === 0 ? 11 : currentMonth - 1; 
+  
+    const inMonth = orders.filter((od) => {
+      const orderDate = new Date(od?.createdAt); 
+      return orderDate.getMonth() === currentMonth && orderDate.getFullYear() === currentDate.getFullYear();
+    });
+  
+    const previousMonthOrders = orders.filter((od) => {
+      const orderDate = new Date(od?.createdAt);
+      return orderDate.getMonth() === previousMonth && orderDate.getFullYear() === currentDate.getFullYear();
+    });
+  
+    const previousMonthOrderNonAccept = previousMonthOrders.filter((od) => od.status !== 'Đã giao hàng');
+    const previousMonthAccept = previousMonthOrders.filter((od) => od.status === 'Đã giao hàng');
+  
+    const inMonthAccept = inMonth.filter((od) => od.status == 'Đã giao hàng');
+    const inMonthNonAccept = inMonth.filter((od) => od.status !== 'Đã giao hàng');
+  
+    const totalRevenueInMonth = inMonthAccept.reduce((sum, od) => sum + (od.totalPrice || 0), 0);
+    const totalRevenuePreviousMonth = previousMonthAccept.reduce((sum, od) => sum + (od.totalPrice || 0), 0);
+  
+    // Tính phần trăm thay đổi doanh thu
+    const revenuePercentageChange = totalRevenuePreviousMonth === 0 
+      ? (totalRevenueInMonth > 0 ? 100 : 0) 
+      : ((totalRevenueInMonth - totalRevenuePreviousMonth) / totalRevenuePreviousMonth) * 100;
+  
+    // Tính phần trăm thay đổi số lượng đơn hàng chwa xác nhận
+    const orderNonAcceptPercentageChange = previousMonthAccept.length === 0 
+      ? (inMonthNonAccept.length > 0 ? 100 : 0) 
+      : ((inMonthNonAccept.length - previousMonthOrderNonAccept.length) / previousMonthAccept.length) * 100;
+  
+    // Tính phần trăm thay đổi tổng số lượng đơn hàng
+    const orderPercentageChange = previousMonthOrders.length === 0 
+      ? (inMonth.length > 0 ? 100 : 0) 
+      : ((inMonth.length - previousMonthOrders.length) / previousMonthOrders.length) * 100;
+  
+    setOrderChart({
+      inMonthOrders: inMonth.length,
+      nonAcceptInMonth: inMonthNonAccept.length,
+      totalRevenueInMonth: totalRevenueInMonth,
+
+      revenuePercentageChange: revenuePercentageChange.toFixed(2),
+      orderNonAcceptPercentageChange: orderNonAcceptPercentageChange.toFixed(2), 
+      orderPercentageChange: orderPercentageChange.toFixed(2), 
+    });
+  };
+  
+  
+
+  
+  const getUserInMonth = () => {
+    const currentDate = new Date();
+    const currentMonth = currentDate.getMonth(); 
+    const previousMonth = currentMonth === 0 ? 11 : currentMonth - 1; 
+  
+    const inMonth = users.filter((us) => {
+      const userDate = new Date(us?.createdAt); 
+      return userDate.getMonth() === currentMonth && userDate.getFullYear() === currentDate.getFullYear();
+    });
+  
+    const previousMonthUser = users.filter((us) => {
+      const userDate = new Date(us?.createdAt);
+      return userDate.getMonth() === previousMonth && userDate.getFullYear() === currentDate.getFullYear();
+    });
+    const inMonthCount = inMonth.length;
+    const previousMonthCount = previousMonthUser.length;
+
+   
+    const percentageChange = previousMonthCount === 0
+          ? inMonthCount > 0 ? 100 : 0 
+          : ((inMonthCount - previousMonthCount) / previousMonthCount) * 100;
+    setUserChart({
+      previousMonth: previousMonthCount,
+      inMonth: inMonthCount,
+      percentageChange: percentageChange.toFixed(2) // Làm tròn 2 chữ số
+    });
+   };
+  
+  useEffect(()=>{
+    getOrderInMonth()
+    getUserInMonth()
+    console.log('orderChart', orderChart);
+  },[orders, users])
 
   useEffect(() => {
     const fetchRevenueData = async () => {
@@ -166,13 +285,13 @@ const Dashboard = () => {
     fetchRevenueData();
   }, [timeRange, dashboardData.monthlyRevenue]);
 
-  if (loading || !dashboardData) {
-    return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
-        <CircularProgress />
-      </Box>
-    );
-  }
+  // if (loading || !dashboardData) {
+  //   return (
+  //     <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
+  //       <CircularProgress />
+  //     </Box>
+  //   );
+  // }
 
   const options = {
     responsive: true,
@@ -241,37 +360,37 @@ const Dashboard = () => {
           <div className="col-12 col-md-6 col-lg-3">
             <StatCard 
               title="Tổng người dùng" 
-              value={dashboardData.stats.users.total} 
-              change={dashboardData.stats.users.change}
+              value={userChart.inMonth} 
+              change={userChart.percentageChange}
               icon={Users} 
-              changeType={dashboardData.stats.users.change >= 0 ? 'up' : 'down'} 
+              changeType={userChart.percentageChange >= 0 ? 'up' : 'down'} 
             />
           </div>
           <div className="col-12 col-md-6 col-lg-3">
             <StatCard 
               title="Tổng đơn hàng" 
-              value={dashboardData.stats.orders.total} 
-              change={dashboardData.stats.orders.change}
+              value={orderChart.inMonthOrders} 
+              change={orderChart.orderPercentageChange}
               icon={Package} 
-              changeType={dashboardData.stats.orders.change >= 0 ? 'up' : 'down'} 
+              changeType={ orderChart.orderPercentageChange>= 0 ? 'up' : 'down'} 
             />
           </div>
           <div className="col-12 col-md-6 col-lg-3">
             <StatCard 
               title="Doanh thu tháng này" 
-              value={formatCurrency(dashboardData.stats.revenue.total)}
-              change={dashboardData.stats.revenue.change}
+              value={formatCurrency(orderChart.totalRevenueInMonth)}
+              change={orderChart.revenuePercentageChange}
               icon={DollarSign} 
-              changeType={dashboardData.stats.revenue.change >= 0 ? 'up' : 'down'} 
+              changeType={orderChart.revenuePercentageChange >= 0 ? 'up' : 'down'} 
             />
           </div>
           <div className="col-12 col-md-6 col-lg-3">
             <StatCard 
               title="Đơn hàng chờ xử lý" 
-              value={dashboardData.stats.pendingOrders.total}
-              change={dashboardData.stats.pendingOrders.change}
+              value={orderChart.nonAcceptInMonth}
+              change={orderChart.orderNonAcceptPercentageChange}
               icon={Clock} 
-              changeType={dashboardData.stats.pendingOrders.change >= 0 ? 'up' : 'down'} 
+              changeType={orderChart.orderNonAcceptPercentageChange >= 0 ? 'up' : 'down'} 
             />
           </div>
         </div>

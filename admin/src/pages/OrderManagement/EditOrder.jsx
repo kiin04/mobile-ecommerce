@@ -10,7 +10,7 @@ import {
     Autocomplete,
 } from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom";
-
+import axios from "axios";
 import apiConfigInstance from "../../../SingletonParttern.js";
 import { notification } from "antd";
 const API_URL = apiConfigInstance.getApiUrl();
@@ -155,22 +155,6 @@ const EditOrder = () => {
         if (!order.address) {
             newErrors.address = "Vui lòng nhập địa chỉ giao hàng";
         }
-
-        // // Validate items
-        // if (!order.items || order.items.length === 0) {
-        //   newErrors.items = 'Đơn hàng phải có ít nhất một sản phẩm';
-        // } else {
-        //   order.items.forEach((item, index) => {
-        //     if (!item.productId) {
-        //       newErrors[`items[${index}].productId`] = 'Vui lòng chọn sản phẩm';
-        //     }
-        //     if (!item.quantity || item.quantity <= 0) {
-        //       newErrors[`items[${index}].quantity`] = 'Số lượng phải lớn hơn 0';
-        //     }
-        //   });
-        // }
-
-        // Validate ngày đặt hàng
         if (!order.createdAt) {
             newErrors.createdAt = "Vui lòng chọn ngày đặt hàng";
         }
@@ -213,7 +197,7 @@ const EditOrder = () => {
             }));
         }
     };
-
+    
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -231,6 +215,9 @@ const EditOrder = () => {
             });
             console.log("response update order", response);
             if (response.ok) {
+                if(order.status == 'Đã giao hàng'){
+                    await updateUser();
+                }
                 notification.success({
                     message: 'Thành công',
                     description: "Đơn hàng đã được cập nhật thành công",
@@ -256,6 +243,88 @@ const EditOrder = () => {
             });
         }
     };
+
+    const fetchUsers = async () => {
+        try {
+            const response = await axios.get(`${API_URL}/api/Users/${order?.userId}`);
+            if (response.status === 200) {
+                const data = response.data;
+                console.log("Fetched users:", data);
+                return data
+            } else {
+                console.error(
+                    `Failed to fetch users: ${response.status} ${response.statusText}`
+                );
+                return {}
+            }
+        } catch (error) {
+            console.error("Error fetching users:", error);
+            return {}
+        }
+    };
+
+    const updateUser = async () => {
+           const user =  await fetchUsers()
+            if(user){
+                console.log('user', user);
+                const formData = new FormData();
+                const totalPrice = user?.totalBuy + order?.totalPrice
+                formData.append("totalBuy", totalPrice)
+                formData.append("createdAt", user.createdAt);
+                formData.append("id", user.id);
+                formData.append("name", user.name);
+                formData.append("phone", user.phone);
+                formData.append("address", user.address);
+                formData.append("account", user.account);
+                if (totalPrice <= 1500000)
+                     { formData.append("role", 4);}
+                else  if (totalPrice > 1500000)
+                    { formData.append("role", 5);}
+                else  if (totalPrice > 3500000)
+                    { formData.append("role", 6);}
+                else  if (totalPrice > 700000)
+                    { formData.append("role", 7);}
+
+                console.log("📝 FormData nội dung:");
+                for (let [key, value] of formData.entries()) {
+                    console.log(key, value);
+                }
+                try {
+                    const response = await fetch(
+                        `${API_URL}/api/Users/${user.id}`,
+                        {
+                            method: "PUT",
+                            body: formData,
+                        }
+                    );
+                    console.log("update response", response);
+                    console.log(response);
+                    if (response.ok) {
+                        notification.success({
+                            message: 'Thành công',
+                            description: "Người dùng đã được cập nhật thành công",
+                            duration: 4,
+                            placement: "bottomRight",
+                            showProgress: true,
+                            pauseOnHover: true
+                        });
+                    }
+                } catch (error) {
+                    console.error("Lỗi khi cập nhật Người dùng:", error);
+                    notification.error({
+                        message: 'Thất bại',
+                        description: "Lỗi khi cập nhật Người dùng: " + error.message,
+                        duration: 4,
+                        placement: "bottomRight",
+                        showProgress: true,
+                        pauseOnHover: true
+                    });
+                }
+            }
+    
+           
+    };
+
 
     if (loading) return <CircularProgress />;
     if (error) return <Typography color="error">{error}</Typography>;
@@ -447,18 +516,18 @@ const EditOrder = () => {
                     </Grid>
 
                     {/* Notes */}
-                    {/* <Grid item xs={12}>
-            <TextField
-              label="Ghi chú"
-              name="notes"
-              value={order.notes || ''}
-              onChange={handleChange}
-              fullWidth
-              multiline
-              rows={3}
-              margin="normal"
-            />
-          </Grid> */}
+                    <Grid item xs={12}>
+                        <TextField
+                        label="Ghi chú"
+                        name="notes"
+                        value={order.note || ''}
+                        onChange={handleChange}
+                        fullWidth
+                        multiline
+                        rows={3}
+                        margin="normal"
+                        />
+                    </Grid>
 
                     {/* Ngày đặt hàng */}
                     <Grid item xs={12} sm={6}>

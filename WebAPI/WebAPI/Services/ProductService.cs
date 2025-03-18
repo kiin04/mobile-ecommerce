@@ -1,6 +1,5 @@
 ﻿using WebAPI.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Mvc;
 
 
 namespace WebAPI.Services

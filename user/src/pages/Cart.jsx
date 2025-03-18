@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { API_URL } from "../config";
 import { notification } from "antd";
 import PathNames from "../PathNames.js";
-import {  useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 const Cart = () => {
     const [cartItems, setCartItems] = useState([]);
     const [cartAmount, setCartAmount] = useState(0);
@@ -15,15 +15,16 @@ const Cart = () => {
     const [selectedItems, setSelectedItems] = useState([]);
     const navigate = useNavigate();
     const user = useSelector((state) => state.user);
-    const userId = user?.id
- 
+    const userId = user?.id;
+
     const fetchCartItems = async () => {
-           
         if (!userId) {
             console.error("Xin hãy đăng nhập để sử dụng tính năng này");
         }
         try {
-            const response = await fetch(`${API_URL}/api/Carts/User/${user.id}`);
+            const response = await fetch(
+                `${API_URL}/api/Carts/User/${user.id}`
+            );
             if (!response.ok) {
                 throw new Error("Failed to fetch cart items");
             }
@@ -47,7 +48,9 @@ const Cart = () => {
     const fetchProducts = async () => {
         try {
             const promises = cartItems.map(async (item) => {
-                const response = await fetch(`${API_URL}/api/Products/${item.productId}`);
+                const response = await fetch(
+                    `${API_URL}/api/Products/${item.productId}`
+                );
                 if (!response.ok) {
                     throw new Error("Failed to fetch product");
                 }
@@ -56,10 +59,13 @@ const Cart = () => {
             });
 
             const results = await Promise.all(promises);
-            const productsMap = results.reduce((acc, { productId, product }) => {
-                acc[productId] = product;
-                return acc;
-            }, {});
+            const productsMap = results.reduce(
+                (acc, { productId, product }) => {
+                    acc[productId] = product;
+                    return acc;
+                },
+                {}
+            );
 
             setProductItems(productsMap);
         } catch (error) {
@@ -68,11 +74,13 @@ const Cart = () => {
         }
     };
     const [colorSizes, setColorSizes] = useState({});
-     // Hàm lấy dữ liệu color
-     const fetchColorSizes = async () => {
+    // Hàm lấy dữ liệu color
+    const fetchColorSizes = async () => {
         try {
             const promises = cartItems.map(async (item) => {
-                const response = await fetch(`${API_URL}/api/ColorSizes/${item.colorSizeId}`);
+                const response = await fetch(
+                    `${API_URL}/api/ColorSizes/${item.colorSizeId}`
+                );
                 if (!response.ok) {
                     throw new Error("Failed to fetch product");
                 }
@@ -109,57 +117,53 @@ const Cart = () => {
 
     // Xóa sản phẩm khỏi giỏ hàng
     const removeFromCart = async (id) => {
-          try {
+        try {
             const response = await fetch(`${API_URL}/api/Carts/${id}`, {
-                    method: "DELETE",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                }
-            );
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
 
             if (!response.ok) {
                 throw new Error("Failed to remove item from cart");
             }
 
-            setCartItems(prevItems => prevItems.filter(item => item.id !== id));
+            setCartItems((prevItems) =>
+                prevItems.filter((item) => item.id !== id)
+            );
         } catch (error) {
             console.error("Lỗi khi xóa sản phẩm khỏi giỏ hàng:", error);
         }
     };
 
     // Cập nhật số lượng sản phẩm trong giỏ hàng và kiểm tra tồn kho
-    const updateQuantity = async (id,cart, newQuantity) => {
+    const updateQuantity = async (id, cart, newQuantity) => {
         const userId = localStorage.getItem("userId");
-        const productInCart = cartItems.find(
-            (item) => item.id === id
-        );
+        const productInCart = cartItems.find((item) => item.id === id);
 
         if (newQuantity <= 0) {
             setItemToRemove(productInCart);
             setShowConfirmDialog(true); // Hiển thị hộp thoại xác nhận xóa sản phẩm
         } else {
             try {
-                const response = await fetch(
-                    `${API_URL}/api/Carts/${id}`,
-                    {
-                        method: "PUT",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({
-                            ...Cart,
-                            quantity: newQuantity,
-                        }),
-                    }
-                );
+                const response = await fetch(`${API_URL}/api/Carts/${id}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        ...Cart,
+                        quantity: newQuantity,
+                    }),
+                });
 
                 const data = await response.json();
-                console.log('data ', data);
+                console.log("data ", data);
                 if (response.status == 400) {
                     setOverStockError(data.message); // Hiển thị lỗi nếu vượt quá tồn kho
                 } else {
-                    console.log('update quantity');
+                    console.log("update quantity");
                     setCartItems((prevItems) =>
                         prevItems.map((item) =>
                             item.id === id
@@ -191,9 +195,7 @@ const Cart = () => {
     // Xử lý chọn/bỏ chọn sản phẩm
     const handleSelectItem = (id) => {
         setSelectedItems((prev) =>
-            prev.includes(id)
-                ? prev.filter((id) => id !== id)
-                : [...prev, id]
+            prev.includes(id) ? prev.filter((id) => id !== id) : [...prev, id]
         );
     };
 
@@ -227,13 +229,12 @@ const Cart = () => {
             console.error("Lỗi khi xóa sản phẩm khỏi giỏ hàng:", error);
         }
     };
-    
+
     // Sửa hàm navigate để thêm callback xóa giỏ hàng
     const handleCheckout = () => {
         const selectedProducts = cartItems.filter((item) =>
             selectedItems.includes(item.id)
         );
-        
 
         // Lưu selectedItems vào localStorage để có thể xóa sau khi thanh toán thành công
         localStorage.setItem("checkoutItems", JSON.stringify(selectedItems));
@@ -244,7 +245,7 @@ const Cart = () => {
                 total: calculateSelectedTotal(),
             },
         });
-    };  
+    };
     // Giao diện khi giỏ hàng trống
     // if (loading) {
     //     return <div>Đang tải...</div>;
@@ -270,13 +271,12 @@ const Cart = () => {
             </div>
         );
     }
-   
-   
+
     return (
         <div className="container p-6 mx-auto">
             <h2 className="mb-4 text-2xl font-semibold">Giỏ hàng của bạn</h2>
             <div className="grid grid-cols-1 gap-4">
-            {cartItems.map((item) => {
+                {cartItems.map((item) => {
                     const product = productItems[item.productId];
                     const color = colorSizes[item.colorSizeId];
                     return (
@@ -309,9 +309,12 @@ const Cart = () => {
                                 )}
                                 <div className="ml-4">
                                     <h3 className="text-lg font-semibold">
-                                        Tên sản phẩm: {product?.name || "Chưa rõ"}
+                                        Tên sản phẩm:{" "}
+                                        {product?.name || "Chưa rõ"}
                                     </h3>
-                                    <p className="text-sm font-semibold">Màu: {color?.color} - {color?.size} </p>
+                                    <p className="text-sm font-semibold">
+                                        Màu: {color?.color} - {color?.size}{" "}
+                                    </p>
                                     <p className="text-red-500">
                                         Giá: {item.price.toLocaleString()}đ
                                     </p>
@@ -319,14 +322,26 @@ const Cart = () => {
                             </div>
                             <div className="flex items-center space-x-4">
                                 <button
-                                    onClick={() => updateQuantity(item.id, item, item.quantity - 1)}
+                                    onClick={() =>
+                                        updateQuantity(
+                                            item.id,
+                                            item,
+                                            item.quantity - 1
+                                        )
+                                    }
                                     className="px-3 py-1 border rounded-md"
                                 >
                                     -
                                 </button>
                                 <span>{item.quantity}</span>
                                 <button
-                                    onClick={() => updateQuantity(item.id, item, item.quantity + 1)}
+                                    onClick={() =>
+                                        updateQuantity(
+                                            item.id,
+                                            item,
+                                            item.quantity + 1
+                                        )
+                                    }
                                     className="px-3 py-1 border rounded-md"
                                 >
                                     +
@@ -340,9 +355,8 @@ const Cart = () => {
                             </div>
                         </div>
                     );
-            })}
+                })}
             </div>
-           
 
             {/* Hiển thị thông báo lỗi vượt quá tồn kho */}
             {overStockError && (

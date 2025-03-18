@@ -2,7 +2,8 @@ import { useState } from "react";
 import { notification } from "antd";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { Grid, Typography, TextField, Button } from "@mui/material";
+import { Typography, TextField, Button } from "@mui/material";
+import Grid from '@mui/material/Grid2';
 import { API_URL } from "../config";
 
 // Fetch dữ liệu từ API

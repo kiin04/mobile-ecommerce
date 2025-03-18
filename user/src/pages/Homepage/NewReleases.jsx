@@ -28,44 +28,13 @@ const NewReleases = () => {
 
     const getProductsById = () => {
         return products
-            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // Sắp xếp giảm dần theo createdAt
-            .slice(0, 4); // Lấy 4 sản phẩm đầu tiên
+            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+            .slice(0, 4);
     };
     const NReleaseProducts = getProductsById();
-    console.log("NReleaseProducts: ",NReleaseProducts);
-
-    // const handleQuantityChange = (e) => {
-    //     const value = parseInt(e.target.value, 10);
-    //     if (value > product.quantity) {
-    //         setError("Số lượng bạn chọn đã đạt mức tối đa của sản phẩm này");
-    //         notification.warning({
-    //             message: "Lưu ý",
-    //             description:
-    //                 "Số lượng bạn chọn đã đạt mức tối đa của sản phẩm này",
-    //             duration: 4,
-    //             placement: "bottomLeft",
-    //             showProgress: true,
-    //             pauseOnHover: true,
-    //         });
-    //     } else {
-    //         setError("");
-    //     }
-    //     setQuantity(value);
-    // };
+    console.log("NReleaseProducts: ", NReleaseProducts);
 
     const handleAddtoCart = async (selectedProduct) => {
-        // if (!userId) {
-        //     notification.warning({
-        //         message: "Lưu ý!",
-        //         description: "Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng",
-        //         duration: 4,
-        //         placement: "bottomLeft",
-        //         showProgress: true,
-        //         pauseOnHover: true,
-        //     });
-        //     return;
-        // }
-
         if (!selectedProduct || !selectedProduct.id) {
             notification.error({
                 message: "Lỗi",
@@ -78,10 +47,28 @@ const NewReleases = () => {
             return;
         }
 
-        if (quantity <= 0 || quantity > selectedProduct.quantity) {
+        // Fetch available color/size options for the product
+        let colorSizeId;
+        let availableQuantity;
+        try {
+            const response = await fetch(
+                `${API_URL}/api/ColorSizes/ProductColorSize/${selectedProduct.id}`
+            );
+            if (response.ok) {
+                const colorSizes = await response.json();
+                const availableColorSizes = colorSizes.filter((cs) => cs.quantity > 0);
+                if (availableColorSizes.length === 0) {
+                    throw new Error("Không có màu/size khả dụng cho sản phẩm này!");
+                }
+                colorSizeId = availableColorSizes[0].id; // Select the first available colorSizeId
+                availableQuantity = availableColorSizes[0].quantity; // Get the quantity of the selected colorSize
+            } else {
+                throw new Error("Không thể lấy thông tin màu/size!");
+            }
+        } catch (error) {
             notification.error({
                 message: "Lỗi",
-                description: "Số lượng không hợp lệ!",
+                description: error.message,
                 duration: 4,
                 placement: "bottomLeft",
                 showProgress: true,
@@ -90,13 +77,26 @@ const NewReleases = () => {
             return;
         }
 
+        // Validate quantity against the selected colorSize's quantity
+        if (quantity > availableQuantity || quantity <= 0) {
+            notification.error({
+                message: "Lỗi",
+                description: `Không còn sản phẩm trong kho!`,
+                duration: 4,
+                placement: "bottomLeft",
+                showProgress: true,
+                pauseOnHover: true,
+            });
+            return;
+        }
+
+
         const cartItem = {
             productId: selectedProduct.id,
-            name: selectedProduct.name,
-            price: selectedProduct.price,
-            color: selectedProduct.color,
             quantity: parseInt(quantity),
-            image: selectedProduct.image,
+            userId: userId,
+            price: selectedProduct.price,
+            colorSizeId: colorSizeId,
         };
 
         console.log("Sending cart item:", cartItem);
@@ -108,15 +108,13 @@ const NewReleases = () => {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify(cartItem),
-                cache: "no-store"
+                cache: "no-store",
             });
 
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(
-                    data.message || "Có lỗi xảy ra khi thêm vào giỏ hàng"
-                );
+                throw new Error(data.message || "Có lỗi xảy ra khi thêm vào giỏ hàng");
             }
 
             notification.success({
@@ -130,7 +128,7 @@ const NewReleases = () => {
             console.error("Error adding to cart:", error);
             notification.error({
                 message: "Lỗi",
-                description: error.message,
+                description: "Có lỗi xảy ra khi thêm vào giỏ hàng: " + error.message,
                 duration: 4,
                 placement: "bottomLeft",
                 pauseOnHover: true,
@@ -159,21 +157,19 @@ const NewReleases = () => {
                 />
                 {/* Phần nội dung */}
                 <div className="mb-10">
-                    <div className="grid sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 place-items-center ">
+                    <div className="grid sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 place-items-center">
                         {/* card selection */}
                         {NReleaseProducts.map((item) => (
                             <div
                                 key={item.id}
-                                className="w-[19rem]  mx-2 my-2 bg-white border xl:scale-90 lg:scale-90 md:scale-75 sm:scale-50 border-gray-200 rounded-2xl shadow dark:bg-gray-800 dark:border-gray-700"
+                                className="w-[19rem] mx-2 my-2 bg-white border xl:scale-90 lg:scale-90 md:scale-75 sm:scale-50 border-gray-200 rounded-2xl shadow dark:bg-gray-800 dark:border-gray-700"
                             >
                                 {item.image ? (
                                     <img
                                         className="p-8 rounded-t-lg cursor-pointer"
                                         src={`data:image/jpeg;base64,${item.image}`}
                                         alt="product image"
-                                        onClick={() =>
-                                            handleProductClick(item.id)
-                                        }
+                                        onClick={() => handleProductClick(item.id)}
                                     />
                                 ) : (
                                     <div className="h-[180px] w-[260px] flex items-center justify-center mb-3">
@@ -181,9 +177,7 @@ const NewReleases = () => {
                                     </div>
                                 )}
                                 <div className="px-5 pb-5">
-                                    <Link
-                                        to={`${PathNames.PRODUCT_DETAILS}/${item.id}`}
-                                    >
+                                    <Link to={`${PathNames.PRODUCT_DETAILS}/${item.id}`}>
                                         <h5 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
                                             {item.name}
                                         </h5>
@@ -192,7 +186,6 @@ const NewReleases = () => {
                                         <span className="text-xl font-bold text-gray-900 dark:text-white">
                                             {formatCurrency(item.price)}
                                         </span>
-
                                         <AddtoCartBtn
                                             onClick={() => handleAddtoCart(item)}
                                             className="text-white bg-[#f42c37] focus:outline-none font-medium rounded-xl hover:scale-105 ease transition-transform text-sm px-5 py-2.5 text-center"

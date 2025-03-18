@@ -1,11 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace WebAPI.Models;
 
 public partial class Order : BaseEntity
 {
 
+    [Column("user_id")]
     public int UserId { get; set; }
 
     public decimal TotalPrice { get; set; }
@@ -22,5 +23,4 @@ public partial class Order : BaseEntity
 
     public string? Address { get; set; }
 
-   
 }

@@ -36,7 +36,6 @@ const ProductManagement = () => {
         const fetchProducts = async () => {
             try {
                 const response = await axios.get(`${API_URL}/api/Products`);
-
                 if (response.status === 200) {
                     const data = response.data;
                     setProducts(data);
@@ -321,7 +320,7 @@ const ProductManagement = () => {
                                         {selectedProduct?.brand}
                                     </Typography>
                                     <Typography>
-                                        <strong>Đá bán:</strong>{" "}
+                                        <strong>Đã bán:</strong>{" "}
                                         {selectedProduct.sold}
                                     </Typography>
                                     <Typography>

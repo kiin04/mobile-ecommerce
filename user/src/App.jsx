@@ -28,7 +28,7 @@ import Breadcrumbs from "./shared/Breadcrumbs.jsx";
 import userService from "./facadeParttern/userService.js";
 import { useDispatch } from "react-redux";
 import { setUser } from "./redux/userSlide.js";
-import CheckoutBuyNow from "./pages/CheckOutNuyNow.jsx";
+import CheckoutBuyNow from "./pages/CheckOutBuyNow.jsx";
 function App() {
     const [cartOpen, setCartOpen] = useState(false);
     const userId = localStorage.getItem("userId");
