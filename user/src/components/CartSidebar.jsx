@@ -15,18 +15,41 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
     const [overStockError, setOverStockError] = useState(null);
     const navigate = useNavigate();
 
-
-    //Hàm lấy giỏ hàng từ localStorage
+    // Hàm lấy giỏ hàng từ localStorage cho guest
     const getLocalCart = () => {
         const localCart = localStorage.getItem('localCart');
-        const parsedCart = localCart ? JSON.parse(localCart) : [];
-        console.log('Getting localCart:', parsedCart);
-        return parsedCart;
+        return localCart ? JSON.parse(localCart) : [];
     };
-    //Hàm lưu giỏ hàng vào localStorage
+
+    // Hàm lưu giỏ hàng vào localStorage cho guest
     const saveLocalCart = (items) => {
-        console.log('Saving localCart:', items);
         localStorage.setItem('localCart', JSON.stringify(items));
+    };
+
+    // Hàm lấy giỏ hàng từ server cho user
+    const fetchUserCart = async () => {
+        try {
+            const response = await fetch(`${API_URL}/api/Carts/User/${userId}`);
+            if (!response.ok) throw new Error("Failed to fetch cart items");
+            const data = await response.json();
+            // Gộp các mục trùng lặp
+            const mergedItems = data.reduce((acc, item) => {
+                const key = `${item.productId}-${item.colorSizeId}`;
+                const existingItem = acc.find((i) => `${i.productId}-${i.colorSizeId}` === key);
+                if (existingItem) {
+                    existingItem.quantity += item.quantity;
+                    existingItem.ids = existingItem.ids ? [...existingItem.ids, item.id] : [item.id];
+                } else {
+                    acc.push({ ...item, ids: [item.id] });
+                }
+                return acc;
+            }, []);
+            return mergedItems;
+        } catch (error) {
+            console.error("Error fetching cart items:", error);
+            setError(error.message);
+            return [];
+        }
     };
 
     const loadCartItems = async () => {
@@ -34,39 +57,20 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
         let items = [];
 
         if (userId) {
-            try {
-                const response = await fetch(`${API_URL}/api/Carts/User/${userId}`);
-                if (!response.ok) throw new Error("Failed to fetch cart items");
-                const data = await response.json();
-                items = data.reduce((acc, item) => {
-                    const key = `${item.productId}-${item.colorSizeId}`;
-                    const existingItem = acc.find((i) => `${i.productId}-${i.colorSizeId}` === key);
-                    if (existingItem) {
-                        existingItem.quantity += item.quantity;
-                        existingItem.ids = existingItem.ids ? [...existingItem.ids, item.id] : [item.id];
-                    } else {
-                        acc.push({ ...item, ids: [item.id] });
-                    }
-                    return acc;
-                }, []);
-                console.log('Loaded server cart:', items);
-                saveLocalCart(items);
-            } catch (error) {
-                console.error("Error fetching cart items:", error);
-                setError(error.message);
-                items = getLocalCart();
-            }
+            // Trường hợp user đã đăng nhập
+            items = await fetchUserCart();
+            // Đồng bộ với localStorage nếu cần
+            saveLocalCart(items);
         } else {
+            // Trường hợp guest
             items = getLocalCart();
         }
 
-        console.log('Setting cartItems:', items);
         setCartItems(items);
         setLoading(false);
     };
 
     useEffect(() => {
-        console.log('cartOpen changed:', cartOpen);
         if (cartOpen) {
             loadCartItems();
         }
@@ -74,7 +78,6 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
 
     useEffect(() => {
         const handleCartUpdate = () => {
-            console.log('Cart updated event received');
             if (cartOpen) {
                 loadCartItems();
             }
@@ -88,7 +91,10 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
     };
 
     const removeFromCart = async (cartIds) => {
+        let updatedItems = [...cartItems];
+        
         if (userId) {
+            // Xử lý xóa cho user
             try {
                 await Promise.all(
                     cartIds.map((id) =>
@@ -99,10 +105,15 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
                     )
                 );
             } catch (error) {
-                console.error("Lỗi khi xóa sản phẩm:", error);
+                console.error("Error removing cart item:", error);
+                return;
             }
+            updatedItems = updatedItems.filter((item) => !cartIds.includes(item.ids[0]));
+        } else {
+            // Xử lý xóa cho guest
+            updatedItems = updatedItems.filter((item) => !cartIds.includes(item.ids?.[0] || item.productId));
         }
-        const updatedItems = cartItems.filter((item) => !cartIds.includes(item.ids[0]));
+
         setCartItems(updatedItems);
         saveLocalCart(updatedItems);
     };
@@ -112,19 +123,24 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
             showDeleteConfirm(cartIds);
             return;
         }
-        const item = cartItems.find((item) => item.ids.includes(cartIds[0]));
+
+        const item = cartItems.find((item) => item.ids?.includes(cartIds[0]) || item.productId === cartIds[0]);
         if (!item) return;
 
         let updatedItems = [...cartItems];
+
         if (userId) {
+            // Xử lý cho user
             try {
                 const response = await fetch(`${API_URL}/api/ColorSizes/${item.colorSizeId}`);
                 if (!response.ok) throw new Error("Không thể kiểm tra tồn kho");
                 const colorSizeData = await response.json();
+                
                 if (newQuantity > colorSizeData.quantity) {
                     setOverStockError(`Chỉ còn ${colorSizeData.quantity} sản phẩm`);
                     return;
                 }
+
                 await Promise.all(
                     cartIds.map((id) =>
                         fetch(`${API_URL}/api/Carts/${id}`, {
@@ -142,14 +158,19 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
                     )
                 );
             } catch (error) {
-                console.error("Lỗi khi cập nhật số lượng:", error);
+                console.error("Error updating quantity:", error);
                 setOverStockError("Có lỗi xảy ra");
                 return;
             }
         }
+
+        // Cập nhật local state cho cả user và guest
         updatedItems = updatedItems.map((item) =>
-            item.ids.some((id) => cartIds.includes(id)) ? { ...item, quantity: newQuantity } : item
+            (item.ids?.some((id) => cartIds.includes(id)) || item.productId === cartIds[0])
+                ? { ...item, quantity: newQuantity }
+                : item
         );
+
         setCartItems(updatedItems);
         saveLocalCart(updatedItems);
         setOverStockError(null);
@@ -238,10 +259,9 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
                     <div className="flex gap-2">
                         <button
                             onClick={() => {
-                                const cartData = cartItems; // Lấy dữ liệu giỏ hàng hiện tại
-                    navigate(PathNames.CART, { state: { cartItems: cartData } });
-                    setCartOpen(false);
-                }}
+                                navigate(PathNames.CART, { state: { cartItems } });
+                                setCartOpen(false);
+                            }}
                             className="px-4 py-2 text-sm border border-gray-300 rounded-3xl hover:bg-gray-50"
                         >
                             Xem giỏ hàng
@@ -267,9 +287,10 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
                         {cartItems.map((item) => {
                             const product = productItems[item.productId];
                             const color = colorSizes[item.colorSizeId];
+                            const itemKey = userId ? `${item.productId}-${item.colorSizeId}` : item.productId;
                             return (
                                 <div
-                                    key={`${item.productId}-${item.colorSizeId}`}
+                                    key={itemKey}
                                     className="w-full max-w-7xl px-4 md:px-5 lg-6 mx-auto"
                                 >
                                     <div className="rounded-3xl border-2 border-gray-200 p-4 lg:p-8 grid grid-cols-12 mb-8 gap-y-4">
@@ -290,7 +311,7 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
                                                     {product?.name || "Đang tải..."}
                                                 </h5>
                                                 <button
-                                                    onClick={() => showDeleteConfirm(item.ids)}
+                                                    onClick={() => showDeleteConfirm(item.ids || [item.productId])}
                                                     className="rounded-full group flex items-center justify-center"
                                                 >
                                                     <svg width={34} height={34} viewBox="0 0 34 34" fill="none">
@@ -316,7 +337,7 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
                                                 <div className="flex items-center gap-4">
                                                     <button
                                                         className="group rounded-[50px] border border-gray-200 p-2.5 bg-white hover:bg-gray-50"
-                                                        onClick={() => updateQuantity(item.ids, item.quantity - 1)}
+                                                        onClick={() => updateQuantity(item.ids || [item.productId], item.quantity - 1)}
                                                     >
                                                         <svg
                                                             className="stroke-gray-900 group-hover:stroke-black"
@@ -336,7 +357,7 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
                                                     </span>
                                                     <button
                                                         className="group rounded-[50px] border border-gray-200 p-2.5 bg-white hover:bg-gray-50"
-                                                        onClick={() => updateQuantity(item.ids, item.quantity + 1)}
+                                                        onClick={() => updateQuantity(item.ids || [item.productId], item.quantity + 1)}
                                                     >
                                                         <svg
                                                             className="stroke-gray-900 group-hover:stroke-black"

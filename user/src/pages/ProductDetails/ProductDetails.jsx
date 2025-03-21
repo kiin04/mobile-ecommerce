@@ -209,6 +209,11 @@ const ProductDetails = () => {
             price: product.price,
             colorSizeId: selectedColor ? selectedColor.id : colorSizes[0]?.id,
             quantity: parseInt(quantity),
+            name: product.name, 
+            image: product.image,
+            size: product.size,
+
+            
         };
     
         if (!userId) {

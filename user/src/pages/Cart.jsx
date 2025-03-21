@@ -220,10 +220,28 @@ const Cart = () => {
 
     const handleCheckout = () => {
         const selectedProducts = cartItems.filter((item) => selectedItems.includes(item.id));
-        localStorage.setItem("checkoutItems", JSON.stringify(selectedItems));
-        navigate(PathNames.CHECKOUT, {
-            state: { cartItems: selectedProducts, total: calculateSelectedTotal() },
-        });
+        if (selectedProducts.length === 0) {
+            notification.error({
+                message: "Lỗi",
+                description: "Vui lòng chọn ít nhất một sản phẩm để thanh toán.",
+                duration: 4,
+                placement: "bottomLeft",
+            });
+            return;
+        }
+    
+        // Phân biệt user và guest
+        if (userId) {
+            // User: Chuyển hướng đến Checkout
+            navigate(PathNames.CHECKOUT, {
+                state: { cartItems: selectedProducts, total: calculateSelectedTotal() },
+            });
+        } else {
+            // Guest: Chuyển hướng đến CheckoutBuyNow
+            navigate(PathNames.CHECKOUTBUYNOW, {
+                state: { cartItems: selectedProducts, total: calculateSelectedTotal() },
+            });
+        }
     };
 
     if (error) return <div>{error}</div>;
