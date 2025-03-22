@@ -181,17 +181,11 @@ const Checkout = () => {
             paymentStatus: "Chưa thanh toán",
             status: "Chờ xác nhận",
             address:
-
-                    shippingOption === "store"
-                        ? storeAddress
-                        : customerInfo.address,
+            shippingOption === "store"
+                ? storeAddress
+                : customerInfo.address,
             discountCode: selectedDiscount ? selectedDiscount.code : null,
-            discountAmount: discountedAmount,
-
-          
-                shippingOption === "store"
-                    ? storeAddress
-                    : customerInfo.address,
+            discountAmount: discountedAmount
 
         };
         console.log(paymentData);
@@ -261,7 +255,7 @@ const Checkout = () => {
                             price: item.price,
                             quantity: item.quantity,
                         };
-    
+
                         // Gọi API tạo chi tiết đơn hàng
                         const orderDetailResponse = await fetch(`${API_URL}/api/OrderDetails`, {
                             method: "POST",
@@ -270,13 +264,13 @@ const Checkout = () => {
                             },
                             body: JSON.stringify(orderDetail),
                         });
-    
+
                         if (!orderDetailResponse.ok) {
                             console.error("Lỗi khi tạo chi tiết đơn hàng:", await orderDetailResponse.json());
                             throw new Error("Lỗi khi tạo chi tiết đơn hàng");
                         }
-                       
-                    
+
+
                     }
                     // Xóa sản phẩm khỏi giỏ hàng
                     const ids = cartItems.map((item) => item.id);

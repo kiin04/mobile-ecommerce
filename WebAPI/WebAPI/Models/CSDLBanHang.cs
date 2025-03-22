@@ -27,7 +27,7 @@ public partial class CSDLBanHang : DbContext
 
     public virtual DbSet<Order> Orders { get; set; }
 
-    public virtual DbSet<OrderDetail> OrderDetails { get; set; }
+    public virtual DbSet<OrderDetails> OrderDetails { get; set; }
 
     public virtual DbSet<Product> Products { get; set; }
 
@@ -226,7 +226,7 @@ public partial class CSDLBanHang : DbContext
 
         });
 
-        modelBuilder.Entity<OrderDetail>(entity =>
+        modelBuilder.Entity<OrderDetails>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__OrderDet__3213E83F5350BA77");
 
