@@ -3,6 +3,7 @@ import { API_URL } from "../config";
 import { useLocation, useNavigate } from "react-router-dom";
 import { notification } from "antd";
 import PathNames from "../PathNames.js";
+import {  useSelector } from "react-redux";
 
 const Checkout = () => {
     const location = useLocation();
@@ -20,11 +21,12 @@ const Checkout = () => {
     const [totalAmount, setTotalAmount] = useState(0);
     const [notes, setNotes] = useState(""); // Lưu trữ ghi chú từ người dùng
     const [showDiscountDialog, setShowDiscountDialog] = useState(false);
-    const [discountCodes, setDiscountCodes] = useState([]);
+    const [discounts, setDiscounts] = useState([]);
     const [selectedDiscount, setSelectedDiscount] = useState(null);
     const [discountedAmount, setDiscountedAmount] = useState(0);
     const [error, setError] = useState(null);
 
+    const user = useSelector((state) => state.user);
     const userId = localStorage.getItem("userId");
 
     useEffect(() => {
@@ -126,7 +128,7 @@ const Checkout = () => {
 
     // Thêm useEffect để fetch mã giảm giá
     useEffect(() => {
-        const fetchDiscountCodes = async () => {
+        const fetchDiscounts = async () => {
             try {
                 const response = await fetch(`${API_URL}/api/Promotions`);
                 if (!response.ok) {
@@ -134,19 +136,50 @@ const Checkout = () => {
                 }
                 const data = await response.json();
                 // Sắp xếp theo phn trăm giảm giá từ cao đến thấp
-                const sortedCodes = data.sort((a, b) => b.value - a.value);
-                const enableDiscount = sortedCodes.filter(
-                    (discount) =>
-                        new Date(discount.endAt).getTime() > Date.now()
+                const sortedCodes = data.sort(
+                    (a, b) => b.value - a.value
                 );
-
-                // Cập nhật lại danh sách mã giảm giá
-                setDiscountCodes(enableDiscount);
+                const enableDiscount = sortedCodes.filter(
+                    (discount) => new Date(discount.endAt).getTime() > Date.now()
+                );
+                let memberDiscount;
+                if (user?.role === 5) {
+                    memberDiscount = {
+                        name: "Ưu đãi khách hàng bạc",
+                        value: 7,
+                        minPrice: 200000,
+                        maxValue: 2500000,
+                        code: "MEMBERVIP",
+                    };
+                } else if (user?.role === 6) {
+                    memberDiscount = {
+                        name: "Ưu đãi khách hàng vàng",
+                        value: 10,
+                        minPrice: 200000,
+                        maxValue: 3500000,
+                        code: "MEMBERVIP",
+                    };
+                } else if (user?.role === 7) {
+                    memberDiscount = {
+                        name: "Ưu đãi khách hàng kim cương",
+                        value: 10,
+                        minPrice: 200000,
+                        maxValue: 4500000,
+                        code: "MEMBERVIP",
+                    };
+                }
+    
+                // Cập nhật danh sách mã giảm giá
+                const updatedDiscounts = memberDiscount
+                    ? [...enableDiscount, memberDiscount]
+                    : enableDiscount;
+                setDiscounts(updatedDiscounts);
+                
             } catch (error) {
                 console.error("Error fetching discount codes:", error);
             }
         };
-        fetchDiscountCodes();
+        fetchDiscounts();
     }, []);
 
     // Handler khi chọn mã giảm giá
@@ -569,7 +602,7 @@ const Checkout = () => {
                             </button>
                         </div>
                         <div className="space-y-4">
-                            {discountCodes.map((discount) => {
+                            {discounts.map((discount) => {
                                 // Kiểm tra điều kiện áp dụng mã giảm giá
                                 const isApplicable =
                                     totalAmount >= discount.minPrice;
