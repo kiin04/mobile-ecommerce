@@ -34,6 +34,108 @@ const NewReleases = () => {
     const NReleaseProducts = getProductsById();
     console.log("NReleaseProducts: ", NReleaseProducts);
 
+    // const handleAddtoCart = async (selectedProduct) => {
+    //     if (!selectedProduct || !selectedProduct.id) {
+    //         notification.error({
+    //             message: "Lỗi",
+    //             description: "Không tìm thấy thông tin sản phẩm",
+    //             duration: 4,
+    //             placement: "bottomLeft",
+    //             showProgress: true,
+    //             pauseOnHover: true,
+    //         });
+    //         return;
+    //     }
+
+    //     // Fetch available color/size options for the product
+    //     let colorSizeId;
+    //     let availableQuantity;
+    //     try {
+    //         const response = await fetch(
+    //             `${API_URL}/api/ColorSizes/ProductColorSize/${selectedProduct.id}`
+    //         );
+    //         if (response.ok) {
+    //             const colorSizes = await response.json();
+    //             const availableColorSizes = colorSizes.filter((cs) => cs.quantity > 0);
+    //             if (availableColorSizes.length === 0) {
+    //                 throw new Error("Không có màu/size khả dụng cho sản phẩm này!");
+    //             }
+    //             colorSizeId = availableColorSizes[0].id; // Select the first available colorSizeId
+    //             availableQuantity = availableColorSizes[0].quantity; // Get the quantity of the selected colorSize
+    //         } else {
+    //             throw new Error("Không thể lấy thông tin màu/size!");
+    //         }
+    //     } catch (error) {
+    //         notification.error({
+    //             message: "Lỗi",
+    //             description: error.message,
+    //             duration: 4,
+    //             placement: "bottomLeft",
+    //             showProgress: true,
+    //             pauseOnHover: true,
+    //         });
+    //         return;
+    //     }
+
+    //     // Validate quantity against the selected colorSize's quantity
+    //     if (quantity > availableQuantity || quantity <= 0) {
+    //         notification.error({
+    //             message: "Lỗi",
+    //             description: `Không còn sản phẩm trong kho!`,
+    //             duration: 4,
+    //             placement: "bottomLeft",
+    //             showProgress: true,
+    //             pauseOnHover: true,
+    //         });
+    //         return;
+    //     }
+
+
+    //     const cartItem = {
+    //         productId: selectedProduct.id,
+    //         quantity: parseInt(quantity),
+    //         userId: userId,
+    //         price: selectedProduct.price,
+    //         colorSizeId: colorSizeId,
+    //     };
+
+    //     console.log("Sending cart item:", cartItem);
+
+    //     try {
+    //         const response = await fetch(`${API_URL}/api/Carts`, {
+    //             method: "POST",
+    //             headers: {
+    //                 "Content-Type": "application/json",
+    //             },
+    //             body: JSON.stringify(cartItem),
+    //             cache: "no-store",
+    //         });
+
+    //         const data = await response.json();
+
+    //         if (!response.ok) {
+    //             throw new Error(data.message || "Có lỗi xảy ra khi thêm vào giỏ hàng");
+    //         }
+
+    //         notification.success({
+    //             message: "Thành công",
+    //             description: "Đã thêm sản phẩm vào giỏ hàng",
+    //             duration: 4,
+    //             placement: "bottomLeft",
+    //             pauseOnHover: true,
+    //         });
+    //     } catch (error) {
+    //         console.error("Error adding to cart:", error);
+    //         notification.error({
+    //             message: "Lỗi",
+    //             description: "Có lỗi xảy ra khi thêm vào giỏ hàng: " + error.message,
+    //             duration: 4,
+    //             placement: "bottomLeft",
+    //             pauseOnHover: true,
+    //         });
+    //     }
+    // };
+
     const handleAddtoCart = async (selectedProduct) => {
         if (!selectedProduct || !selectedProduct.id) {
             notification.error({
@@ -61,7 +163,7 @@ const NewReleases = () => {
                     throw new Error("Không có màu/size khả dụng cho sản phẩm này!");
                 }
                 colorSizeId = availableColorSizes[0].id; // Select the first available colorSizeId
-                availableQuantity = availableColorSizes[0].quantity; // Get the quantity of the selected colorSize
+                availableQuantity = availableColorSizes[0].quantity; // Get the quantity
             } else {
                 throw new Error("Không thể lấy thông tin màu/size!");
             }
@@ -77,11 +179,11 @@ const NewReleases = () => {
             return;
         }
 
-        // Validate quantity against the selected colorSize's quantity
+        // Validate quantity
         if (quantity > availableQuantity || quantity <= 0) {
             notification.error({
                 message: "Lỗi",
-                description: `Không còn sản phẩm trong kho!`,
+                description: `Không còn đủ sản phẩm trong kho!`,
                 duration: 4,
                 placement: "bottomLeft",
                 showProgress: true,
@@ -90,49 +192,85 @@ const NewReleases = () => {
             return;
         }
 
-
         const cartItem = {
             productId: selectedProduct.id,
             quantity: parseInt(quantity),
             userId: userId,
             price: selectedProduct.price,
             colorSizeId: colorSizeId,
+            name: selectedProduct.name, // Optional: for consistency with ProductDetails
+            image: selectedProduct.image, // Optional
         };
 
-        console.log("Sending cart item:", cartItem);
+        if (!userId) {
+            // Handle guest user with localStorage
+            try {
+                const localCart = JSON.parse(localStorage.getItem("localCart") || "[]");
+                const existingItem = localCart.find(
+                    (item) =>
+                        item.productId === cartItem.productId &&
+                        item.colorSizeId === cartItem.colorSizeId
+                );
 
-        try {
-            const response = await fetch(`${API_URL}/api/Carts`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(cartItem),
-                cache: "no-store",
-            });
+                if (existingItem) {
+                    existingItem.quantity += cartItem.quantity;
+                } else {
+                    cartItem.ids = [Date.now()]; // Temporary ID for guest cart
+                    localCart.push(cartItem);
+                }
 
-            const data = await response.json();
+                localStorage.setItem("localCart", JSON.stringify(localCart));
+                window.dispatchEvent(new Event("cartUpdated"));
 
-            if (!response.ok) {
-                throw new Error(data.message || "Có lỗi xảy ra khi thêm vào giỏ hàng");
+                notification.success({
+                    message: "Thành công",
+                    description: "Đã thêm sản phẩm vào giỏ hàng",
+                    duration: 4,
+                    placement: "bottomLeft",
+                    pauseOnHover: true,
+                });
+            } catch (error) {
+                console.error("Error adding to localCart:", error);
+                notification.error({
+                    message: "Lỗi",
+                    description: "Có lỗi khi thêm vào giỏ hàng",
+                    duration: 4,
+                    placement: "bottomLeft",
+                    pauseOnHover: true,
+                });
             }
+        } else {
+            // Handle logged-in user with API
+            try {
+                const response = await axios.post(`${API_URL}/api/Carts`, cartItem, {
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                });
 
-            notification.success({
-                message: "Thành công",
-                description: "Đã thêm sản phẩm vào giỏ hàng",
-                duration: 4,
-                placement: "bottomLeft",
-                pauseOnHover: true,
-            });
-        } catch (error) {
-            console.error("Error adding to cart:", error);
-            notification.error({
-                message: "Lỗi",
-                description: "Có lỗi xảy ra khi thêm vào giỏ hàng: " + error.message,
-                duration: 4,
-                placement: "bottomLeft",
-                pauseOnHover: true,
-            });
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.message || "Có lỗi xảy ra khi thêm vào giỏ hàng");
+                }
+
+                notification.success({
+                    message: "Thành công",
+                    description: "Đã thêm sản phẩm vào giỏ hàng",
+                    duration: 4,
+                    placement: "bottomLeft",
+                    pauseOnHover: true,
+                });
+            } catch (error) {
+                console.error("Error adding to cart:", error);
+                notification.error({
+                    message: "Lỗi",
+                    description: "Có lỗi xảy ra khi thêm vào giỏ hàng: " + error.message,
+                    duration: 4,
+                    placement: "bottomLeft",
+                    pauseOnHover: true,
+                });
+            }
         }
     };
 

@@ -183,8 +183,13 @@ const MyOrders = () => {
             return;
         }
         try {
-            const response = await axios.delete(
-                `${API_URL}/api/Orders/${cancellingOrder.id}`
+            const response = await axios.put(
+                `${API_URL}/api/Orders/${cancellingOrder.id}`,
+                {
+                    ...cancellingOrder,
+                    status: "Đã hủy",
+                    cancelReason: cancelReason,
+                }
             );
             if (response.status === 204) {
                 Modal.success({
@@ -192,8 +197,10 @@ const MyOrders = () => {
                     content: "Đơn hàng đã được hủy thành công",
                 });
                 setOrders((prevOrders) =>
-                    prevOrders.filter(
-                        (order) => order.id !== cancellingOrder.id
+                    prevOrders.map((order) =>
+                        order.id !== cancellingOrder.id
+                        ? { ...order, status: "Đã hủy" }
+                        : order
                     )
                 );
                 setRefreshTrigger((prev) => prev + 1);
