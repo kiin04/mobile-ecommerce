@@ -385,8 +385,7 @@ const CheckoutBuyNow = () => {
                     onChange={(e) => setPaymentMethod(e.target.value)}
                 >
                     <option value="Tiền mặt">Tiền mặt</option>
-                    <option value="MoMo">Thanh toán qua MOMO</option>
-                    <option value="Thanh toán qua VNpay">Thanh toán qua VNpay</option>
+                    <option value="PayPal">Thanh toán qua PAYPAL</option>
                 </select>
             </div>
 

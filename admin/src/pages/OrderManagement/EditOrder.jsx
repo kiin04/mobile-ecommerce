@@ -42,9 +42,7 @@ const EditOrder = () => {
     // Thêm options cho phương thức thanh toán
     const paymentMethodOptions = [
         "Tiền mặt",
-        "MoMo",
-        "VNPay",
-        "Chuyển khoản ngân hàng",
+        "PayPal"
     ];
 
     // Thêm hàm để format ngày giờ cho input datetime-local

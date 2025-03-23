@@ -1,3 +1,4 @@
+import { API_URL } from "../config";
 import { useEffect, useState } from "react";
 import { MenuOutlined, UserOutlined } from "@ant-design/icons";
 import { Dropdown, Space, Modal, Avatar, message } from "antd";
@@ -5,7 +6,6 @@ import { Link, useNavigate } from "react-router-dom";
 import Login from "./Login";
 import Register from "./Register";
 import PathNames from "../PathNames";
-import { API_URL } from "../config";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutUser, setUser } from "../redux/userSlide";
 const UserMenu = () => {
@@ -21,7 +21,7 @@ const UserMenu = () => {
         const hasShownWelcomeMessage = sessionStorage.getItem("hasShownWelcomeMessage");
         if (user.isLoggedIn && !hasShownWelcomeMessage) {
             message.success("Welcome back!");
-            sessionStorage.setItem("hasShownWelcomeMessage", "true"); // Set the flag
+            sessionStorage.setItem("hasShownWelcomeMessage", "true");
         }
     }, [user.isLoggedIn]);
 
@@ -31,8 +31,10 @@ const UserMenu = () => {
         dispatch(logoutUser());
 
         message.success("Logged out successfully");
-        navigate(PathNames.HOMEPAGE);
-        window.location.reload();
+        setTimeout(() => {
+            navigate(PathNames.HOMEPAGE);
+            window.location.reload();
+        }, 500);
     };
 
     const GuestItems = [

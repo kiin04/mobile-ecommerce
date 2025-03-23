@@ -15,25 +15,25 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
     const [overStockError, setOverStockError] = useState(null);
     const navigate = useNavigate();
 
-    // Hàm lấy giỏ hàng từ localStorage cho guest
+    // Fetch local cart for guests
     const getLocalCart = () => {
-        const localCart = localStorage.getItem('localCart');
+        const localCart = localStorage.getItem("localCart");
         return localCart ? JSON.parse(localCart) : [];
     };
 
-    // Hàm lưu giỏ hàng vào localStorage cho guest
+    // Save cart to localStorage for guests
     const saveLocalCart = (items) => {
-        localStorage.setItem('localCart', JSON.stringify(items));
+        localStorage.setItem("localCart", JSON.stringify(items));
     };
 
-    // Hàm lấy giỏ hàng từ server cho user
+    // Fetch cart from server for logged-in users
     const fetchUserCart = async () => {
         try {
             const response = await fetch(`${API_URL}/api/Carts/User/${userId}`);
             if (!response.ok) throw new Error("Failed to fetch cart items");
             const data = await response.json();
-            // Gộp các mục trùng lặp
-            const mergedItems = data.reduce((acc, item) => {
+            // Group cart items by productId and colorSizeId
+            const groupedItems = data.reduce((acc, item) => {
                 const key = `${item.productId}-${item.colorSizeId}`;
                 const existingItem = acc.find((i) => `${i.productId}-${i.colorSizeId}` === key);
                 if (existingItem) {
@@ -44,7 +44,7 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
                 }
                 return acc;
             }, []);
-            return mergedItems;
+            return groupedItems;
         } catch (error) {
             console.error("Error fetching cart items:", error);
             setError(error.message);
@@ -52,77 +52,87 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
         }
     };
 
+    // Load cart items based on user status
     const loadCartItems = async () => {
         setLoading(true);
         let items = [];
-
         if (userId) {
-            // Trường hợp user đã đăng nhập
             items = await fetchUserCart();
-            // Đồng bộ với localStorage nếu cần
-            saveLocalCart(items);
+            // For logged-in users, sync local cart if it exists
+            const localCart = getLocalCart();
+            if (localCart.length > 0) {
+                await syncLocalCartToServer(localCart);
+                items = await fetchUserCart(); // Refresh after sync
+                saveLocalCart([]); // Clear local cart after syncing
+            }
         } else {
-            // Trường hợp guest
             items = getLocalCart();
         }
-
         setCartItems(items);
         setLoading(false);
     };
+
+    // Sync local cart to server for newly logged-in users
     const syncLocalCartToServer = async (localItems) => {
         if (!userId || !localItems.length) return;
-    
+
         try {
-            // Lấy giỏ hàng hiện tại của user từ server
             const userCart = await fetchUserCart();
-    
-            for (const item of localItems) {
-                // Kiểm tra xem sản phẩm đã tồn tại trong giỏ hàng của user chưa
+
+            for (const localItem of localItems) {
                 const existingItem = userCart.find(
-                    (cartItem) => cartItem.productId === item.productId && cartItem.colorSizeId === item.colorSizeId
+                    (cartItem) =>
+                        cartItem.productId === localItem.productId &&
+                        cartItem.colorSizeId === localItem.colorSizeId
                 );
-    
+
                 if (existingItem) {
-                    // Nếu sản phẩm đã tồn tại, cập nhật số lượng
-                    const newQuantity = existingItem.quantity + item.quantity;
-                    const cartIds = existingItem.ids || [existingItem.id];
-    
-                    await Promise.all(
-                        cartIds.map((id) =>
-                            fetch(`${API_URL}/api/Carts/${id}`, {
-                                method: "PUT",
-                                headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({
-                                    id: id,
-                                    quantity: newQuantity,
-                                    productId: item.productId,
-                                    userId: userId,
-                                    price: item.price,
-                                    colorSizeId: item.colorSizeId,
-                                }),
-                            })
-                        )
-                    );
+                    // Update existing item with total quantity
+                    const totalQuantity = existingItem.quantity + localItem.quantity;
+                    const cartIds = existingItem.ids;
+                    const keepId = cartIds[0];
+                    const deleteIds = cartIds.slice(1);
+
+                    // Delete duplicates
+                    if (deleteIds.length > 0) {
+                        await Promise.all(
+                            deleteIds.map((id) =>
+                                fetch(`${API_URL}/api/Carts/${id}`, {
+                                    method: "DELETE",
+                                    headers: { "Content-Type": "application/json" },
+                                })
+                            )
+                        );
+                    }
+
+                    // Update the remaining item
+                    await fetch(`${API_URL}/api/Carts/${keepId}`, {
+                        method: "PUT",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            id: keepId,
+                            quantity: totalQuantity,
+                            productId: localItem.productId,
+                            userId: userId,
+                            price: localItem.price,
+                            colorSizeId: localItem.colorSizeId,
+                        }),
+                    });
                 } else {
-                    // Nếu sản phẩm chưa tồn tại, thêm mới vào giỏ hàng của user
-                    const cartItem = {
-                        userId: userId,
-                        productId: item.productId,
-                        colorSizeId: item.colorSizeId,
-                        quantity: item.quantity,
-                        price: item.price,
-                    };
-                    const response = await fetch(`${API_URL}/api/Carts`, {
+                    // Add new item to server
+                    await fetch(`${API_URL}/api/Carts`, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(cartItem),
+                        body: JSON.stringify({
+                            userId: userId,
+                            productId: localItem.productId,
+                            colorSizeId: localItem.colorSizeId,
+                            quantity: localItem.quantity,
+                            price: localItem.price,
+                        }),
                     });
-                    if (!response.ok) throw new Error("Failed to sync cart item to server");
                 }
             }
-    
-            // Xóa localCart sau khi đồng bộ
-            localStorage.removeItem('localCart');
         } catch (error) {
             console.error("Error syncing local cart to server:", error);
             setError("Không thể đồng bộ giỏ hàng. Vui lòng thử lại.");
@@ -131,39 +141,16 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
 
     useEffect(() => {
         if (cartOpen) {
-            const localCart = getLocalCart();
-            if (userId && localCart.length > 0) {
-                // Nếu user vừa đăng nhập và có localCart, đồng bộ lên server
-                syncLocalCartToServer(localCart).then(() => {
-                    // Sau khi đồng bộ, tải lại giỏ hàng từ server
-                    loadCartItems();
-                });
-            } else {
-                // Nếu không cần đồng bộ, chỉ tải giỏ hàng
-                loadCartItems();
-            }
+            loadCartItems();
         }
     }, [cartOpen, userId]);
 
-    useEffect(() => {
-        const handleCartUpdate = () => {
-            if (cartOpen) {
-                loadCartItems();
-            }
-        };
-        window.addEventListener('cartUpdated', handleCartUpdate);
-        return () => window.removeEventListener('cartUpdated', handleCartUpdate);
-    }, [cartOpen]);
-
     const calculateTotal = () => {
-        return cartItems.reduce((total, item) => total + (item.price * item.quantity || 0), 0);
+        return cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
     };
 
     const removeFromCart = async (cartIds) => {
-        let updatedItems = [...cartItems];
-        
         if (userId) {
-            // Xử lý xóa cho user
             try {
                 await Promise.all(
                     cartIds.map((id) =>
@@ -177,14 +164,10 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
                 console.error("Lỗi khi xóa sản phẩm:", error);
                 return;
             }
-            updatedItems = updatedItems.filter((item) => !cartIds.includes(item.ids[0]));
-        } else {
-            // Xử lý xóa cho guest
-            updatedItems = updatedItems.filter((item) => !cartIds.includes(item.ids?.[0] || item.productId));
         }
-
+        const updatedItems = cartItems.filter((item) => !cartIds.includes(item.ids?.[0] || item.productId));
         setCartItems(updatedItems);
-        saveLocalCart(updatedItems);
+        if (!userId) saveLocalCart(updatedItems);
     };
 
     const updateQuantity = async (cartIds, newQuantity) => {
@@ -196,36 +179,44 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
         const item = cartItems.find((item) => item.ids?.includes(cartIds[0]) || item.productId === cartIds[0]);
         if (!item) return;
 
-        let updatedItems = [...cartItems];
-
         if (userId) {
-            // Xử lý cho user
             try {
                 const response = await fetch(`${API_URL}/api/ColorSizes/${item.colorSizeId}`);
                 if (!response.ok) throw new Error("Không thể kiểm tra tồn kho");
                 const colorSizeData = await response.json();
-                
                 if (newQuantity > colorSizeData.quantity) {
                     setOverStockError(`Chỉ còn ${colorSizeData.quantity} sản phẩm`);
                     return;
                 }
 
-                await Promise.all(
-                    cartIds.map((id) =>
-                        fetch(`${API_URL}/api/Carts/${id}`, {
-                            method: "PUT",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({
-                                id: id,
-                                quantity: newQuantity,
-                                productId: item.productId,
-                                userId: userId,
-                                price: item.price,
-                                colorSizeId: item.colorSizeId,
-                            }),
-                        })
-                    )
-                );
+                const keepId = cartIds[0];
+                const deleteIds = cartIds.slice(1);
+
+                // Delete duplicates
+                if (deleteIds.length > 0) {
+                    await Promise.all(
+                        deleteIds.map((id) =>
+                            fetch(`${API_URL}/api/Carts/${id}`, {
+                                method: "DELETE",
+                                headers: { "Content-Type": "application/json" },
+                            })
+                        )
+                    );
+                }
+
+                // Update the remaining item
+                await fetch(`${API_URL}/api/Carts/${keepId}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        id: keepId,
+                        quantity: newQuantity,
+                        productId: item.productId,
+                        userId: userId,
+                        price: item.price,
+                        colorSizeId: item.colorSizeId,
+                    }),
+                });
             } catch (error) {
                 console.error("Lỗi khi cập nhật số lượng:", error);
                 setOverStockError("Có lỗi xảy ra");
@@ -233,15 +224,14 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
             }
         }
 
-        // Cập nhật local state cho cả user và guest
-        updatedItems = updatedItems.map((item) =>
-            (item.ids?.some((id) => cartIds.includes(id)) || item.productId === cartIds[0])
-                ? { ...item, quantity: newQuantity }
-                : item
+        // Update local state
+        const updatedItems = cartItems.map((cartItem) =>
+            (cartItem.ids?.includes(cartIds[0]) || cartItem.productId === cartIds[0])
+                ? { ...cartItem, quantity: newQuantity }
+                : cartItem
         );
-
         setCartItems(updatedItems);
-        saveLocalCart(updatedItems);
+        if (!userId) saveLocalCart(updatedItems);
         setOverStockError(null);
     };
 
@@ -260,29 +250,15 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
         });
     };
 
-    const handleCheckout = async () => {
+    const handleCheckout = () => {
         if (cartItems.length === 0) {
             setError("Giỏ hàng trống. Vui lòng thêm sản phẩm trước khi thanh toán.");
             return;
         }
-    
-        // Lưu cartItems để truyền sang trang checkout
         const itemsToCheckout = [...cartItems];
-       
-    
-        // Phân biệt user và guest
-        if (userId) {
-            // User: Chuyển hướng đến Checkout
-            navigate(PathNames.CHECKOUT, {
-                state: { cartItems: itemsToCheckout, total: calculateTotal() },
-            });
-        } else {
-            // Guest: Chuyển hướng đến CheckoutBuyNow
-            navigate(PathNames.CHECKOUTBUYNOW, {
-                state: { cartItems: itemsToCheckout, total: calculateTotal() },
-            });
-        }
-    
+        navigate(userId ? PathNames.CHECKOUT : PathNames.CHECKOUTBUYNOW, {
+            state: { cartItems: itemsToCheckout, total: calculateTotal() },
+        });
         setCartOpen(false);
     };
 

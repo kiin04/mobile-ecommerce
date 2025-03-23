@@ -186,7 +186,7 @@ const Checkout = () => {
 
         console.log("Payment Data gửi lên:", paymentData);
 
-        if (paymentMethod === "MoMo") {
+        if (paymentMethod === "PayPal") {
             try {
                 const paymentResponse = await fetch(`${API_URL}/payment`, {
                     method: "POST",
@@ -212,7 +212,7 @@ const Checkout = () => {
                     throw new Error("Không nhận được URL thanh toán");
                 }
             } catch (error) {
-                console.error("Lỗi khi xử lý thanh toán MoMo:", error);
+                console.error("Lỗi khi xử lý thanh toán PayPal:", error);
                 notification.error({
                     message: "Lỗi thanh toán",
                     description: error.message || "Có lỗi xảy ra khi xử lý thanh toán",
@@ -445,7 +445,7 @@ const Checkout = () => {
                     onChange={(e) => setPaymentMethod(e.target.value)}
                 >
                     <option value="COD">Thanh toán khi nhận hàng</option>
-                    <option value="MoMo">Thanh toán qua MOMO</option>
+                    <option value="PayPal">Thanh toán qua PayPal</option>
                 </select>
             </div>
 

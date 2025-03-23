@@ -190,7 +190,7 @@ const ProductDetails = () => {
             });
             return;
         }
-    
+
         if (quantity <= 0 || quantity > selectedColor.quantity) {
             notification.error({
                 message: "Lỗi",
@@ -202,30 +202,30 @@ const ProductDetails = () => {
             });
             return;
         }
-    
+
         const cartItem = {
             productId: product.id,
             userId: userId,
             price: product.price,
             colorSizeId: selectedColor ? selectedColor.id : colorSizes[0]?.id,
             quantity: parseInt(quantity),
-            name: product.name, 
+            name: product.name,
             image: product.image,
             size: product.size,
 
-            
+
         };
-    
+
         if (!userId) {
             // Xử lý khi chưa đăng nhập: Lưu vào localStorage
             try {
                 const localCart = JSON.parse(localStorage.getItem('localCart') || '[]');
                 console.log('Current localCart:', localCart);
-    
+
                 const existingItem = localCart.find(
                     item => item.productId === cartItem.productId && item.colorSizeId === cartItem.colorSizeId
                 );
-    
+
                 if (existingItem) {
                     existingItem.quantity += cartItem.quantity;
                     console.log('Updated existing item in localCart:', existingItem);
@@ -234,10 +234,10 @@ const ProductDetails = () => {
                     localCart.push(cartItem);
                     console.log('Added new item to localCart:', cartItem);
                 }
-    
+
                 localStorage.setItem('localCart', JSON.stringify(localCart));
                 console.log('Saved localCart:', JSON.parse(localStorage.getItem('localCart')));
-    
+
                 window.dispatchEvent(new Event('cartUpdated'));
                 notification.success({
                     message: "Thành công",
@@ -263,7 +263,7 @@ const ProductDetails = () => {
             // Xử lý khi đã đăng nhập: Gửi lên API
             const check = checkCartItem(cartItem);
             console.log("check cart ", check);
-    
+
             if (check) {
                 const updatedData = {
                     ...check,
@@ -278,12 +278,12 @@ const ProductDetails = () => {
                         body: JSON.stringify(updatedData),
                         cache: "no-store",
                     });
-    
+
                     if (!response.ok) {
                         const data = await response.json();
                         throw new Error(data.message || "Có lỗi xảy ra khi thêm vào giỏ hàng");
                     }
-    
+
                     notification.success({
                         message: "Thành công",
                         description: "Đã thêm sản phẩm vào giỏ hàng",
@@ -314,12 +314,12 @@ const ProductDetails = () => {
                         body: JSON.stringify(cartItem),
                         cache: "no-store",
                     });
-    
+
                     if (!response.ok) {
                         const data = await response.json();
                         throw new Error(data.message || "Có lỗi xảy ra khi thêm vào giỏ hàng");
                     }
-    
+
                     notification.success({
                         message: "Thành công",
                         description: "Đã thêm sản phẩm vào giỏ hàng",
