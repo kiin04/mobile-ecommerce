@@ -248,11 +248,7 @@ const NewReleases = () => {
                     },
                 });
 
-                const data = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(data.message || "Có lỗi xảy ra khi thêm vào giỏ hàng");
-                }
+                const data = await response.data;
 
                 notification.success({
                     message: "Thành công",
