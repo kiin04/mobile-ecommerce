@@ -5,7 +5,6 @@ namespace WebAPI.Models;
 
 public partial class Promotion : BaseEntity
 {
-   
 
     public string Name { get; set; } = null!;
 
@@ -15,4 +14,5 @@ public partial class Promotion : BaseEntity
     public string Code { get; set; } = null!;
 
     public DateTime? EndAt { get; set; }
+    public DateTime? StartAt { get; set; }
 }

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { message, notification } from "antd";
-import { Box, TextField, Button, CircularProgress, Grid, Typography } from "@mui/material";
+import { Box, TextField, Button, CircularProgress, Typography } from "@mui/material";
+import Grid from "@mui/material/Grid2";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import {format} from "date-fns";
@@ -47,11 +48,20 @@ const EditVoucher = () => {
             newErrors.name = 'Tên voucher phải có ít nhất 3 ký tự';
         }
 
+        // Validate ngày bắt đầu (startAt)
+        if (!voucher?.startAt) {
+            newErrors.startAt = "Vui lòng chọn ngày bắt đầu";
+        } else if (new Date(voucher.startAt) >= new Date(voucher.endAt)) {
+            newErrors.startAt = "Ngày bắt đầu phải trước ngày hết hạn";
+        }
+
         // Validate ngày hết hạn
         if (!voucher?.endAt) {
             newErrors.endAt = 'Vui lòng chọn ngày hết hạn';
-        } else if (new Date(voucher.endAt) <= new Date(voucher.createdAt)) {
+        } else if (new Date(voucher.endAt) <= new Date(voucher.startAt)) {
             newErrors.endAt = 'Ngày hết hạn phải sau ngày bắt đầu';
+        } else if (new Date(voucher.endAt) < new Date()) {
+            newErrors.endAt = "Ngày hết hạn không được ở trong quá khứ";
         }
 
         // Validate tỷ lệ giảm giá
@@ -110,7 +120,6 @@ const EditVoucher = () => {
         }
 
         try {
-          
 
             const response = await axios.put(
                 `${API_URL}/api/Promotions/${voucherId}`,voucher,
@@ -144,7 +153,7 @@ const EditVoucher = () => {
     if (loading) return <CircularProgress />;
     if (!voucher) return <div>Không tìm thấy voucher</div>;
     const formatDateForInput = (dateString) => {
-        return dateString.split('T')[0]; 
+        return dateString.split('T')[0];
     };
     return (
         <Box padding={3}>
@@ -168,12 +177,13 @@ const EditVoucher = () => {
                     </Grid>
                     <Grid item xs={12} sm={6}>
                         <TextField
-                            label="Ngày tạo"
-                          
-                            value={formatDateForInput(voucher.createdAt)} 
+                            label="Ngày bắt đầu"
+                            name="startAt"
+                            type="date"
+                            value={formatDateForInput(voucher.startAt)}
+                            onChange={handleInputChange}
                             fullWidth
                             required
-                            aria-readonly:true
                             margin="normal"
                             InputLabelProps={{
                                 shrink: true,
@@ -187,9 +197,8 @@ const EditVoucher = () => {
                             label="Ngày hết hạn"
                             name="endAt"
                             type="date"
-                            value={formatDateForInput(voucher.endAt)} 
+                            value={formatDateForInput(voucher.endAt)}
                             onChange={handleInputChange}
-                          
                             fullWidth
                             required
                             margin="normal"

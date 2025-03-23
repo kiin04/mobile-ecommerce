@@ -12,12 +12,11 @@ namespace WebAPI.Controllers
     {
         //factory design parttern
         private readonly IRepository<Promotion> _PromotionRepository;
-      
+
 
         public PromotionsController(CSDLBanHang context)
         {
             _PromotionRepository = RepositoryFactory.CreateRepository<Promotion>(context);
-           
         }
 
         // GET: api/Promotions
@@ -41,7 +40,7 @@ namespace WebAPI.Controllers
                 return NotFound(new { message = ex.Message });
             }
         }
-       
+
         // PUT: api/Promotions/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutPromotion(int id, Promotion Promotion)
@@ -81,7 +80,7 @@ namespace WebAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePromotion(int id)
         {
-           
+
             try
             {
                 await _PromotionRepository.DeleteAsync(id);
