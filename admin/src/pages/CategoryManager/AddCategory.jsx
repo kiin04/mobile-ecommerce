@@ -83,6 +83,16 @@ const AddCategory = () => {
                     pauseOnHover: true
                 });
                 navigate("/category-management");
+            } else {
+                const result = await response.json();
+                notification.error({
+                    message: 'Thất bại',
+                    description: "Lỗi khi thêm danh mục: " + result.message,
+                    duration: 4,
+                    placement: "bottomRight",
+                    showProgress: true,
+                    pauseOnHover: true
+                });
             }
         } catch (error) {
             console.error("Lỗi khi thêm danh mục:", error);

@@ -19,15 +19,16 @@ import ColorSize from "../../components/ColorSize.jsx";
 import Detail from "../../components/Detail.jsx";
 import axios from "axios";
 import { notification } from "antd";
-
 const EditProduct = () => {
     const { productId } = useParams();
     const navigate = useNavigate();
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [imagePreview, setImagePreview] = useState(null);
-    const [productImage, setProductImage] = useState("");
+    const [imagePreview, setImagePreview] = useState(null); // Thêm state cho hình ảnh mới
+    const [productImage, setProductImage] = useState(
+            product?.image ? `data:image/jpeg;base64,${product.image}` : ""
+        );
     const [errors, setErrors] = useState({});
 
     const brandOptions = [
@@ -55,13 +56,15 @@ const EditProduct = () => {
         "Nubia",
     ];
 
+    // Fetch dữ liệu từ API
     const fetchCategory = async () => {
         try {
             const response = await axios.get(`${API_URL}/api/Categories`);
+
             return response.data;
         } catch (error) {
             console.error("Lỗi khi gọi API:", error);
-            return [];
+            return []; // Trả về mảng rỗng nếu API lỗi
         }
     };
 
@@ -69,7 +72,6 @@ const EditProduct = () => {
         queryKey: ["categories"],
         queryFn: () => fetchCategory(),
     });
-
     useEffect(() => {
         const fetchProduct = async () => {
             try {
@@ -82,7 +84,7 @@ const EditProduct = () => {
                     setProductImage(
                         data.image ? `data:image/jpeg;base64,${data.image}` : ""
                     );
-                    console.log("product detail ", data);
+                    console.log('product detail ', data);
                 } else {
                     throw new Error("Failed to fetch product");
                 }
@@ -98,16 +100,20 @@ const EditProduct = () => {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
+
+        // Xóa error khi người dùng bắt đầu nhập lại
         setErrors((prev) => ({
             ...prev,
             [name]: undefined,
         }));
+
         if (name === "price" && Number(value) <= 0) {
             setErrors((prev) => ({
                 ...prev,
                 price: "Giá phải lớn hơn 0",
             }));
         }
+
         setProduct({ ...product, [name]: value });
     };
 
@@ -119,120 +125,95 @@ const EditProduct = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+    
         const formData = new FormData();
-        const fieldMap = {
-            name: "Name",
-            price: "Price",
-            promo: "Promo",
-            description: "Description",
-            categoryId: "CategoryId",
-            createdAt: "CreatedAt",
-            unit: "Unit",
-            rate: "Rate",
-            sold: "Sold",
-            brand: "Brand",
-            starsRate: "StarsRate",
-        };
-
-        const createdAtValue = product.createdAt
-            ? new Date(product.createdAt).toISOString()
-            : new Date().toISOString();
-
+    
+        // Thêm dữ liệu vào formData
         Object.keys(product).forEach((key) => {
             if (key === "image") {
+                // Nếu có ảnh mới, thêm vào formData, nếu không giữ nguyên ảnh cũ
                 if (imagePreview && product.image instanceof File) {
                     formData.append("image", product.image);
                 }
-            } else if (
-                key in fieldMap &&
-                product[key] !== undefined &&
-                product[key] !== null
-            ) {
-                formData.append(fieldMap[key], product[key]);
+            } else {
+                formData.append(key, product[key]);
             }
         });
-        formData.append("CreatedAt", createdAtValue);
-
+    
+        formData.append("createdAt", product.createdAt);
+    
         console.log("📝 FormData nội dung:");
         for (let [key, value] of formData.entries()) {
             console.log(key, value);
         }
-
+    
         try {
-            setLoading(true);
-            const response = await fetch(
-                `${API_URL}/api/Products/${productId}`,
-                {
-                    method: "PUT",
-                    body: formData,
-                }
-            );
-
-            // Only parse JSON if the response has a body (status is not 204)
-            let responseData = null;
-            if (response.status !== 204 && response.status !== 200) {
-                responseData = await response.json();
+            const response = await fetch(`${API_URL}/api/Products/${productId}`, {
+                method: "PUT",
+                body: formData,
+            });
+    
+            let result = null;
+            if (response.headers.get("content-type")?.includes("application/json")) {
+                result = await response.json();
             }
 
-            console.log("update response", response);
-
+            console.log("update response", result);
+    
             if (response.ok) {
                 notification.success({
-                    message: "Thành công",
+                    message: 'Thành công',
                     description: "Sản phẩm đã được cập nhật thành công",
                     duration: 4,
                     placement: "bottomRight",
                     showProgress: true,
                     pauseOnHover: true,
                 });
-                const updatedResponse = await fetch(
-                    `${API_URL}/api/Products/${productId}`
-                );
-                if (updatedResponse.ok) {
-                    const updatedProduct = await updatedResponse.json();
-                    setProduct({ ...updatedProduct });
-                    setProductImage(
-                        updatedProduct.image
-                            ? `data:image/jpeg;base64,${updatedProduct.image}`
-                            : ""
-                    );
-                }
                 navigate("/product-management");
             } else {
-                throw new Error(
-                    responseData?.message || "Failed to update product"
-                );
+                // Hiển thị thông báo lỗi từ API
+                notification.error({
+                    message: 'Thất bại',
+                    description: result.message || "Cập nhật sản phẩm thất bại",
+                    duration: 4,
+                    placement: "bottomRight",
+                    showProgress: true,
+                    pauseOnHover: true,
+                });
             }
         } catch (error) {
             console.error("Lỗi khi cập nhật sản phẩm:", error);
             notification.error({
-                message: "Thất bại",
+                message: 'Thất bại',
                 description: "Lỗi khi cập nhật sản phẩm: " + error.message,
                 duration: 4,
                 placement: "bottomRight",
                 showProgress: true,
                 pauseOnHover: true,
             });
-            setLoading(false);
-        } finally {
-            setLoading(false);
         }
     };
-
+    
     const handleCancel = () => {
-        navigate("/product-management");
+        navigate("/product-management"); // Quay lại trang quản lý sản phẩm
     };
 
+    // Thêm hàm validate
     const validateForm = () => {
         const newErrors = {};
+
+        // Validate tên sản phẩm
         if (!product?.name || !product.name.trim()) {
             newErrors.name = "Vui lòng nhập tên sản phẩm";
         }
+
+        // Validate giá
         if (!product?.price || product.price <= 0) {
             newErrors.price = "Giá phải lớn hơn 0";
         }
+        // Validate cấu hình
         if (product?.cauhinh) {
+            // Validate kích thước màn hình
             if (!product.cauhinh.kichThuocManHinh) {
                 newErrors["cauhinh.kichThuocManHinh"] =
                     "Vui lòng nhập kích thước màn hình";
@@ -242,43 +223,60 @@ const EditProduct = () => {
                 newErrors["cauhinh.kichThuocManHinh"] =
                     'Định dạng không hợp lệ (ví dụ: 6.1")';
             }
+
+            // Validate camera sau
             if (!product.cauhinh.cameraSau) {
                 newErrors["cauhinh.cameraSau"] = "Vui lòng nhập camera sau";
             } else if (!/^\d+MP$/.test(product.cauhinh.cameraSau)) {
                 newErrors["cauhinh.cameraSau"] =
                     "Định dạng không hợp lệ (ví dụ: 12MP)";
             }
+
+            // Validate camera trước
             if (!product.cauhinh.cameraTruoc) {
                 newErrors["cauhinh.cameraTruoc"] = "Vui lòng nhập camera trước";
             } else if (!/^\d+MP$/.test(product.cauhinh.cameraTruoc)) {
                 newErrors["cauhinh.cameraTruoc"] =
                     "Định dạng không hợp lệ (ví dụ: 12MP)";
             }
+
+            // Validate chipset
             if (!product.cauhinh.chipset) {
                 newErrors["cauhinh.chipset"] = "Vui lòng nhập chipset";
             }
+
+            // Validate GPU
             if (!product.cauhinh.gpu) {
                 newErrors["cauhinh.gpu"] = "Vui lòng nhập GPU";
             }
+
+            // Validate RAM
             if (!product.cauhinh.dungLuongRAM) {
                 newErrors["cauhinh.dungLuongRAM"] = "Vui lòng nhập RAM";
             } else if (!/^\d+GB$/.test(product.cauhinh.dungLuongRAM)) {
                 newErrors["cauhinh.dungLuongRAM"] =
                     "Định dạng không hợp lệ (ví dụ: 8GB)";
             }
+
+            // Validate bộ nhớ trong
             if (!product.cauhinh.boNhoTrong) {
                 newErrors["cauhinh.boNhoTrong"] = "Vui lòng nhập bộ nhớ trong";
             } else if (!/^\d+GB$/.test(product.cauhinh.boNhoTrong)) {
                 newErrors["cauhinh.boNhoTrong"] =
                     "Định dạng không hợp lệ (ví dụ: 128GB)";
             }
+
+            // Validate thẻ SIM
             if (!product.cauhinh.theSIM) {
                 newErrors["cauhinh.theSIM"] = "Vui lòng chọn thẻ SIM";
             }
+
+            // Validate cổng sạc
             if (!product.cauhinh.congSac) {
                 newErrors["cauhinh.congSac"] = "Vui lòng chọn cổng sạc";
             }
         }
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -305,6 +303,7 @@ const EditProduct = () => {
                             margin="normal"
                         />
                     </Grid>
+
                     <Grid item xs={12} sm={6}>
                         <TextField
                             label="Giá"
@@ -345,7 +344,7 @@ const EditProduct = () => {
                             label="Giảm giá"
                             name="promo"
                             type="number"
-                            value={product?.promo || ""}
+                            value={product?.promo}
                             onChange={handleChange}
                             fullWidth
                             required
@@ -353,6 +352,29 @@ const EditProduct = () => {
                             inputProps={{ min: 0 }}
                         />
                     </Grid>
+
+                  {/* <Grid item xs={12} sm={6}>
+                        <TextField
+                            select
+                            label="Thương hiệu"
+                            name="brand"
+                            value={product?.brand || ""}
+                            onChange={handleChange}
+                            fullWidth
+                            required
+                            margin="normal"
+                        >
+                            {brandOptions.map((option) => (
+                                <MenuItem key={option} value={option}>
+                                    {option}
+                                </MenuItem>
+                            ))}
+                        </TextField>
+                    </Grid>*/ }  
+                 
+
+                 
+
                     <Grid item xs={12} sm={4}>
                         <input
                             accept="image/*"
@@ -386,6 +408,7 @@ const EditProduct = () => {
                             )
                         )}
                     </Grid>
+                    
                     <ColorSize productId={product.id}></ColorSize>
                     <Grid item xs={12}>
                         <TextField
@@ -400,21 +423,18 @@ const EditProduct = () => {
                             rows={4}
                         />
                     </Grid>
-                    <Detail productId={product.id}></Detail>
+                 
                 </Grid>
+
+                <Detail productId={product.id}></Detail>
                 <Box mt={3}>
                     <Button
                         type="submit"
                         variant="contained"
                         color="primary"
                         size="large"
-                        disabled={loading}
                     >
-                        {loading ? (
-                            <CircularProgress size={24} />
-                        ) : (
-                            "Cập nhật sản phẩm"
-                        )}
+                        Cập nhật sản phẩm
                     </Button>
                     <Button
                         onClick={handleCancel}
@@ -422,7 +442,6 @@ const EditProduct = () => {
                         color="secondary"
                         size="large"
                         style={{ marginLeft: 16 }}
-                        disabled={loading}
                     >
                         Huỷ
                     </Button>
