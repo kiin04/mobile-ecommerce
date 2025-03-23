@@ -35,10 +35,14 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
             // Group cart items by productId and colorSizeId
             const groupedItems = data.reduce((acc, item) => {
                 const key = `${item.productId}-${item.colorSizeId}`;
-                const existingItem = acc.find((i) => `${i.productId}-${i.colorSizeId}` === key);
+                const existingItem = acc.find(
+                    (i) => `${i.productId}-${i.colorSizeId}` === key
+                );
                 if (existingItem) {
                     existingItem.quantity += item.quantity;
-                    existingItem.ids = existingItem.ids ? [...existingItem.ids, item.id] : [item.id];
+                    existingItem.ids = existingItem.ids
+                        ? [...existingItem.ids, item.id]
+                        : [item.id];
                 } else {
                     acc.push({ ...item, ids: [item.id] });
                 }
@@ -88,7 +92,8 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
 
                 if (existingItem) {
                     // Update existing item with total quantity
-                    const totalQuantity = existingItem.quantity + localItem.quantity;
+                    const totalQuantity =
+                        existingItem.quantity + localItem.quantity;
                     const cartIds = existingItem.ids;
                     const keepId = cartIds[0];
                     const deleteIds = cartIds.slice(1);
@@ -99,7 +104,9 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
                             deleteIds.map((id) =>
                                 fetch(`${API_URL}/api/Carts/${id}`, {
                                     method: "DELETE",
-                                    headers: { "Content-Type": "application/json" },
+                                    headers: {
+                                        "Content-Type": "application/json",
+                                    },
                                 })
                             )
                         );
@@ -146,7 +153,10 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
     }, [cartOpen, userId]);
 
     const calculateTotal = () => {
-        return cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+        return cartItems.reduce(
+            (total, item) => total + item.price * item.quantity,
+            0
+        );
     };
 
     const removeFromCart = async (cartIds) => {
@@ -165,7 +175,9 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
                 return;
             }
         }
-        const updatedItems = cartItems.filter((item) => !cartIds.includes(item.ids?.[0] || item.productId));
+        const updatedItems = cartItems.filter(
+            (item) => !cartIds.includes(item.ids?.[0] || item.productId)
+        );
         setCartItems(updatedItems);
         if (!userId) saveLocalCart(updatedItems);
     };
@@ -176,19 +188,28 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
             return;
         }
 
-        const item = cartItems.find((item) => item.ids?.includes(cartIds[0]) || item.productId === cartIds[0]);
+        const item = cartItems.find(
+            (item) =>
+                item.ids?.includes(cartIds[0]) || item.productId === cartIds[0]
+        );
         if (!item) return;
 
-        if (userId) {
-            try {
-                const response = await fetch(`${API_URL}/api/ColorSizes/${item.colorSizeId}`);
-                if (!response.ok) throw new Error("Không thể kiểm tra tồn kho");
-                const colorSizeData = await response.json();
-                if (newQuantity > colorSizeData.quantity) {
-                    setOverStockError(`Chỉ còn ${colorSizeData.quantity} sản phẩm`);
-                    return;
-                }
+        try {
+            // Fetch stock information for the product
+            const response = await fetch(
+                `${API_URL}/api/ColorSizes/${item.colorSizeId}`
+            );
+            if (!response.ok) throw new Error("Không thể kiểm tra tồn kho");
+            const colorSizeData = await response.json();
 
+            // Validate the new quantity against the available stock
+            if (newQuantity > colorSizeData.quantity) {
+                setOverStockError(`Chỉ còn ${colorSizeData.quantity} sản phẩm`);
+                return;
+            }
+
+            if (userId) {
+                // update the quantity on the server for users
                 const keepId = cartIds[0];
                 const deleteIds = cartIds.slice(1);
 
@@ -217,22 +238,23 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
                         colorSizeId: item.colorSizeId,
                     }),
                 });
-            } catch (error) {
-                console.error("Lỗi khi cập nhật số lượng:", error);
-                setOverStockError("Có lỗi xảy ra");
-                return;
+            } else {
+                // update the quantity in the local cart
+                const updatedItems = cartItems.map((cartItem) =>
+                    cartItem.productId === item.productId &&
+                    cartItem.colorSizeId === item.colorSizeId
+                        ? { ...cartItem, quantity: newQuantity }
+                        : cartItem
+                );
+                setCartItems(updatedItems);
+                saveLocalCart(updatedItems);
             }
-        }
 
-        // Update local state
-        const updatedItems = cartItems.map((cartItem) =>
-            (cartItem.ids?.includes(cartIds[0]) || cartItem.productId === cartIds[0])
-                ? { ...cartItem, quantity: newQuantity }
-                : cartItem
-        );
-        setCartItems(updatedItems);
-        if (!userId) saveLocalCart(updatedItems);
-        setOverStockError(null);
+            setOverStockError(null);
+        } catch (error) {
+            console.error("Lỗi khi cập nhật số lượng:", error);
+            setOverStockError("Có lỗi xảy ra");
+        }
     };
 
     const { confirm } = Modal;
@@ -252,7 +274,9 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
 
     const handleCheckout = () => {
         if (cartItems.length === 0) {
-            setError("Giỏ hàng trống. Vui lòng thêm sản phẩm trước khi thanh toán.");
+            setError(
+                "Giỏ hàng trống. Vui lòng thêm sản phẩm trước khi thanh toán."
+            );
             return;
         }
         const itemsToCheckout = [...cartItems];
@@ -269,14 +293,18 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
         if (!cartItems.length) return;
         try {
             const productPromises = cartItems.map(async (item) => {
-                const response = await fetch(`${API_URL}/api/Products/${item.productId}`);
+                const response = await fetch(
+                    `${API_URL}/api/Products/${item.productId}`
+                );
                 if (!response.ok) throw new Error("Failed to fetch product");
                 const data = await response.json();
                 return { productId: item.productId, product: data };
             });
 
             const colorPromises = cartItems.map(async (item) => {
-                const response = await fetch(`${API_URL}/api/ColorSizes/${item.colorSizeId}`);
+                const response = await fetch(
+                    `${API_URL}/api/ColorSizes/${item.colorSizeId}`
+                );
                 if (!response.ok) throw new Error("Failed to fetch color/size");
                 const data = await response.json();
                 return { colorSizeId: item.colorSizeId, color: data };
@@ -287,14 +315,18 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
                 Promise.all(colorPromises),
             ]);
 
-            setProductItems(productResults.reduce((acc, { productId, product }) => {
-                acc[productId] = product;
-                return acc;
-            }, {}));
-            setColorSizes(colorResults.reduce((acc, { colorSizeId, color }) => {
-                acc[colorSizeId] = color;
-                return acc;
-            }, {}));
+            setProductItems(
+                productResults.reduce((acc, { productId, product }) => {
+                    acc[productId] = product;
+                    return acc;
+                }, {})
+            );
+            setColorSizes(
+                colorResults.reduce((acc, { colorSizeId, color }) => {
+                    acc[colorSizeId] = color;
+                    return acc;
+                }, {})
+            );
         } catch (error) {
             console.error("Error fetching product data:", error);
             setError(error.message);
@@ -324,7 +356,9 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
                     <div className="flex gap-2">
                         <button
                             onClick={() => {
-                                navigate(PathNames.CART, { state: { cartItems } });
+                                navigate(PathNames.CART, {
+                                    state: { cartItems },
+                                });
                                 setCartOpen(false);
                             }}
                             className="px-4 py-2 text-sm border border-gray-300 rounded-3xl hover:bg-gray-50"
@@ -352,7 +386,9 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
                         {cartItems.map((item) => {
                             const product = productItems[item.productId];
                             const color = colorSizes[item.colorSizeId];
-                            const itemKey = userId ? `${item.productId}-${item.colorSizeId}` : item.productId;
+                            const itemKey = userId
+                                ? `${item.productId}-${item.colorSizeId}`
+                                : item.productId;
                             return (
                                 <div
                                     key={itemKey}
@@ -373,13 +409,25 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
                                         <div className="col-span-12 lg:col-span-10 w-full lg:pl-3">
                                             <div className="flex items-center justify-between mb-4">
                                                 <h5 className="font-manrope font-bold text-2xl text-gray-900">
-                                                    {product?.name || "Đang tải..."}
+                                                    {product?.name ||
+                                                        "Đang tải..."}
                                                 </h5>
                                                 <button
-                                                    onClick={() => showDeleteConfirm(item.ids || [item.productId])}
+                                                    onClick={() =>
+                                                        showDeleteConfirm(
+                                                            item.ids || [
+                                                                item.productId,
+                                                            ]
+                                                        )
+                                                    }
                                                     className="rounded-full group flex items-center justify-center"
                                                 >
-                                                    <svg width={34} height={34} viewBox="0 0 34 34" fill="none">
+                                                    <svg
+                                                        width={34}
+                                                        height={34}
+                                                        viewBox="0 0 34 34"
+                                                        fill="none"
+                                                    >
                                                         <circle
                                                             className="fill-red-50 group-hover:fill-red-400"
                                                             cx={17}
@@ -396,13 +444,23 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
                                                 </button>
                                             </div>
                                             <p className="font-normal text-base text-gray-500 mb-6">
-                                                {color ? `${color.color} - ${color.size}` : "Đang tải..."}
+                                                {color
+                                                    ? `${color.color} - ${color.size}`
+                                                    : "Đang tải..."}
                                             </p>
                                             <div className="flex justify-between items-center">
                                                 <div className="flex items-center gap-4">
                                                     <button
                                                         className="group rounded-[50px] border border-gray-200 p-2.5 bg-white hover:bg-gray-50"
-                                                        onClick={() => updateQuantity(item.ids || [item.productId], item.quantity - 1)}
+                                                        onClick={() =>
+                                                            updateQuantity(
+                                                                item.ids || [
+                                                                    item.productId,
+                                                                ],
+                                                                item.quantity -
+                                                                    1
+                                                            )
+                                                        }
                                                     >
                                                         <svg
                                                             className="stroke-gray-900 group-hover:stroke-black"
@@ -422,7 +480,15 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
                                                     </span>
                                                     <button
                                                         className="group rounded-[50px] border border-gray-200 p-2.5 bg-white hover:bg-gray-50"
-                                                        onClick={() => updateQuantity(item.ids || [item.productId], item.quantity + 1)}
+                                                        onClick={() =>
+                                                            updateQuantity(
+                                                                item.ids || [
+                                                                    item.productId,
+                                                                ],
+                                                                item.quantity +
+                                                                    1
+                                                            )
+                                                        }
                                                     >
                                                         <svg
                                                             className="stroke-gray-900 group-hover:stroke-black"
@@ -439,7 +505,11 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
                                                     </button>
                                                 </div>
                                                 <h6 className="text-primary font-manrope font-bold text-2xl">
-                                                    {(item.price * item.quantity).toLocaleString()} đ
+                                                    {(
+                                                        item.price *
+                                                        item.quantity
+                                                    ).toLocaleString()}{" "}
+                                                    đ
                                                 </h6>
                                             </div>
                                         </div>
