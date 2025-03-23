@@ -419,7 +419,6 @@ const Checkout = () => {
                         onChange={handleInputChange}
                         placeholder="Địa chỉ nhận hàng"
                         className="w-full p-2 border rounded-lg mb-4"
-                        readOnly={!!userId}
                         required={!userId}
                     />
                 )}

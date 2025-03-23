@@ -349,7 +349,7 @@ const CheckoutBuyNow = () => {
                                 type="text"
                                 className="w-full p-2 border rounded-lg mb-4"
                                 value={customerInfo.address}
-                                readOnly
+                                onChange={handleInputChange}
                             />
                         ) : (
                             <input
