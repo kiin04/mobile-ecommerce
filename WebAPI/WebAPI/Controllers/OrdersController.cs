@@ -62,13 +62,41 @@ namespace WebAPI.Controllers
             }
         }
         // PUT: api/Orders/5
+        // [HttpPut("{id}")]
+        // public async Task<IActionResult> PutOrder(int id, Order Order)
+        // {
+        //     try
+        //     {
+        //         Order.Id = id;
+        //         await _OrderRepository.UpdateAsync(Order);
+        //         return NoContent();
+        //     }
+        //     catch (DbUpdateConcurrencyException ex)
+        //     {
+        //         return Conflict(new { message = ex.Message });
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         return StatusCode(500, new { message = ex.Message });
+        //     }
+        // }
+
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutOrder(int id, Order Order)
+        public async Task<IActionResult> PutOrder(int id, Order updatedOrder)
         {
             try
             {
-                Order.Id = id;
-                await _OrderRepository.UpdateAsync(Order);
+                var existingOrder = await _OrderRepository.GetByIdAsync(id);
+                if (existingOrder == null)
+                {
+                    return NotFound(new { message = "Order not found" });
+                }
+
+                existingOrder.Status = updatedOrder.Status ?? existingOrder.Status;
+                existingOrder.CancellationReason = updatedOrder.CancellationReason ?? existingOrder.CancellationReason;
+                existingOrder.UpdatedAt = DateTime.UtcNow;
+
+                await _OrderRepository.UpdateAsync(existingOrder);
                 return NoContent();
             }
             catch (DbUpdateConcurrencyException ex)

@@ -10,60 +10,148 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
     const user = useSelector((state) => state.user);
     const userId = user?.id;
     const [cartItems, setCartItems] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [showConfirmDialog, setShowConfirmDialog] = useState(false);
-    const [itemToRemove, setItemToRemove] = useState(null);
     const [overStockError, setOverStockError] = useState(null);
-    const [selectedItems, setSelectedItems] = useState([]);
     const navigate = useNavigate();
 
-    useEffect(() => {
-        const fetchCartItems = async () => {
-            if (!userId) {
-                console.error("Xin hãy đăng nhập để sử dụng tính năng này");
-                return;
-            }
+    // Fetch local cart for guests
+    const getLocalCart = () => {
+        const localCart = localStorage.getItem("localCart");
+        return localCart ? JSON.parse(localCart) : [];
+    };
 
-            try {
-                const response = await fetch(
-                    `${API_URL}/api/Carts/User/${userId}`
+    // Save cart to localStorage for guests
+    const saveLocalCart = (items) => {
+        localStorage.setItem("localCart", JSON.stringify(items));
+    };
+
+    // Fetch cart from server for logged-in users
+    const fetchUserCart = async () => {
+        try {
+            const response = await fetch(`${API_URL}/api/Carts/User/${userId}`);
+            if (!response.ok) throw new Error("Failed to fetch cart items");
+            const data = await response.json();
+            // Group cart items by productId and colorSizeId
+            const groupedItems = data.reduce((acc, item) => {
+                const key = `${item.productId}-${item.colorSizeId}`;
+                const existingItem = acc.find(
+                    (i) => `${i.productId}-${i.colorSizeId}` === key
                 );
-                if (!response.ok) {
-                    throw new Error("Failed to fetch cart items");
+                if (existingItem) {
+                    existingItem.quantity += item.quantity;
+                    existingItem.ids = existingItem.ids
+                        ? [...existingItem.ids, item.id]
+                        : [item.id];
+                } else {
+                    acc.push({ ...item, ids: [item.id] });
                 }
-                const data = await response.json();
-                // Group cart items by productId and colorSizeId, summing their quantities
-                const groupedItems = data.reduce((acc, item) => {
-                    const key = `${item.productId}-${item.colorSizeId}`;
-                    const existingItem = acc.find(
-                        (i) => `${i.productId}-${i.colorSizeId}` === key
-                    );
-                    if (existingItem) {
-                        existingItem.quantity += item.quantity;
-                        existingItem.ids = existingItem.ids
-                            ? [...existingItem.ids, item.id]
-                            : [item.id];
-                    } else {
-                        acc.push({ ...item, ids: [item.id] });
-                    }
-                    return acc;
-                }, []);
-                setCartItems(groupedItems);
-                setLoading(false);
-            } catch (error) {
-                console.error("Error fetching cart items:", error);
-                setError(error.message);
-                setLoading(false);
-            }
-        };
-
-        if (cartOpen) {
-            fetchCartItems();
+                return acc;
+            }, []);
+            return groupedItems;
+        } catch (error) {
+            console.error("Error fetching cart items:", error);
+            setError(error.message);
+            return [];
         }
-    }, [navigate, cartOpen]);
+    };
 
-    // Tính tổng giá tiền
+    // Load cart items based on user status
+    const loadCartItems = async () => {
+        setLoading(true);
+        let items = [];
+        if (userId) {
+            items = await fetchUserCart();
+            // For logged-in users, sync local cart if it exists
+            const localCart = getLocalCart();
+            if (localCart.length > 0) {
+                await syncLocalCartToServer(localCart);
+                items = await fetchUserCart(); // Refresh after sync
+                saveLocalCart([]); // Clear local cart after syncing
+            }
+        } else {
+            items = getLocalCart();
+        }
+        setCartItems(items);
+        setLoading(false);
+    };
+
+    // Sync local cart to server for newly logged-in users
+    const syncLocalCartToServer = async (localItems) => {
+        if (!userId || !localItems.length) return;
+
+        try {
+            const userCart = await fetchUserCart();
+
+            for (const localItem of localItems) {
+                const existingItem = userCart.find(
+                    (cartItem) =>
+                        cartItem.productId === localItem.productId &&
+                        cartItem.colorSizeId === localItem.colorSizeId
+                );
+
+                if (existingItem) {
+                    // Update existing item with total quantity
+                    const totalQuantity =
+                        existingItem.quantity + localItem.quantity;
+                    const cartIds = existingItem.ids;
+                    const keepId = cartIds[0];
+                    const deleteIds = cartIds.slice(1);
+
+                    // Delete duplicates
+                    if (deleteIds.length > 0) {
+                        await Promise.all(
+                            deleteIds.map((id) =>
+                                fetch(`${API_URL}/api/Carts/${id}`, {
+                                    method: "DELETE",
+                                    headers: {
+                                        "Content-Type": "application/json",
+                                    },
+                                })
+                            )
+                        );
+                    }
+
+                    // Update the remaining item
+                    await fetch(`${API_URL}/api/Carts/${keepId}`, {
+                        method: "PUT",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            id: keepId,
+                            quantity: totalQuantity,
+                            productId: localItem.productId,
+                            userId: userId,
+                            price: localItem.price,
+                            colorSizeId: localItem.colorSizeId,
+                        }),
+                    });
+                } else {
+                    // Add new item to server
+                    await fetch(`${API_URL}/api/Carts`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            userId: userId,
+                            productId: localItem.productId,
+                            colorSizeId: localItem.colorSizeId,
+                            quantity: localItem.quantity,
+                            price: localItem.price,
+                        }),
+                    });
+                }
+            }
+        } catch (error) {
+            console.error("Error syncing local cart to server:", error);
+            setError("Không thể đồng bộ giỏ hàng. Vui lòng thử lại.");
+        }
+    };
+
+    useEffect(() => {
+        if (cartOpen) {
+            loadCartItems();
+        }
+    }, [cartOpen, userId]);
+
     const calculateTotal = () => {
         return cartItems.reduce(
             (total, item) => total + item.price * item.quantity,
@@ -71,223 +159,185 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
         );
     };
 
-    // Xóa sản phẩm khỏi giỏ hàng
     const removeFromCart = async (cartIds) => {
-        try {
-            // Delete all cart items with the given IDs
-            await Promise.all(
-                cartIds.map((id) =>
-                    fetch(`${API_URL}/api/Carts/${id}`, {
-                        method: "DELETE",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                    })
-                )
-            );
-
-            setCartItems(
-                cartItems.filter((item) => !cartIds.includes(item.ids[0]))
-            );
-        } catch (error) {
-            console.error("Lỗi khi xóa sản phẩm khỏi giỏ hàng:", error);
-        }
-    };
-
-    // Cập nhật số lượng sản phẩm trong giỏ hàng và kiểm tra tồn kho
-    const updateQuantity = async (cartIds, newQuantity) => {
-        if (newQuantity <= 0) {
-            setItemToRemove(cartIds);
-            setShowConfirmDialog(true);
-        } else {
+        if (userId) {
             try {
-                // Get the current item details
-                const item = cartItems.find((item) =>
-                    item.ids.includes(cartIds[0])
-                );
-                if (!item) return;
-
-                // Check available stock
-                const response = await fetch(
-                    `${API_URL}/api/ColorSizes/${item.colorSizeId}`
-                );
-                if (!response.ok) {
-                    throw new Error("Không thể kiểm tra số lượng tồn kho");
-                }
-                const colorSizeData = await response.json();
-                const availableQuantity = colorSizeData.quantity;
-
-                // Get total quantity in cart for this product and colorSize (excluding items being updated)
-                const otherCartItems = cartItems.filter(
-                    (i) =>
-                        i.productId === item.productId &&
-                        i.colorSizeId === item.colorSizeId &&
-                        !i.ids.some((id) => cartIds.includes(id))
-                );
-                const otherQuantity = otherCartItems.reduce(
-                    (sum, i) => sum + i.quantity,
-                    0
-                );
-
-                // Check if new quantity exceeds available stock
-                if (newQuantity + otherQuantity > availableQuantity) {
-                    setOverStockError(
-                        `Số lượng vượt quá tồn kho! Chỉ còn ${
-                            availableQuantity - otherQuantity
-                        } sản phẩm khả dụng.`
-                    );
-                    return;
-                }
-
-                // Update the quantity for all cart items with the given IDs
-                const responses = await Promise.all(
+                await Promise.all(
                     cartIds.map((id) =>
                         fetch(`${API_URL}/api/Carts/${id}`, {
-                            method: "PUT",
-                            headers: {
-                                "Content-Type": "application/json",
-                            },
-                            body: JSON.stringify({
-                                id: id,
-                                quantity: newQuantity,
-                                productId: cartItems.find((item) =>
-                                    item.ids.includes(id)
-                                ).productId,
-                                userId: userId,
-                                price: cartItems.find((item) =>
-                                    item.ids.includes(id)
-                                ).price,
-                                colorSizeId: cartItems.find((item) =>
-                                    item.ids.includes(id)
-                                ).colorSizeId,
-                            }),
+                            method: "DELETE",
+                            headers: { "Content-Type": "application/json" },
                         })
                     )
                 );
+            } catch (error) {
+                console.error("Lỗi khi xóa sản phẩm:", error);
+                return;
+            }
+        }
+        const updatedItems = cartItems.filter(
+            (item) => !cartIds.includes(item.ids?.[0] || item.productId)
+        );
+        setCartItems(updatedItems);
+        if (!userId) saveLocalCart(updatedItems);
+    };
 
-                const failedResponse = responses.find((res) => !res.ok);
-                if (failedResponse) {
-                    const data = await failedResponse.json();
-                    setOverStockError(data.message); // Hiển thị lỗi nếu vượt quá tồn kho
-                } else {
-                    setCartItems((prevItems) =>
-                        prevItems.map((item) =>
-                            item.ids.some((id) => cartIds.includes(id))
-                                ? { ...item, quantity: newQuantity }
-                                : item
+    const updateQuantity = async (cartIds, newQuantity) => {
+        if (newQuantity <= 0) {
+            showDeleteConfirm(cartIds);
+            return;
+        }
+
+        const item = cartItems.find(
+            (item) =>
+                item.ids?.includes(cartIds[0]) || item.productId === cartIds[0]
+        );
+        if (!item) return;
+
+        try {
+            // Fetch stock information for the product
+            const response = await fetch(
+                `${API_URL}/api/ColorSizes/${item.colorSizeId}`
+            );
+            if (!response.ok) throw new Error("Không thể kiểm tra tồn kho");
+            const colorSizeData = await response.json();
+
+            // Validate the new quantity against the available stock
+            if (newQuantity > colorSizeData.quantity) {
+                setOverStockError(`Chỉ còn ${colorSizeData.quantity} sản phẩm`);
+                return;
+            }
+
+            if (userId) {
+                // update the quantity on the server for users
+                const keepId = cartIds[0];
+                const deleteIds = cartIds.slice(1);
+
+                // Delete duplicates
+                if (deleteIds.length > 0) {
+                    await Promise.all(
+                        deleteIds.map((id) =>
+                            fetch(`${API_URL}/api/Carts/${id}`, {
+                                method: "DELETE",
+                                headers: { "Content-Type": "application/json" },
+                            })
                         )
                     );
-                    setOverStockError(null); // Xóa lỗi nếu cập nhật thành công
                 }
-            } catch (error) {
-                console.error("Lỗi khi cập nhật số lượng:", error);
-                setOverStockError("Có lỗi xảy ra khi cập nhật số lượng");
+
+                // Update the remaining item
+                await fetch(`${API_URL}/api/Carts/${keepId}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        id: keepId,
+                        quantity: newQuantity,
+                        productId: item.productId,
+                        userId: userId,
+                        price: item.price,
+                        colorSizeId: item.colorSizeId,
+                    }),
+                });
+            } else {
+                // update the quantity in the local cart
+                const updatedItems = cartItems.map((cartItem) =>
+                    cartItem.productId === item.productId &&
+                    cartItem.colorSizeId === item.colorSizeId
+                        ? { ...cartItem, quantity: newQuantity }
+                        : cartItem
+                );
+                setCartItems(updatedItems);
+                saveLocalCart(updatedItems);
             }
+
+            setOverStockError(null);
+        } catch (error) {
+            console.error("Lỗi khi cập nhật số lượng:", error);
+            setOverStockError("Có lỗi xảy ra");
         }
     };
 
     const { confirm } = Modal;
     const showDeleteConfirm = (cartIds) => {
-        setItemToRemove(cartIds); // Set item to remove
         confirm({
             title: "Xóa sản phẩm?",
             icon: <ExclamationCircleFilled />,
-            content: "Bạn có chắc muốn xóa sản phẩm này khỏi giỏ hàng?",
+            content: "Bạn có chắc muốn xóa sản phẩm này?",
             okText: "Có",
             okType: "danger",
             cancelText: "Không",
             onOk() {
-                console.log("OK");
-                removeFromCart(cartIds); // Use cartIds directly
-            },
-            onCancel() {
-                console.log("Cancel");
+                removeFromCart(cartIds);
             },
         });
     };
 
-    // Sửa hàm navigate để thêm callback xóa giỏ hàng
     const handleCheckout = () => {
-        // Lấy tất cả sản phẩm trong giỏ hàng
-        const selectedProducts = cartItems;
-
-        // Lưu selectedItems vào localStorage để có thể xóa sau khi thanh toán thành công
-        localStorage.setItem("checkoutItems", JSON.stringify(selectedProducts));
-
-        navigate(PathNames.CHECKOUT, {
-            state: {
-                cartItems: selectedProducts,
-                total: calculateTotal(),
-            },
+        if (cartItems.length === 0) {
+            setError(
+                "Giỏ hàng trống. Vui lòng thêm sản phẩm trước khi thanh toán."
+            );
+            return;
+        }
+        const itemsToCheckout = [...cartItems];
+        navigate(userId ? PathNames.CHECKOUT : PathNames.CHECKOUTBUYNOW, {
+            state: { cartItems: itemsToCheckout, total: calculateTotal() },
         });
+        setCartOpen(false);
     };
 
     const [productItems, setProductItems] = useState({});
-    // Hàm lấy dữ liệu sản phẩm
-    const fetchProducts = async () => {
+    const [colorSizes, setColorSizes] = useState({});
+
+    const fetchProductsAndColors = async () => {
+        if (!cartItems.length) return;
         try {
-            const promises = cartItems.map(async (item) => {
+            const productPromises = cartItems.map(async (item) => {
                 const response = await fetch(
                     `${API_URL}/api/Products/${item.productId}`
                 );
-                if (!response.ok) {
-                    throw new Error("Failed to fetch product");
-                }
+                if (!response.ok) throw new Error("Failed to fetch product");
                 const data = await response.json();
                 return { productId: item.productId, product: data };
             });
 
-            const results = await Promise.all(promises);
-            const productsMap = results.reduce(
-                (acc, { productId, product }) => {
-                    acc[productId] = product;
-                    return acc;
-                },
-                {}
-            );
-
-            setProductItems(productsMap);
-        } catch (error) {
-            console.error("Error fetching products:", error);
-            setError(error.message);
-        }
-    };
-
-    const [colorSizes, setColorSizes] = useState({});
-    // Hàm lấy dữ liệu color
-    const fetchColorSizes = async () => {
-        try {
-            const promises = cartItems.map(async (item) => {
+            const colorPromises = cartItems.map(async (item) => {
                 const response = await fetch(
                     `${API_URL}/api/ColorSizes/${item.colorSizeId}`
                 );
-                if (!response.ok) {
-                    throw new Error("Failed to fetch product");
-                }
+                if (!response.ok) throw new Error("Failed to fetch color/size");
                 const data = await response.json();
                 return { colorSizeId: item.colorSizeId, color: data };
             });
 
-            const results = await Promise.all(promises);
-            const colorsMap = results.reduce((acc, { colorSizeId, color }) => {
-                acc[colorSizeId] = color;
-                return acc;
-            }, {});
+            const [productResults, colorResults] = await Promise.all([
+                Promise.all(productPromises),
+                Promise.all(colorPromises),
+            ]);
 
-            setColorSizes(colorsMap);
+            setProductItems(
+                productResults.reduce((acc, { productId, product }) => {
+                    acc[productId] = product;
+                    return acc;
+                }, {})
+            );
+            setColorSizes(
+                colorResults.reduce((acc, { colorSizeId, color }) => {
+                    acc[colorSizeId] = color;
+                    return acc;
+                }, {})
+            );
         } catch (error) {
-            console.error("Error fetching products:", error);
+            console.error("Error fetching product data:", error);
             setError(error.message);
         }
     };
 
-    // Gọi API khi cartItems thay đổi
     useEffect(() => {
-        if (cartItems.length > 0) {
-            fetchProducts();
-            fetchColorSizes();
+        if (cartItems.length > 0 && cartOpen) {
+            fetchProductsAndColors();
         }
-    }, [cartItems]);
+    }, [cartItems, cartOpen]);
 
     return (
         <Drawer
@@ -297,31 +347,28 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
             width={600}
             footer={
                 <div className="flex items-center justify-between">
-                    {/* Subtotal section */}
-                    <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
                         <span className="text-xl font-bold">Tạm tính:</span>
                         <span className="text-xl font-semibold">
                             {calculateTotal().toLocaleString()}đ
                         </span>
                     </div>
-
-                    {/* Buttons section */}
                     <div className="flex gap-2">
                         <button
                             onClick={() => {
-                                navigate(PathNames.CART);
+                                navigate(PathNames.CART, {
+                                    state: { cartItems },
+                                });
                                 setCartOpen(false);
                             }}
-                            className="px-4 py-2 text-sm border border-gray-300 rounded-3xl hover:bg-gray-50 transition-colors"
+                            className="px-4 py-2 text-sm border border-gray-300 rounded-3xl hover:bg-gray-50"
                         >
                             Xem giỏ hàng
                         </button>
                         <button
-                            onClick={() => {
-                                setCartOpen(false);
-                                handleCheckout();
-                            }}
-                            className="px-4 py-2 text-sm bg-primary text-white rounded-3xl hover:bg-red-700 transition-colors"
+                            onClick={handleCheckout}
+                            disabled={!cartItems.length}
+                            className="px-4 py-2 text-sm bg-primary text-white rounded-3xl hover:bg-red-700 disabled:bg-gray-400"
                         >
                             Thanh toán
                         </button>
@@ -330,148 +377,148 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
             }
         >
             <div className="flex flex-col h-full relative">
-                {/* Scrollable content */}
-                <div className="flex-1 overflow-y-auto pb-16">
-                    <section>
-                        {cartItems &&
-                            cartItems.map((item) => {
-                                const product = productItems[item.productId];
-                                const color = colorSizes[item.colorSizeId];
-                                return (
-                                    <div
-                                        className="w-full max-w-7xl px-4 md:px-5 lg-6 mx-auto"
-                                        key={`${item.productId}-${item.colorSizeId}`}
-                                    >
-                                        <div className="rounded-3xl border-2 border-gray-200 p-4 lg:p-8 grid grid-cols-12 mb-8 max-lg:max-w-lg max-lg:mx-auto gap-y-4">
-                                            <div className="col-span-12 lg:col-span-2 img box">
-                                                {product ? (
-                                                    <img
-                                                        src={`data:image/jpeg;base64,${product?.image}`}
-                                                        alt={product?.name}
-                                                        className="object-cover w-20 h-20"
-                                                    />
-                                                ) : (
-                                                    <p>Đang tải...</p>
-                                                )}
+                {loading ? (
+                    <p>Đang tải...</p>
+                ) : cartItems.length === 0 ? (
+                    <p>Giỏ hàng trống</p>
+                ) : (
+                    <div className="flex-1 overflow-y-auto pb-16">
+                        {cartItems.map((item) => {
+                            const product = productItems[item.productId];
+                            const color = colorSizes[item.colorSizeId];
+                            const itemKey = userId
+                                ? `${item.productId}-${item.colorSizeId}`
+                                : item.productId;
+                            return (
+                                <div
+                                    key={itemKey}
+                                    className="w-full max-w-7xl px-4 md:px-5 lg-6 mx-auto"
+                                >
+                                    <div className="rounded-3xl border-2 border-gray-200 p-4 lg:p-8 grid grid-cols-12 mb-8 gap-y-4">
+                                        <div className="col-span-12 lg:col-span-2">
+                                            {product ? (
+                                                <img
+                                                    src={`data:image/jpeg;base64,${product?.image}`}
+                                                    alt={product?.name}
+                                                    className="object-cover w-20 h-20"
+                                                />
+                                            ) : (
+                                                <div className="w-20 h-20 bg-gray-200 animate-pulse" />
+                                            )}
+                                        </div>
+                                        <div className="col-span-12 lg:col-span-10 w-full lg:pl-3">
+                                            <div className="flex items-center justify-between mb-4">
+                                                <h5 className="font-manrope font-bold text-2xl text-gray-900">
+                                                    {product?.name ||
+                                                        "Đang tải..."}
+                                                </h5>
+                                                <button
+                                                    onClick={() =>
+                                                        showDeleteConfirm(
+                                                            item.ids || [
+                                                                item.productId,
+                                                            ]
+                                                        )
+                                                    }
+                                                    className="rounded-full group flex items-center justify-center"
+                                                >
+                                                    <svg
+                                                        width={34}
+                                                        height={34}
+                                                        viewBox="0 0 34 34"
+                                                        fill="none"
+                                                    >
+                                                        <circle
+                                                            className="fill-red-50 group-hover:fill-red-400"
+                                                            cx={17}
+                                                            cy={17}
+                                                            r={17}
+                                                        />
+                                                        <path
+                                                            className="stroke-red-500 group-hover:stroke-white"
+                                                            d="M14.1673 13.5997V12.5923C14.1673 11.8968 14.7311 11.333 15.4266 11.333H18.5747C19.2702 11.333 19.834 11.8968 19.834 12.5923V13.5997M19.834 13.5997C19.834 13.5997 14.6534 13.5997 11.334 13.5997C6.90804 13.5998 27.0933 13.5998 22.6673 13.5997C21.5608 13.5997 19.834 13.5997 19.834 13.5997ZM12.4673 13.5997H21.534V18.8886C21.534 20.6695 21.534 21.5599 20.9807 22.1131C20.4275 22.6664 19.5371 22.6664 17.7562 22.6664H16.2451C14.4642 22.6664 13.5738 22.6664 13.0206 22.1131C12.4673 21.5599 12.4673 20.6695 12.4673 18.8886V13.5997Z"
+                                                            strokeWidth="1.6"
+                                                            strokeLinecap="round"
+                                                        />
+                                                    </svg>
+                                                </button>
                                             </div>
-                                            <div className="col-span-12 lg:col-span-10 detail w-full lg:pl-3">
-                                                <div className="flex items-center justify-between w-full mb-4">
-                                                    <h5 className="font-manrope font-bold text-2xl leading-9 text-gray-900">
-                                                        {product?.name}
-                                                    </h5>
+                                            <p className="font-normal text-base text-gray-500 mb-6">
+                                                {color
+                                                    ? `${color.color} - ${color.size}`
+                                                    : "Đang tải..."}
+                                            </p>
+                                            <div className="flex justify-between items-center">
+                                                <div className="flex items-center gap-4">
                                                     <button
+                                                        className="group rounded-[50px] border border-gray-200 p-2.5 bg-white hover:bg-gray-50"
                                                         onClick={() =>
-                                                            showDeleteConfirm(
-                                                                item.ids
+                                                            updateQuantity(
+                                                                item.ids || [
+                                                                    item.productId,
+                                                                ],
+                                                                item.quantity -
+                                                                    1
                                                             )
                                                         }
-                                                        className="rounded-full group flex items-center justify-center focus-within:outline-red-500"
                                                     >
                                                         <svg
-                                                            width={34}
-                                                            height={34}
-                                                            viewBox="0 0 34 34"
-                                                            fill="none"
-                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            className="stroke-gray-900 group-hover:stroke-black"
+                                                            width={18}
+                                                            height={19}
+                                                            viewBox="0 0 18 19"
                                                         >
-                                                            <circle
-                                                                className="fill-red-50 transition-all duration-500 group-hover:fill-red-400"
-                                                                cx={17}
-                                                                cy={17}
-                                                                r={17}
-                                                                fill=""
-                                                            />
                                                             <path
-                                                                className="stroke-red-500 transition-all duration-500 group-hover:stroke-white"
-                                                                d="M14.1673 13.5997V12.5923C14.1673 11.8968 14.7311 11.333 15.4266 11.333H18.5747C19.2702 11.333 19.834 11.8968 19.834 12.5923V13.5997M19.834 13.5997C19.834 13.5997 14.6534 13.5997 11.334 13.5997C6.90804 13.5998 27.0933 13.5998 22.6673 13.5997C21.5608 13.5997 19.834 13.5997 19.834 13.5997ZM12.4673 13.5997H21.534V18.8886C21.534 20.6695 21.534 21.5599 20.9807 22.1131C20.4275 22.6664 19.5371 22.6664 17.7562 22.6664H16.2451C14.4642 22.6664 13.5738 22.6664 13.0206 22.1131C12.4673 21.5599 12.4673 20.6695 12.4673 18.8886V13.5997Z"
-                                                                stroke="#EF4444"
+                                                                d="M4.5 9.5H13.5"
+                                                                strokeWidth="1.6"
+                                                                strokeLinecap="round"
+                                                            />
+                                                        </svg>
+                                                    </button>
+                                                    <span className="border border-gray-200 rounded-full w-10 aspect-square text-gray-900 font-semibold text-sm py-2 px-3 bg-gray-100 text-center">
+                                                        {item.quantity}
+                                                    </span>
+                                                    <button
+                                                        className="group rounded-[50px] border border-gray-200 p-2.5 bg-white hover:bg-gray-50"
+                                                        onClick={() =>
+                                                            updateQuantity(
+                                                                item.ids || [
+                                                                    item.productId,
+                                                                ],
+                                                                item.quantity +
+                                                                    1
+                                                            )
+                                                        }
+                                                    >
+                                                        <svg
+                                                            className="stroke-gray-900 group-hover:stroke-black"
+                                                            width={18}
+                                                            height={19}
+                                                            viewBox="0 0 18 19"
+                                                        >
+                                                            <path
+                                                                d="M3.75 9.5H14.25M9 14.75V4.25"
                                                                 strokeWidth="1.6"
                                                                 strokeLinecap="round"
                                                             />
                                                         </svg>
                                                     </button>
                                                 </div>
-                                                <p className="font-normal text-base leading-7 text-gray-500 mb-6">
-                                                    {color?.color} -{" "}
-                                                    {color?.size}
-                                                </p>
-                                                <div className="flex justify-between items-center">
-                                                    <div className="flex items-center gap-4">
-                                                        <button
-                                                            className="group rounded-[50px] border border-gray-200 shadow-sm shadow-transparent p-2.5 flex items-center justify-center bg-white transition-all duration-500 hover:shadow-gray-200 hover:bg-gray-50 hover:border-gray-300 focus-within:outline-gray-300"
-                                                            onClick={() =>
-                                                                updateQuantity(
-                                                                    item.ids,
-                                                                    item.quantity -
-                                                                        1
-                                                                )
-                                                            }
-                                                        >
-                                                            <svg
-                                                                className="stroke-gray-900 transition-all duration-500 group-hover:stroke-black"
-                                                                width={18}
-                                                                height={19}
-                                                                viewBox="0 0 18 19"
-                                                                fill="none"
-                                                                xmlns="http://www.w3.org/2000/svg"
-                                                            >
-                                                                <path
-                                                                    d="M4.5 9.5H13.5"
-                                                                    stroke=""
-                                                                    strokeWidth="1.6"
-                                                                    strokeLinecap="round"
-                                                                    strokeLinejoin="round"
-                                                                />
-                                                            </svg>
-                                                        </button>
-                                                        <span className="border border-gray-200 rounded-full w-10 aspect-square outline-none text-gray-900 font-semibold text-sm py-2 px-3 bg-gray-100 text-center">
-                                                            {item.quantity}
-                                                        </span>
-                                                        <button
-                                                            className="group rounded-[50px] border border-gray-200 shadow-sm shadow-transparent p-2.5 flex items-center justify-center bg-white transition-all duration-500 hover:shadow-gray-200 hover:bg-gray-50 hover:border-gray-300 focus-within:outline-gray-300"
-                                                            onClick={() =>
-                                                                updateQuantity(
-                                                                    item.ids,
-                                                                    item.quantity +
-                                                                        1
-                                                                )
-                                                            }
-                                                        >
-                                                            <svg
-                                                                className="stroke-gray-900 transition-all duration-500 group-hover:stroke-black"
-                                                                width={18}
-                                                                height={19}
-                                                                viewBox="0 0 18 19"
-                                                                fill="none"
-                                                                xmlns="http://www.w3.org/2000/svg"
-                                                            >
-                                                                <path
-                                                                    d="M3.75 9.5H14.25M9 14.75V4.25"
-                                                                    stroke=""
-                                                                    strokeWidth="1.6"
-                                                                    strokeLinecap="round"
-                                                                    strokeLinejoin="round"
-                                                                />
-                                                            </svg>
-                                                        </button>
-                                                    </div>
-                                                    <h6 className="text-primary font-manrope font-bold text-2xl leading-9 text-right">
-                                                        {(
-                                                            item.price *
-                                                            item.quantity
-                                                        ).toLocaleString()}{" "}
-                                                        đ
-                                                    </h6>
-                                                </div>
+                                                <h6 className="text-primary font-manrope font-bold text-2xl">
+                                                    {(
+                                                        item.price *
+                                                        item.quantity
+                                                    ).toLocaleString()}{" "}
+                                                    đ
+                                                </h6>
                                             </div>
                                         </div>
                                     </div>
-                                );
-                            })}
-                    </section>
-                </div>
-
-                {/* Fixed alert at bottom */}
+                                </div>
+                            );
+                        })}
+                    </div>
+                )}
                 {overStockError && (
                     <div className="absolute bottom-0 left-0 p-4">
                         <Alert message={overStockError} type="error" showIcon />

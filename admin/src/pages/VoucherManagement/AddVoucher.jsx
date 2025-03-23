@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Box, TextField, Button, Typography } from "@mui/material";
-import Grid from '@mui/material/Grid2';
+import Grid from "@mui/material/Grid2";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { API_URL } from "../../config";
@@ -10,6 +10,7 @@ const AddVoucher = () => {
     const navigate = useNavigate();
     const [voucher, setVoucher] = useState({
         name: "",
+        startAt: "",
         endAt: "",
         value: "",
         code: "",
@@ -29,21 +30,27 @@ const AddVoucher = () => {
             newErrors.name = "Tên voucher phải có ít nhất 3 ký tự";
         }
 
-        // Validate ngày kết thúc
+        // Validate ngày bắt đầu (startAt)
+        if (!voucher.startAt) {
+            newErrors.startAt = "Vui lòng chọn ngày bắt đầu";
+        } else if (new Date(voucher.startAt) >= new Date(voucher.endAt)) {
+            newErrors.startAt = "Ngày bắt đầu phải trước ngày hết hạn";
+        }
+
+        // Validate ngày hết hạn
         if (!voucher.endAt) {
-            // Đổi tên field
-            newErrors.endAt = "Vui lòng chọn ngày kết thúc";
-        } 
+            newErrors.endAt = "Vui lòng chọn ngày hết hạn";
+        } else if (new Date(voucher.endAt) <= new Date(voucher.startAt)) {
+            newErrors.endAt = "Ngày hết hạn phải sau ngày bắt đầu";
+        } else if (new Date(voucher.endAt) < new Date()) {
+            newErrors.endAt = "Ngày hết hạn không được ở trong quá khứ";
+        }
 
         // Validate tỷ lệ giảm giá
         const value = Number(voucher.value);
         if (!voucher.value) {
             newErrors.value = "Vui lòng nhập tỷ lệ giảm giá";
-        } else if (
-            isNaN(value) ||
-            value <= 0 ||
-            value > 100
-        ) {
+        } else if (isNaN(value) || value <= 0 || value > 100) {
             newErrors.value = "Tỷ lệ giảm giá phải từ 1% đến 100%";
         }
 
@@ -58,8 +65,7 @@ const AddVoucher = () => {
 
         // Validate giá trị đơn hàng tối thiểu
         if (!voucher.maxValue) {
-            newErrors.maxValue =
-                "Vui lòng nhập giá trị đơn hàng tối thiểu";
+            newErrors.maxValue = "Vui lòng nhập giá trị đơn hàng tối thiểu";
         } else if (Number(voucher.maxValue) < 0) {
             newErrors.maxValue = "Giá trị đơn hàng tối thiểu không thể âm";
         }
@@ -98,11 +104,11 @@ const AddVoucher = () => {
         }
         const formattedVoucher = {
             ...voucher,
-            endAt: `${voucher.endAt}T00:00:00`, 
+            startAt: `${voucher.startAt}T00:00:00`,
+            endAt: `${voucher.endAt}T00:00:00`,
         };
-        console.log('promotion data: ', formattedVoucher);
+        console.log("promotion data: ", formattedVoucher);
         try {
-           
             const response = await axios.post(
                 `${API_URL}/api/Promotions`,
                 formattedVoucher,
@@ -113,22 +119,22 @@ const AddVoucher = () => {
 
             if (response.status === 201) {
                 notification.success({
-                    message: 'Thành công',
+                    message: "Thành công",
                     description: "Thêm voucher thành công",
                     duration: 4,
                     placement: "bottomRight",
                     showProgress: true,
-                    pauseOnHover: true
+                    pauseOnHover: true,
                 });
                 navigate("/voucher-management");
             } else {
                 notification.error({
-                    message: 'Thất bại',
+                    message: "Thất bại",
                     description: "Không thể thêm voucher",
                     duration: 4,
                     placement: "bottomRight",
                     showProgress: true,
-                    pauseOnHover: true
+                    pauseOnHover: true,
                 });
             }
         } catch (error) {
@@ -146,7 +152,7 @@ const AddVoucher = () => {
         }
     };
     const formatDateForInput = (dateString) => {
-        return dateString.split('T')[0]; 
+        return dateString.split("T")[0];
     };
     return (
         <Box padding={3}>
@@ -168,10 +174,28 @@ const AddVoucher = () => {
                             helperText={errors.name}
                         />
                     </Grid>
-                   
+
                     <Grid item xs={12} sm={6}>
                         <TextField
-                            label="Ngày kết thúc"
+                            label="Ngày bắt đầu"
+                            name="startAt"
+                            type="date"
+                            value={voucher.startAt}
+                            onChange={handleInputChange}
+                            fullWidth
+                            required
+                            margin="normal"
+                            InputLabelProps={{
+                                shrink: true,
+                            }}
+                            error={!!errors.startAt}
+                            helperText={errors.startAt}
+                        />
+                    </Grid>
+
+                    <Grid item xs={12} sm={6}>
+                        <TextField
+                            label="Ngày hết hạn"
                             name="endAt"
                             type="date"
                             value={voucher.endAt}
