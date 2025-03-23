@@ -1,10 +1,17 @@
 import { useState, useEffect } from "react";
 import AccountSidebar from "../components/AccountSidebar.jsx";
-import { Modal, Button, Input } from "antd";
+import { Modal, Button, Input, Rate } from "antd";
 import axios from "axios";
 import { API_URL } from "../config.js";
 import { useDispatch, useSelector } from "react-redux";
+
 const MyOrders = () => {
+    const [reviewModalVisible, setReviewModalVisible] = useState(false);
+    const [reviewingProduct, setReviewingProduct] = useState(null);
+    const [reviewContent, setReviewContent] = useState("");
+    const [reviewStars, setReviewStars] = useState(0);
+    const [userReviews, setUserReviews] = useState([]);
+
     const [orders, setOrders] = useState([]);
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -199,8 +206,8 @@ const MyOrders = () => {
                 setOrders((prevOrders) =>
                     prevOrders.map((order) =>
                         order.id !== cancellingOrder.id
-                        ? { ...order, status: "Đã hủy" }
-                        : order
+                            ? { ...order, status: "Đã hủy" }
+                            : order
                     )
                 );
                 setRefreshTrigger((prev) => prev + 1);
@@ -215,6 +222,120 @@ const MyOrders = () => {
             setCancelModalVisible(false);
             setCancelReason("");
             setCancellingOrder(null);
+        }
+    };
+
+    useEffect(() => {
+        const fetchUserReviews = async () => {
+            if (!userId) return;
+            try {
+                const response = await axios.get(
+                    `${API_URL}/api/Comments/User/${userId}`
+                );
+                if (response.status === 200) {
+                    setUserReviews(response.data);
+                }
+            } catch (error) {
+                console.error(
+                    "Error fetching user reviews:",
+                    error.response || error.message
+                );
+                setUserReviews([]);
+            }
+        };
+        fetchUserReviews();
+    }, [userId, refreshTrigger]);
+
+    const handleOpenReviewModal = (product) => {
+        const existingReview = userReviews.find(
+            (review) =>
+                review.productId === product.id && review.userId === userId
+        );
+        if (existingReview) {
+            setReviewStars(existingReview.stars);
+            setReviewContent(existingReview.content);
+        } else {
+            setReviewStars(0);
+            setReviewContent("");
+        }
+        setReviewingProduct(product);
+        setReviewModalVisible(true);
+    };
+
+    const handleSubmitReview = async () => {
+        if (!reviewStars || !reviewContent.trim()) {
+            Modal.error({
+                title: "Lỗi",
+                content: "Vui lòng nhập nội dung và đánh giá sao.",
+            });
+            return;
+        }
+
+        try {
+            const existingReview = userReviews.find(
+                (review) =>
+                    review.productId === reviewingProduct.id &&
+                    review.userId === userId
+            );
+
+            if (existingReview) {
+                const response = await axios.put(
+                    `${API_URL}/api/Comments/${existingReview.id}`,
+                    {
+                        ...existingReview,
+                        stars: reviewStars,
+                        content: reviewContent,
+                    }
+                );
+
+                if (response.status === 204) {
+                    Modal.success({
+                        title: "Thành công",
+                        content: "Đánh giá của bạn đã được cập nhật.",
+                    });
+                    setUserReviews((prevReviews) =>
+                        prevReviews.map((review) =>
+                            review.id === existingReview.id
+                                ? {
+                                      ...review,
+                                      stars: reviewStars,
+                                      content: reviewContent,
+                                  }
+                                : review
+                        )
+                    );
+                    setRefreshTrigger((prev) => prev + 1); // Trigger refetch
+                }
+            } else {
+                const response = await axios.post(`${API_URL}/api/Comments`, {
+                    productId: reviewingProduct.id,
+                    userId: userId,
+                    name: user.name,
+                    stars: reviewStars,
+                    content: reviewContent,
+                });
+
+                Modal.success({
+                    title: "Thành công",
+                    content: "Đánh giá của bạn đã được gửi.",
+                });
+
+                setUserReviews((prevReviews) => [
+                    ...prevReviews,
+                    response.data,
+                ]);
+                setRefreshTrigger((prev) => prev + 1);
+            }
+
+            setReviewModalVisible(false);
+            setReviewContent("");
+            setReviewStars(0);
+            setReviewingProduct(null);
+        } catch (error) {
+            Modal.error({
+                title: "Lỗi",
+                content: "Không thể gửi đánh giá. Vui lòng thử lại sau.",
+            });
         }
     };
 
@@ -429,6 +550,12 @@ const MyOrders = () => {
                                                         <th className="border px-4 py-2 text-left">
                                                             Giá
                                                         </th>
+                                                        {selectedOrder.status ===
+                                                            "Đã giao hàng" && (
+                                                            <th className="border px-4 py-2 text-left">
+                                                                Đánh giá
+                                                            </th>
+                                                        )}
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -438,6 +565,12 @@ const MyOrders = () => {
                                                                 products.find(
                                                                     (prod) =>
                                                                         prod.id ===
+                                                                        detail.productId
+                                                                );
+                                                            const userReview =
+                                                                userReviews.find(
+                                                                    (review) =>
+                                                                        review.productId ===
                                                                         detail.productId
                                                                 );
                                                             return (
@@ -467,6 +600,72 @@ const MyOrders = () => {
                                                                             detail.price
                                                                         )}
                                                                     </td>
+                                                                    {selectedOrder.status ===
+                                                                        "Đã giao hàng" && (
+                                                                        <td className="border px-4 py-2">
+                                                                            {userReviews.find(
+                                                                                (
+                                                                                    review
+                                                                                ) =>
+                                                                                    review.productId ===
+                                                                                        detail.productId &&
+                                                                                    review.userId ===
+                                                                                        userId
+                                                                            ) ? (
+                                                                                <button
+                                                                                    onClick={() =>
+                                                                                        handleOpenReviewModal(
+                                                                                            products.find(
+                                                                                                (
+                                                                                                    prod
+                                                                                                ) =>
+                                                                                                    prod.id ===
+                                                                                                    detail.productId
+                                                                                            )
+                                                                                        )
+                                                                                    }
+                                                                                >
+                                                                                    <Rate
+                                                                                        value={
+                                                                                            userReviews.find(
+                                                                                                (
+                                                                                                    review
+                                                                                                ) =>
+                                                                                                    review.productId ===
+                                                                                                        detail.productId &&
+                                                                                                    review.userId ===
+                                                                                                        userId
+                                                                                            )
+                                                                                                .stars
+                                                                                        }
+                                                                                        allowHalf
+                                                                                        disabled
+                                                                                    />
+                                                                                </button>
+                                                                            ) : (
+                                                                                <button
+                                                                                    onClick={() =>
+                                                                                        handleOpenReviewModal(
+                                                                                            products.find(
+                                                                                                (
+                                                                                                    prod
+                                                                                                ) =>
+                                                                                                    prod.id ===
+                                                                                                    detail.productId
+                                                                                            )
+                                                                                        )
+                                                                                    }
+                                                                                    className="text-yellow-500 hover:text-yellow-600"
+                                                                                >
+                                                                                    <Rate
+                                                                                        allowClear={
+                                                                                            true
+                                                                                        }
+                                                                                    />
+                                                                                </button>
+                                                                            )}
+                                                                        </td>
+                                                                    )}
                                                                 </tr>
                                                             );
                                                         }
@@ -476,6 +675,56 @@ const MyOrders = () => {
                                         </div>
                                     </Modal>
                                 )}
+
+                                {/* Modal for writing reviews */}
+                                <Modal
+                                    title={`Đánh giá sản phẩm: ${reviewingProduct?.name}`}
+                                    open={reviewModalVisible}
+                                    onCancel={() =>
+                                        setReviewModalVisible(false)
+                                    }
+                                    footer={[
+                                        <Button
+                                            key="cancel"
+                                            onClick={() =>
+                                                setReviewModalVisible(false)
+                                            }
+                                        >
+                                            Hủy
+                                        </Button>,
+                                        <Button
+                                            key="submit"
+                                            type="primary"
+                                            onClick={handleSubmitReview}
+                                        >
+                                            {userReviews.find(
+                                                (review) =>
+                                                    review.productId ===
+                                                    reviewingProduct?.id
+                                            )
+                                                ? "Cập nhật đánh giá"
+                                                : "Gửi đánh giá"}
+                                        </Button>,
+                                    ]}
+                                >
+                                    <div className="space-y-4">
+                                        <Rate
+                                            value={reviewStars}
+                                            onChange={(value) =>
+                                                setReviewStars(value)
+                                            }
+                                            allowHalf
+                                        />
+                                        <Input.TextArea
+                                            value={reviewContent}
+                                            onChange={(e) =>
+                                                setReviewContent(e.target.value)
+                                            }
+                                            placeholder="Nhập nội dung đánh giá"
+                                            rows={4}
+                                        />
+                                    </div>
+                                </Modal>
 
                                 {/* Modal hủy đơn hàng */}
                                 <Modal

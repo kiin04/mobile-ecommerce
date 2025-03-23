@@ -1,11 +1,11 @@
 import { faStar as farStar } from "@fortawesome/free-regular-svg-icons";
-import axios from "axios";
-import { Avatar, Rate } from "antd";
 import { faStar, faStarHalfAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Avatar, Rate } from "antd";
+import axios from "axios";
 import classNames from "classnames";
 import PropTypes from "prop-types";
-import { Fragment, useState, useEffect } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { API_URL } from "../../config";
 
 const Rating = ({ rating, showLabel, className, ...rest }) => (
@@ -82,7 +82,7 @@ ReviewItem.propTypes = {
     item: PropTypes.object.isRequired,
 };
 
-export const ReviewsSection = () => {
+export const ReviewsSection = ({ productId }) => {
     const [comments, setComments] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -90,7 +90,7 @@ export const ReviewsSection = () => {
         const fetchCommentsWithUsers = async () => {
             try {
                 const commentsResponse = await axios.get(
-                    `${API_URL}/api/Comments`
+                    `${API_URL}/api/Comments/ProductComment/${productId}`
                 );
                 const commentsData = commentsResponse.data;
 
@@ -116,9 +116,10 @@ export const ReviewsSection = () => {
                 setLoading(false);
             }
         };
-
-        fetchCommentsWithUsers();
-    }, []);
+        if (productId) {
+            fetchCommentsWithUsers();
+        }
+    }, [productId]);
 
     const roundToHalf = (num) => {
         return Math.round(num * 2) / 2;
@@ -185,4 +186,8 @@ export const ReviewsSection = () => {
             </div>
         </section>
     );
+};
+
+ReviewsSection.propTypes = {
+    productId: PropTypes.string.isRequired,
 };

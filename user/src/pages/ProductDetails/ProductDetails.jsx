@@ -711,7 +711,7 @@ const ProductDetails = () => {
                 </div>
 
                 {/* Reviews Section */}
-                <ReviewsSection />
+                <ReviewsSection productId={productId} />
             </div>
 
             <script>

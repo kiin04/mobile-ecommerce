@@ -12,7 +12,7 @@ namespace WebAPI.Controllers
     {
         private readonly IRepository<Comment> _commentRepository;
         private readonly CommentService _commentService;
-            public CommentsController(CSDLBanHang context, CommentService commentService)
+        public CommentsController(CSDLBanHang context, CommentService commentService)
         {
             _commentRepository = RepositoryFactory.CreateRepository<Comment>(context);
             _commentService = commentService;
@@ -52,15 +52,47 @@ namespace WebAPI.Controllers
                 return NotFound(new { message = ex.Message });
             }
         }
-        // PUT: api/Comment/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutComment(int id, Comment Comment)
+        [HttpGet("User/{userId}")]
+        public async Task<ActionResult<IEnumerable<Comment>>> GetCommentsByUser(int userId)
         {
             try
             {
-                Comment.Id = id;
-                await _commentRepository.UpdateAsync(Comment);
-                return NoContent();
+                var comments = await _commentRepository.GetAllAsync();
+                var userComments = comments.Where(c => c.UserId == userId).ToList();
+                return Ok(userComments);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error retrieving user comments: " + ex.Message });
+            }
+        }
+        // PUT: api/Comment/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutComment(int id, Comment comment)
+        {
+            try
+            {
+                // Ensure the comment ID matches the route parameter
+                if (id != comment.Id)
+                {
+                    return BadRequest(new { message = "Comment ID mismatch." });
+                }
+
+                // Check if the comment exists
+                var existingComment = await _commentRepository.GetByIdAsync(id);
+                if (existingComment == null)
+                {
+                    return NotFound(new { message = "Comment not found." });
+                }
+
+                // Update the existing comment
+                existingComment.Stars = comment.Stars;
+                existingComment.Content = comment.Content;
+                existingComment.CreatedAt = DateTime.UtcNow;
+
+                await _commentRepository.UpdateAsync(existingComment);
+
+                return NoContent(); // Return 204 No Content on success
             }
             catch (DbUpdateConcurrencyException ex)
             {
@@ -74,17 +106,28 @@ namespace WebAPI.Controllers
 
         // POST: api/Comment
         [HttpPost]
-        public async Task<ActionResult<Comment>> PostComment(Comment Comment)
+        public async Task<ActionResult<Comment>> PostComment(Comment comment)
         {
             try
             {
-                Comment.CreatedAt = DateTime.UtcNow;
-                await _commentRepository.AddAsync(Comment);
-                return CreatedAtAction(nameof(GetComment), new { id = Comment.Id }, Comment);
+                // Check if the user has already reviewed this product
+                var existingComment = (await _commentRepository.GetAllAsync())
+                    .FirstOrDefault(c => c.ProductId == comment.ProductId && c.UserId == comment.UserId);
+
+                if (existingComment != null)
+                {
+                    return Conflict(new { message = "You have already reviewed this product." });
+                }
+
+                // Create a new review
+                comment.CreatedAt = DateTime.UtcNow;
+                await _commentRepository.AddAsync(comment);
+
+                return CreatedAtAction(nameof(GetComment), new { id = comment.Id }, comment);
             }
-            catch (InvalidOperationException ex)
+            catch (Exception ex)
             {
-                return BadRequest(new { message = ex.Message });
+                return StatusCode(500, new { message = ex.Message });
             }
         }
 
