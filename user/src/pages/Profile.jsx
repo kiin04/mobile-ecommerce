@@ -4,6 +4,8 @@ import AccountSidebar from "../components/AccountSidebar.jsx";
 import { API_URL } from "../config.js";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutUser, setUser } from "../redux/userSlide";
+import { Avatar } from "antd";
+import { UserOutlined } from "@ant-design/icons";
 const Profile = () => {
     const [userData, setUserData] = useState(null);
     const [error, setError] = useState(null);
@@ -64,17 +66,17 @@ const Profile = () => {
         name: "",
         email: "",
         phone: "",
-         dateofBirth: "",
+        dateofBirth: "",
         password: "",
     });
 
     const dispatch = useDispatch();
     const user = useSelector((state) => state.user);
-   
+
     useEffect(() => {
-        setUserData(user)
+        setUserData(user);
     }, [user, dispatch]);
-   
+
     const handleEditToggle = () => {
         setIsEditing(!isEditing);
         if (!isEditing) {
@@ -98,7 +100,7 @@ const Profile = () => {
             name: "",
             email: "",
             phone: "",
-             dateofBirth: "",
+            dateofBirth: "",
             password: "",
         });
 
@@ -158,12 +160,11 @@ const Profile = () => {
         formData.append("totalBuy", user.totalBuy);
         formData.append("role", user.role);
         formData.append("createdAt", userData.createdAt);
-        
+
         if (userAvatar) {
             formData.append("image", userAvatar); // Append the avatar file
         }
         console.log([...formData]); // Log FormData entries
-
 
         // if (passwordData.newPassword) {
         //     if (passwordData.newPassword !== passwordData.confirmNewPassword) {
@@ -180,12 +181,13 @@ const Profile = () => {
                 body: formData,
             });
 
-           
-            console.log('data update user:', response);
+            console.log("data update user:", response);
             if (response.ok) {
-                dispatch(setUser({
-                    ...userData,
-                }));
+                dispatch(
+                    setUser({
+                        ...userData,
+                    })
+                );
                 setIsEditing(false);
                 setUserAvatar(null); // Reset userAvatar after successful update
                 setAvatarPreview(null); // Reset avatar preview after successful update
@@ -206,9 +208,7 @@ const Profile = () => {
                     setSuccessMessage("");
                 }, 3000);
             } else {
-                setUpdateError(
-                    "Lỗi cập nhật thông tin người dùng"
-                );
+                setUpdateError("Lỗi cập nhật thông tin người dùng");
             }
         } catch (error) {
             setUpdateError("Lỗi kết nối server");
@@ -290,25 +290,32 @@ const Profile = () => {
                                                     className="border rounded-lg p-2"
                                                 />
                                                 {avatarPreview ? (
-                                                    <img
-                                                        src={avatarPreview}
-                                                        alt="Avatar Preview"
-                                                        className="w-16 h-16 rounded-full object-cover" // object-cover to maintain aspect ratio
+                                                    <Avatar
+                                                        src={avatarPreview || (user?.image?.startsWith("data:image") ? user.image : `${API_URL}/${user.image}`)}
+                                                        size={64}
+                                                        className="rounded-full object-cover"
                                                     />
-                                                ) : <img
-                                                src={ `data:image/jpeg;base64,${user?.image}`}
-                                                alt="Avatar Preview"
-                                                className="w-16 h-16 rounded-full object-cover" // object-cover to maintain aspect ratio
-                                            /> }
+                                                ) : (
+                                                    <Avatar
+                                                        src={
+                                                            user?.image?.startsWith(
+                                                                "data:image"
+                                                            )
+                                                                ? user.image
+                                                                : `${API_URL}/${user.image}`
+                                                        }
+                                                        size={64}
+                                                        className="rounded-full object-cover"
+                                                    />
+                                                )}
                                             </>
-                                        ) : (
-                                            <img
-                                                src={
-                                                     `data:image/jpeg;base64,${user?.image}`
-                                                }
-                                                alt="User Avatar"
-                                                className="w-16 h-16 rounded-full object-cover"
+                                        ) : user.image ? (
+                                            <Avatar
+                                                src={`data:image/jpeg;base64,${user.image}`}
+                                                size={64}
                                             />
+                                        ) : (
+                                            <UserOutlined />
                                         )}
                                     </div>
                                 </div>
@@ -409,8 +416,8 @@ const Profile = () => {
                                                     onChange={(e) =>
                                                         setUserData({
                                                             ...userData,
-                                                            phone:
-                                                                e.target.value,
+                                                            phone: e.target
+                                                                .value,
                                                         })
                                                     }
                                                     placeholder="Số điện thoại"
@@ -418,9 +425,7 @@ const Profile = () => {
                                                 />
                                                 {validationErrors.phone && (
                                                     <p className="text-red-500 text-sm absolute right-0 mt-1">
-                                                        {
-                                                            validationErrors.phone
-                                                        }
+                                                        {validationErrors.phone}
                                                     </p>
                                                 )}
                                             </>

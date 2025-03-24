@@ -11,7 +11,6 @@ const Checkout = () => {
 
     const [customerInfo, setCustomerInfo] = useState({
         name: "",
-        // email: "",
         phone: "",
         address: "",
     });
@@ -19,7 +18,7 @@ const Checkout = () => {
     const [paymentMethod, setPaymentMethod] = useState("COD");
     const [cartItems, setCartItems] = useState([]);
     const [totalAmount, setTotalAmount] = useState(0);
-    const [notes, setNotes] = useState(""); // Lưu trữ ghi chú từ người dùng
+    const [notes, setNotes] = useState("");
     const [showDiscountDialog, setShowDiscountDialog] = useState(false);
     const [discounts, setDiscounts] = useState([]);
     const [selectedDiscount, setSelectedDiscount] = useState(null);
@@ -33,14 +32,12 @@ const Checkout = () => {
         const fetchCustomerInfo = async () => {
             try {
                 const response = await fetch(`${API_URL}/api/Users/${userId}`);
-                if (!response.ok) {
-                    throw new Error("Failed to fetch customer info");
-                }
+                if (!response.ok) throw new Error("Failed to fetch customer info");
                 const data = await response.json();
                 setCustomerInfo({
-                    name: data.name,
-                    phone: data.phone,
-                    address: data.address,
+                    name: data.name || "",
+                    phone: data.phone || "",
+                    address: data.address || "",
                 });
             } catch (error) {
                 console.error("Error fetching customer info:", error);
@@ -49,76 +46,67 @@ const Checkout = () => {
 
         if (location.state?.cartItems) {
             setCartItems(location.state.cartItems);
-            console.log("cartItem", location.state.cartItems);
             setTotalAmount(location.state.total);
+        } else if (!userId) {
+            const guestCheckoutItems = localStorage.getItem("guestCheckoutItems");
+            if (guestCheckoutItems) {
+                const items = JSON.parse(guestCheckoutItems);
+                setCartItems(items);
+                setTotalAmount(items.reduce((sum, item) => sum + item.price * item.quantity, 0));
+            } else {
+                navigate(PathNames.CART);
+            }
         } else {
             navigate(PathNames.CART);
         }
 
         if (userId) {
             fetchCustomerInfo();
-        } else {
-            console.error("No userId found in localStorage");
         }
     }, [userId, location.state, navigate]);
 
     const [productItems, setProductItems] = useState({});
-    // Hàm lấy dữ liệu sản phẩm
     const fetchProducts = async () => {
         try {
             const promises = cartItems.map(async (item) => {
-                const response = await fetch(
-                    `${API_URL}/api/Products/${item.productId}`
-                );
-                if (!response.ok) {
-                    throw new Error("Failed to fetch product");
-                }
+                const response = await fetch(`${API_URL}/api/Products/${item.productId}`);
+                if (!response.ok) throw new Error("Failed to fetch product");
                 const data = await response.json();
                 return { productId: item.productId, product: data };
             });
 
             const results = await Promise.all(promises);
-            const productsMap = results.reduce(
-                (acc, { productId, product }) => {
-                    acc[productId] = product;
-                    return acc;
-                },
-                {}
-            );
-
-            setProductItems(productsMap);
+            setProductItems(results.reduce((acc, { productId, product }) => {
+                acc[productId] = product;
+                return acc;
+            }, {}));
         } catch (error) {
             console.error("Error fetching products:", error);
             setError(error.message);
         }
     };
+
     const [colorSizes, setColorSizes] = useState({});
-    // Hàm lấy dữ liệu color
     const fetchColorSizes = async () => {
         try {
             const promises = cartItems.map(async (item) => {
-                const response = await fetch(
-                    `${API_URL}/api/ColorSizes/${item.colorSizeId}`
-                );
-                if (!response.ok) {
-                    throw new Error("Failed to fetch product");
-                }
+                const response = await fetch(`${API_URL}/api/ColorSizes/${item.colorSizeId}`);
+                if (!response.ok) throw new Error("Failed to fetch color/size");
                 const data = await response.json();
                 return { colorSizeId: item.colorSizeId, color: data };
             });
 
             const results = await Promise.all(promises);
-            const colorsMap = results.reduce((acc, { colorSizeId, color }) => {
+            setColorSizes(results.reduce((acc, { colorSizeId, color }) => {
                 acc[colorSizeId] = color;
                 return acc;
-            }, {});
-
-            setColorSizes(colorsMap);
+            }, {}));
         } catch (error) {
-            console.error("Error fetching products:", error);
+            console.error("Error fetching colors:", error);
             setError(error.message);
         }
     };
+
     useEffect(() => {
         if (cartItems.length > 0) {
             fetchProducts();
@@ -126,15 +114,17 @@ const Checkout = () => {
         }
     }, [cartItems]);
 
-    // Thêm useEffect để fetch mã giảm giá
     useEffect(() => {
         const fetchDiscounts = async () => {
             try {
                 const response = await fetch(`${API_URL}/api/Promotions`);
-                if (!response.ok) {
-                    throw new Error("Failed to fetch discount codes");
-                }
+                if (!response.ok) throw new Error("Failed to fetch discount codes");
                 const data = await response.json();
+
+                const sortedCodes = data.sort((a, b) => b.value - a.value);
+                const enableDiscount = sortedCodes.filter(
+                    (discount) => new Date(discount.endAt).getTime() > Date.now()
+                );
                 // Sắp xếp theo phn trăm giảm giá từ cao đến thấp
                 const sortedCodes = data.sort(
                     (a, b) => b.value - a.value
@@ -175,6 +165,7 @@ const Checkout = () => {
                     : enableDiscount;
                 setDiscounts(updatedDiscounts);
                 
+
             } catch (error) {
                 console.error("Error fetching discount codes:", error);
             }
@@ -182,7 +173,6 @@ const Checkout = () => {
         fetchDiscounts();
     }, []);
 
-    // Handler khi chọn mã giảm giá
     const handleSelectDiscount = (discount) => {
         setSelectedDiscount(discount);
         const discountAmount = Math.min(
@@ -193,19 +183,38 @@ const Checkout = () => {
         setShowDiscountDialog(false);
     };
 
-    // Thêm handler để xóa mã giảm giá
     const handleRemoveDiscount = () => {
         setSelectedDiscount(null);
         setDiscountedAmount(0);
     };
 
-    const handleContinue = async () => {
-        // Chuyển đổi số tiền về dạng số nguyên
-        const finalAmount = totalAmount - discountedAmount;
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setCustomerInfo((prev) => ({ ...prev, [name]: value }));
+    };
 
-        // Tạo object chứa thông tin cần thiết cho thanh toán
+    const handleContinue = async () => {
+        // Kiểm tra thông tin bắt buộc cho guest
+        if (!userId) {
+            const missingFields = [];
+            if (!customerInfo.name) missingFields.push("họ tên");
+            if (!customerInfo.phone) missingFields.push("số điện thoại");
+            if (shippingOption === "delivery" && !customerInfo.address) missingFields.push("địa chỉ");
+
+            if (missingFields.length > 0) {
+                notification.error({
+                    message: "Lỗi",
+                    description: `Vui lòng điền ${missingFields.join(", ")}`,
+                    duration: 4,
+                    placement: "bottomLeft",
+                });
+                return;
+            }
+        }
+
+        const finalAmount = totalAmount - discountedAmount;
         const paymentData = {
-            userId: userId,
+            userId: userId || null, // API cần hỗ trợ null hoặc thay bằng "guest" nếu cần
             name: customerInfo.name,
             totalPrice: finalAmount,
             paymentMethod: paymentMethod,
@@ -213,23 +222,18 @@ const Checkout = () => {
             note: notes,
             paymentStatus: "Chưa thanh toán",
             status: "Chờ xác nhận",
-            address:
-            shippingOption === "store"
-                ? storeAddress
-                : customerInfo.address,
+            address: shippingOption === "store" ? storeAddress : customerInfo.address,
             discountCode: selectedDiscount ? selectedDiscount.code : null,
-            discountAmount: discountedAmount
-
+            discountAmount: discountedAmount,
         };
-        console.log(paymentData);
-        if (paymentMethod === "MoMo") {
+
+        console.log("Payment Data gửi lên:", paymentData);
+
+        if (paymentMethod === "PayPal") {
             try {
-                // Gọi API tạo thanh toán
                 const paymentResponse = await fetch(`${API_URL}/payment`, {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
+                    headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                         amount: finalAmount,
                         extraData: JSON.stringify(paymentData),
@@ -238,116 +242,97 @@ const Checkout = () => {
                 });
 
                 const result = await paymentResponse.json();
-
-                if (!paymentResponse.ok) {
-                    throw new Error(
-                        result.message || "Lỗi kết nối đến cổng thanh toán"
-                    );
-                }
+                if (!paymentResponse.ok) throw new Error(result.message || "Lỗi kết nối đến cổng thanh toán");
 
                 if (result.payUrl) {
-                    // Lưu ID sản phẩm để xóa khỏi giỏ hàng sau khi thanh toán thành công
-                    localStorage.setItem(
-                        "checkoutItems",
-                        JSON.stringify(cartItems.map((item) => item.productId))
-                    );
-
-                    // Chuyển hướng đến trang thanh toán MOMO
+                    if (!userId) {
+                        localStorage.setItem("guestCheckoutItems", JSON.stringify(cartItems));
+                    } else {
+                        localStorage.setItem("checkoutItems", JSON.stringify(cartItems.map((item) => item.id)));
+                    }
                     window.location.href = result.payUrl;
                 } else {
                     throw new Error("Không nhận được URL thanh toán");
                 }
             } catch (error) {
-                console.error("Lỗi khi xử lý thanh toán:", error);
+                console.error("Lỗi khi xử lý thanh toán PayPal:", error);
                 notification.error({
                     message: "Lỗi thanh toán",
-                    description:
-                        error.message || "Có lỗi xảy ra khi xử lý thanh toán",
+                    description: error.message || "Có lỗi xảy ra khi xử lý thanh toán",
                     duration: 4,
                     placement: "bottomLeft",
                 });
             }
         } else if (paymentMethod === "COD") {
             try {
-                // Tạo đơn hàng với trạng thái chờ xác nhận
                 const orderResponse = await fetch(`${API_URL}/api/Orders`, {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
+                    headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(paymentData),
                 });
 
-                if (orderResponse.ok) {
-                    const orderRes = await orderResponse.json();
-                    for (const item of cartItems) {
-                        const orderDetail = {
-                            orderId: orderRes.id,
-                            productId: item.productId,
-                            colorSizeId: item.colorSizeId,
-                            price: item.price,
-                            quantity: item.quantity,
-                        };
+                if (!orderResponse.ok) {
+                    const errorData = await orderResponse.json();
+                    console.error("Server error response:", errorData);
+                    throw new Error(errorData.message || "Lỗi khi tạo đơn hàng");
+                }
 
-                        // Gọi API tạo chi tiết đơn hàng
-                        const orderDetailResponse = await fetch(`${API_URL}/api/OrderDetails`, {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json",
-                            },
-                            body: JSON.stringify(orderDetail),
-                        });
+                const orderRes = await orderResponse.json();
+                for (const item of cartItems) {
+                    const orderDetail = {
+                        orderId: orderRes.id,
+                        productId: item.productId,
+                        colorSizeId: item.colorSizeId,
+                        price: item.price,
+                        quantity: item.quantity,
+                    };
 
-                        if (!orderDetailResponse.ok) {
-                            console.error("Lỗi khi tạo chi tiết đơn hàng:", await orderDetailResponse.json());
-                            throw new Error("Lỗi khi tạo chi tiết đơn hàng");
-                        }
+                    const orderDetailResponse = await fetch(`${API_URL}/api/OrderDetails`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(orderDetail),
+                    });
 
-
+                    if (!orderDetailResponse.ok) {
+                        const detailError = await orderDetailResponse.json();
+                        throw new Error(detailError.message || "Lỗi khi tạo chi tiết đơn hàng");
                     }
-                    // Xóa sản phẩm khỏi giỏ hàng
+                }
+
+                // Xóa giỏ hàng sau khi đặt hàng thành công
+                if (userId) {
                     const ids = cartItems.map((item) => item.id);
-                    console.log("IDs to delete:", ids);
                     const deleteResponse = await fetch(
                         `${API_URL}/api/Carts/BySelectedItem/${userId}`,
                         {
                             method: "DELETE",
-                            headers: {
-                                "Content-Type": "application/json",
-                            },
+                            headers: { "Content-Type": "application/json" },
                             body: JSON.stringify(ids),
                         }
                     );
                     if (!deleteResponse.ok) {
-                        const errorData = await deleteResponse.json();
-                        console.error("Lỗi API:", errorData);
-                        throw new Error(
-                            errorData.message ||
-                                "Lỗi khi xóa sản phẩm khỏi giỏ hàng"
-                        );
+                        const deleteError = await deleteResponse.json();
+                        throw new Error(deleteError.message || "Lỗi khi xóa sản phẩm khỏi giỏ hàng");
                     }
-                    notification.success({
-                        message: "Đặt hàng thành công",
-                        description:
-                            "Đơn hàng của bạn đang chờ xác nhận. Chúng tôi sẽ liên hệ với bạn sớm nhất!",
-                        duration: 4,
-                        placement: "bottomLeft",
-                        showProgress: true,
-                        pauseOnHover: true,
-                    });
-                    navigate("/my-orders");
                 } else {
-                    throw new Error("Lỗi khi tạo đơn hàng");
+                    localStorage.removeItem("guestCart");
+                    localStorage.removeItem("guestCheckoutItems");
                 }
+
+                notification.success({
+                    message: "Đặt hàng thành công",
+                    description: "Đơn hàng của bạn đang chờ xác nhận. Chúng tôi sẽ liên hệ với bạn sớm nhất!",
+                    duration: 4,
+                    placement: "bottomLeft",
+                });
+                navigate(userId ? "/my-orders" : "/");
             } catch (error) {
                 console.error("Lỗi khi tạo đơn hàng:", error);
                 notification.error({
                     message: "Lỗi",
-                    description: "Có lỗi xảy ra khi tạo đơn hàng",
+                    description: error.message || "Có lỗi xảy ra khi tạo đơn hàng",
                     duration: 4,
                     placement: "bottomLeft",
-                    showProgress: true,
-                    pauseOnHover: true,
                 });
             }
         }
@@ -359,26 +344,45 @@ const Checkout = () => {
         <div className="max-w-3xl mx-auto p-6">
             <h2 className="text-2xl font-semibold mb-4">Thông tin đặt hàng</h2>
 
-            {/* Hiển thị thông tin khách hàng */}
+            {/* Thông tin khách hàng */}
             <div className="bg-white p-4 rounded-lg shadow mb-4">
-                <h3 className="text-lg font-semibold mb-2">
-                    Thông tin khách hàng
-                </h3>
-                <p>Tên: {customerInfo.name}</p>
-                {/* <p>Email: {customerInfo.email}</p> */}
-                <p>Số điện thoại: {customerInfo.phone}</p>
+                <h3 className="text-lg font-semibold mb-2">Thông tin khách hàng</h3>
+                {!userId ? (
+                    <>
+                        <input
+                            type="text"
+                            name="name"
+                            value={customerInfo.name}
+                            onChange={handleInputChange}
+                            placeholder="Họ và tên"
+                            className="w-full p-2 border rounded-lg mb-2"
+                            required
+                        />
+                        <input
+                            type="text"
+                            name="phone"
+                            value={customerInfo.phone}
+                            onChange={handleInputChange}
+                            placeholder="Số điện thoại"
+                            className="w-full p-2 border rounded-lg mb-2"
+                            required
+                        />
+                    </>
+                ) : (
+                    <>
+                        <p>Tên: {customerInfo.name}</p>
+                        <p>Số điện thoại: {customerInfo.phone}</p>
+                    </>
+                )}
             </div>
 
-            {/* Hiển thị sản phẩm trong giỏ hàng của user */}
+            {/* Hiển thị sản phẩm */}
             {cartItems.length > 0 ? (
                 cartItems.map((item) => {
                     const product = productItems[item.productId];
                     const color = colorSizes[item.colorSizeId];
                     return (
-                        <div
-                            key={item.productId}
-                            className="bg-white p-4 rounded-lg shadow mb-4"
-                        >
+                        <div key={`${item.productId}-${item.colorSizeId}`} className="bg-white p-4 rounded-lg shadow mb-4">
                             <div className="flex items-center">
                                 {product ? (
                                     <img
@@ -391,16 +395,9 @@ const Checkout = () => {
                                 )}
                                 <div className="ml-4">
                                     <h3 className="text-lg font-semibold">
-                                        {product?.name} - {color?.color} -{" "}
-                                        {color?.size}
+                                        {product?.name} - {color?.color} - {color?.size}
                                     </h3>
-
-                                    <p className="text-red-500">
-                                        {item.price.toLocaleString()}{" "}
-                                        <span className="line-through text-gray-500">
-                                            {item.price?.toLocaleString()}
-                                        </span>
-                                    </p>
+                                    <p className="text-red-500">{item.price.toLocaleString()}đ</p>
                                     <p>Số lượng: {item.quantity}</p>
                                 </div>
                             </div>
@@ -411,131 +408,90 @@ const Checkout = () => {
                 <p>Giỏ hàng của bạn trống. Hãy mua gì đó rồi quay lại nhé</p>
             )}
 
-            {/* Thông tin giao / nhận hàng */}
+            {/* Thông tin nhận hàng */}
             <div className="bg-white p-4 rounded-lg shadow mb-4">
-                <h3 className="text-lg font-semibold mb-2">
-                    Thông tin nhận hàng
-                </h3>
+                <h3 className="text-lg font-semibold mb-2">Thông tin nhận hàng</h3>
                 <div className="flex items-center space-x-8 mb-4">
-                    <div
-                        className="flex items-center cursor-pointer"
-                        onClick={() => setShippingOption("store")}
-                    >
+                    <div className="flex items-center cursor-pointer" onClick={() => setShippingOption("store")}>
                         <div
                             className={`w-5 h-5 rounded-full border-2 ${
-                                shippingOption === "store"
-                                    ? "border-blue-500 bg-blue-500"
-                                    : "border-gray-500"
+                                shippingOption === "store" ? "border-blue-500 bg-blue-500" : "border-gray-500"
                             } mr-2 flex items-center justify-center`}
                         >
-                            {shippingOption === "store" && (
-                                <div className="w-2.5 h-2.5 bg-white rounded-full"></div>
-                            )}
+                            {shippingOption === "store" && <div className="w-2.5 h-2.5 bg-white rounded-full"></div>}
                         </div>
-                        <label className="text-gray-800">
-                            Nhận tại cửa hàng
-                        </label>
+                        <label className="text-gray-800">Nhận tại cửa hàng</label>
                     </div>
-                    <div
-                        className="flex items-center cursor-pointer"
-                        onClick={() => setShippingOption("delivery")}
-                    >
+                    <div className="flex items-center cursor-pointer" onClick={() => setShippingOption("delivery")}>
                         <div
                             className={`w-5 h-5 rounded-full border-2 ${
-                                shippingOption === "delivery"
-                                    ? "border-blue-500 bg-blue-500"
-                                    : "border-gray-500"
+                                shippingOption === "delivery" ? "border-blue-500 bg-blue-500" : "border-gray-500"
                             } mr-2 flex items-center justify-center`}
                         >
-                            {shippingOption === "delivery" && (
-                                <div className="w-2.5 h-2.5 bg-white rounded-full"></div>
-                            )}
+                            {shippingOption === "delivery" && <div className="w-2.5 h-2.5 bg-white rounded-full"></div>}
                         </div>
-                        <label className="text-gray-800">
-                            Giao hàng tận nơi
-                        </label>
+                        <label className="text-gray-800">Giao hàng tận nơi</label>
                     </div>
                 </div>
                 {shippingOption === "store" ? (
                     <>
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <label className="block mb-2">
-                                    Tỉnh / Thành phố
-                                </label>
-                                <select
-                                    className="w-full p-2 border rounded-lg"
-                                    disabled
-                                >
-                                    <option value="Ho Chi Minh">
-                                        Hồ Chí Minh
-                                    </option>
+                                <label className="block mb-2">Tỉnh / Thành phố</label>
+                                <select className="w-full p-2 border rounded-lg" disabled>
+                                    <option value="Ho Chi Minh">Hồ Chí Minh</option>
                                 </select>
                             </div>
                             <div>
                                 <label className="block mb-2">Quận/huyện</label>
-                                <select
-                                    className="w-full p-2 border rounded-lg"
-                                    disabled
-                                >
+                                <select className="w-full p-2 border rounded-lg" disabled>
                                     <option value="Hoc Mon">Hóc Môn</option>
                                 </select>
                             </div>
                         </div>
                         <div className="mt-4">
-                            <label className="block mb-2">
-                                Địa chỉ cửa hàng
-                            </label>
-                            <p className="bg-gray-100 p-2 rounded-lg">
-                                {storeAddress}
-                            </p>
+                            <label className="block mb-2">Địa chỉ cửa hàng</label>
+                            <p className="bg-gray-100 p-2 rounded-lg">{storeAddress}</p>
                         </div>
                     </>
                 ) : (
-                    <>
-                        <label className="block mb-2">Địa chỉ nhận hàng</label>
-                        <input
-                            type="text"
-                            className="w-full p-2 border rounded-lg mb-4"
-                            value={customerInfo.address}
-                            readOnly
-                        />
-                    </>
+                    <input
+                        type="text"
+                        name="address"
+                        value={customerInfo.address}
+                        onChange={handleInputChange}
+                        placeholder="Địa chỉ nhận hàng"
+                        className="w-full p-2 border rounded-lg mb-4"
+                        required={!userId}
+                    />
                 )}
             </div>
 
-            {/* Thêm ghi chú */}
+            {/* Ghi chú */}
             <div className="bg-white p-4 rounded-lg shadow mb-4">
-                <h3 className="text-lg font-semibold mb-2">
-                    Ghi chú khác (nếu có)
-                </h3>
+                <h3 className="text-lg font-semibold mb-2">Ghi chú khác (nếu có)</h3>
                 <textarea
                     className="w-full p-2 border rounded-lg"
                     value={notes}
-                    onChange={(e) => setNotes(e.target.value)} // Cập nhật ghi chú
+                    onChange={(e) => setNotes(e.target.value)}
                     placeholder="Nhập ghi chú"
                 />
             </div>
 
-            {/* Dropdown phương thức thanh toán */}
+            {/* Phương thức thanh toán */}
             <div className="bg-white p-4 rounded-lg shadow mb-4">
-                <h3 className="text-lg font-semibold mb-2">
-                    Phương thức thanh toán
-                </h3>
+                <h3 className="text-lg font-semibold mb-2">Phương thức thanh toán</h3>
                 <select
                     className="w-full p-2 border rounded-lg"
                     value={paymentMethod}
                     onChange={(e) => setPaymentMethod(e.target.value)}
                 >
                     <option value="COD">Thanh toán khi nhận hàng</option>
-                    <option value="MoMo">Thanh toán qua MOMO</option>
-                    <option value="Thanh toán qua VNpay">
-                        Thanh toán qua VNpay
-                    </option>
+                    <option value="PayPal">Thanh toán qua PayPal</option>
                 </select>
             </div>
 
-            {/* Thêm nút và dialog mã giảm giá */}
+            {/* Mã giảm giá */}
             <div className="bg-white p-4 rounded-lg shadow mb-4">
                 <div className="flex justify-between items-center">
                     <h3 className="text-lg font-semibold">Mã giảm giá</h3>
@@ -555,30 +511,17 @@ const Checkout = () => {
                         </button>
                     )}
                 </div>
-                <p className="text-sm text-gray-500 mt-1">
-                    * Đơn hàng chỉ được sử dụng 1 mã giảm giá
-                </p>
                 {selectedDiscount && (
                     <div className="mt-2 p-2 bg-blue-50 rounded">
                         <div className="flex justify-between items-center">
                             <div>
-                                <p className="font-medium">
-                                    {selectedDiscount.name}
-                                </p>
+                                <p className="font-medium">{selectedDiscount.name}</p>
                                 <p className="text-sm text-gray-600">
-                                    Giảm {selectedDiscount.discountPercent}%
-                                    (Tối đa{" "}
-                                    {selectedDiscount.maxValue.toLocaleString()}
-                                    đ)
+                                    Giảm {selectedDiscount.value}% (Tối đa {selectedDiscount.maxValue.toLocaleString()}đ)
                                 </p>
-                                <p className="text-green-600 font-medium">
-                                    -{discountedAmount.toLocaleString()}đ
-                                </p>
+                                <p className="text-green-600 font-medium">-{discountedAmount.toLocaleString()}đ</p>
                             </div>
-                            <button
-                                onClick={handleRemoveDiscount}
-                                className="text-gray-500 hover:text-gray-700"
-                            >
+                            <button onClick={handleRemoveDiscount} className="text-gray-500 hover:text-gray-700">
                                 ✕
                             </button>
                         </div>
@@ -591,17 +534,13 @@ const Checkout = () => {
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white rounded-lg p-6 w-96 max-h-[75vh] overflow-y-auto">
                         <div className="flex justify-between items-center mb-4">
-                            <h3 className="text-xl font-semibold">
-                                Chọn mã giảm giá
-                            </h3>
-                            <button
-                                onClick={() => setShowDiscountDialog(false)}
-                                className="text-gray-500 hover:text-gray-700"
-                            >
+                            <h3 className="text-xl font-semibold">Chọn mã giảm giá</h3>
+                            <button onClick={() => setShowDiscountDialog(false)} className="text-gray-500 hover:text-gray-700">
                                 ✕
                             </button>
                         </div>
                         <div className="space-y-4">
+
                             {discounts.map((discount) => {
                                 // Kiểm tra điều kiện áp dụng mã giảm giá
                                 const isApplicable =
@@ -610,70 +549,28 @@ const Checkout = () => {
                                 return (
                                     <div
                                         key={discount.id}
-                                        className={`border rounded p-3 ${
-                                            isApplicable
-                                                ? "hover:bg-gray-50"
-                                                : "opacity-50"
-                                        }`}
+                                        className={`border rounded p-3 ${isApplicable ? "hover:bg-gray-50" : "opacity-50"}`}
                                     >
                                         <div className="flex justify-between items-center">
-                                            <div className="flex-1">
-                                                <h4 className="font-semibold text-lg">
-                                                    {discount.name}
-                                                </h4>
-                                                <div className="space-y-1 mt-1">
-                                                    <p className="text-sm text-gray-600">
-                                                        Giảm{" "}
-                                                        {
-                                                            discount.discountPercent
-                                                        }
-                                                        % (Tối đa{" "}
-                                                        {discount.maxValue.toLocaleString()}
-                                                        đ)
-                                                    </p>
-                                                    <p className="text-xs text-gray-500">
-                                                        Đơn tối thiểu{" "}
-                                                        {discount.minPrice.toLocaleString()}
-                                                        đ
-                                                    </p>
-                                                    {!isApplicable && (
-                                                        <p className="text-xs text-red-500">
-                                                            Đơn hàng chưa đt giá
-                                                            trị tối thiểu
-                                                        </p>
-                                                    )}
-                                                    {discount.endDate && (
-                                                        <p className="text-xs text-gray-500">
-                                                            HSD:{" "}
-                                                            {new Date(
-                                                                discount.endDate
-                                                            ).toLocaleDateString(
-                                                                "vi-VN"
-                                                            )}
-                                                        </p>
-                                                    )}
-                                                </div>
+                                            <div>
+                                                <h4 className="font-semibold text-lg">{discount.name}</h4>
+                                                <p className="text-sm text-gray-600">
+                                                    Giảm {discount.value}% (Tối đa {discount.maxValue.toLocaleString()}đ)
+                                                </p>
+                                                <p className="text-xs text-gray-500">
+                                                    Đơn tối thiểu {discount.minPrice.toLocaleString()}đ
+                                                </p>
+                                                {!isApplicable && (
+                                                    <p className="text-xs text-red-500">Đơn hàng chưa đủ giá trị tối thiểu</p>
+                                                )}
                                             </div>
-                                            <div className="ml-4 flex items-center">
-                                                <button
-                                                    className={`px-4 py-1.5 rounded text-sm w-32 ${
-                                                        isApplicable
-                                                            ? "bg-blue-500 hover:bg-blue-600 text-white"
-                                                            : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                                                    }`}
-                                                    onClick={() =>
-                                                        isApplicable &&
-                                                        handleSelectDiscount(
-                                                            discount
-                                                        )
-                                                    }
-                                                    disabled={!isApplicable}
-                                                >
-                                                    {isApplicable
-                                                        ? "Áp dụng"
-                                                        : "Không đủ điều kiện"}
-                                                </button>
-                                            </div>
+                                            <button
+                                                className={`px-4 py-1.5 rounded text-sm ${isApplicable ? "bg-blue-500 hover:bg-blue-600 text-white" : "bg-gray-300 text-gray-500 cursor-not-allowed"}`}
+                                                onClick={() => isApplicable && handleSelectDiscount(discount)}
+                                                disabled={!isApplicable}
+                                            >
+                                                {isApplicable ? "Áp dụng" : "Không đủ điều kiện"}
+                                            </button>
                                         </div>
                                     </div>
                                 );
@@ -683,7 +580,7 @@ const Checkout = () => {
                 </div>
             )}
 
-            {/* Cập nhật phần tổng tiền */}
+            {/* Tổng tiền */}
             <div className="bg-white p-4 rounded-lg shadow mb-4">
                 <h3 className="text-lg font-semibold mb-2">Tổng tiền</h3>
                 <div className="space-y-2">
@@ -699,9 +596,7 @@ const Checkout = () => {
                     )}
                     <div className="flex justify-between font-semibold text-xl">
                         <span>Tổng cộng:</span>
-                        <span className="text-red-500">
-                            {(totalAmount - discountedAmount).toLocaleString()}đ
-                        </span>
+                        <span className="text-red-500">{(totalAmount - discountedAmount).toLocaleString()}đ</span>
                     </div>
                 </div>
             </div>

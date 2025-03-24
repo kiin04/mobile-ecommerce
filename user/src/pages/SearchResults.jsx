@@ -75,7 +75,7 @@ const SearchResults = () => {
                                     onClick={() => handleProductClick(product.id)}
                                 >
                                     <img
-                                        src={`${API_URL}/${product.image}`}
+                                        src={`data:image/jpeg;base64,${product.image}`}
                                         alt={product.name}
                                         className="object-cover w-full rounded-t-lg h-80"
                                     />

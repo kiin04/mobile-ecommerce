@@ -290,9 +290,7 @@ const AddOrder = () => {
     ];
     const paymentMethodOptions = [
         "Tiền mặt",
-        "MoMo",
-        "VNPay",
-        "Chuyển khoản ngân hàng",
+        "PayPal"
     ];
 
     return (
