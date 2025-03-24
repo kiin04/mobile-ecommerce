@@ -148,21 +148,35 @@ const Cart = () => {
         } else {
             try {
                 if (userId) {
-                    const response = await fetch(`${API_URL}/api/Carts/${id}`, {
-                        method: "PUT",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ ...cart, quantity: newQuantity }),
-                    });
-                    
-                    if (response.status != 204) {
-                        //setOverStockError(response.data.message);
+                    const response = await fetch(
+                        `${API_URL}/api/Carts/${id}`,
+                        {
+                            method: "PUT",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({
+                                ...cart,
+                                quantity: newQuantity,
+                            }),
+                        }
+                    );
+    
+                    // const data = await response.json();
+                    // console.log('data ', data);
+                    if (response.status == 400) {
+                        //setOverStockError(data.message); // Hiển thị lỗi nếu vượt quá tồn kho
+                        setOverStockError(" vượt quá tồn kho");
                     } else {
+                        console.log('update quantity');
                         setCartItems((prevItems) =>
                             prevItems.map((item) =>
-                                item.id === id ? { ...item, quantity: newQuantity } : item
+                                item.id === id
+                                    ? { ...item, quantity: newQuantity }
+                                    : item
                             )
                         );
-                        setOverStockError(null);
+                        setOverStockError(null); // Xóa lỗi nếu cập nhật thành công
                     }
                 } else {
                     // Cập nhật localCart khi chưa đăng nhập
