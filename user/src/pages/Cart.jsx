@@ -36,6 +36,7 @@ const Cart = () => {
                     throw new Error("Failed to fetch cart items");
                 }
                 const data = await response.json();
+                console.log("cart item", data);
                 items = data;
             } catch (error) {
                 console.error("Error fetching cart items:", error);
@@ -152,9 +153,9 @@ const Cart = () => {
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({ ...cart, quantity: newQuantity }),
                     });
-                    const data = await response.json();
-                    if (response.status === 400) {
-                        setOverStockError(data.message);
+                    
+                    if (response.status != 204) {
+                        //setOverStockError(response.data.message);
                     } else {
                         setCartItems((prevItems) =>
                             prevItems.map((item) =>
@@ -296,7 +297,7 @@ const Cart = () => {
                                 >
                                     -
                                 </button>
-                                <span>{item.quantity}</span>
+                                <span>{item?.quantity}</span>
                                 <button
                                     onClick={() => updateQuantity(item.id, item, item.quantity + 1)}
                                     className="px-3 py-1 border rounded-md"

@@ -187,6 +187,7 @@ const Shop = () => {
                 const data = await response.json();
                 console.log("data color", data);
                 setColorSizes(data);
+                return data
             } else {
                 throw new Error("Failed to fetch product");
             }
@@ -195,20 +196,18 @@ const Shop = () => {
             // setError("Failed to load product data. Please try again.");
         }
     };
-    const handleBuyNow = (product) => {
-        const colors = fetchColorSize(product?.id);
-        console.log("color", colors);
-
-        if (colorSizes.length > 0) {
-            setSelectedColor(colorSizes[0]);
+    const handleBuyNow = async(product) => {
+        const colors = await fetchColorSize(product.id);
+        console.log('colorSizes',colors[0]);
+        if (colors.length > 0) {
             const productBuyNow = {
                 productId: product.id,
                 image: product.image,
                 name: product.name,
                 quantity: 1,
-                colorSizeId: selectedColor.id,
-                color: selectedColor.color,
-                size: selectedColor.size,
+                colorSizeId: colors[0].id,
+                color: colors[0].color,
+                size: colors[0].size,
                 price: product?.price,
             };
             // console.log('product buy now ',productBuyNow);
@@ -218,7 +217,7 @@ const Shop = () => {
                 message: "Lỗi",
                 description: "Vui lòng chọn màu trước khi mua",
                 duration: 4,
-                placement: "bottomLeft",
+                placement: "bottomRight",
                 showProgress: true,
                 pauseOnHover: true,
             });
