@@ -161,7 +161,7 @@ const Cart = () => {
                             }),
                         }
                     );
-    
+
                     // const data = await response.json();
                     // console.log('data ', data);
                     if (response.status == 400) {
@@ -244,7 +244,7 @@ const Cart = () => {
             });
             return;
         }
-    
+
         // Phân biệt user và guest
         if (userId) {
             // User: Chuyển hướng đến Checkout

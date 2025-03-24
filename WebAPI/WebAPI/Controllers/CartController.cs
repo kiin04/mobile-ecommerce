@@ -13,13 +13,11 @@ namespace WebAPI.Controllers
         //factory design parttern
         private readonly IRepository<Cart> _CartRepository;
         private readonly CartService _cartService;
-        private readonly CSDLBanHang _context;
 
         public CartsController(CSDLBanHang context, CartService cartService)
         {
             _CartRepository = RepositoryFactory.CreateRepository<Cart>(context);
             _cartService = cartService;
-            _context = context;
         }
 
         // GET: api/Carts
@@ -65,24 +63,6 @@ namespace WebAPI.Controllers
             {
                 Cart.Id = id;
 
-                // Validate quantity against ColorSize stock
-                var colorSize = await _context.ColorSizes
-                    .FirstOrDefaultAsync(cs => cs.Id == Cart.ColorSizeId);
-                if (colorSize == null)
-                {
-                    return BadRequest(new { message = "ColorSize không tồn tại." });
-                }
-
-                var existingCarts = await _context.Carts
-                    .Where(c => c.UserId == Cart.UserId && c.ColorSizeId == Cart.ColorSizeId && c.Id != id)
-                    .SumAsync(c => c.Quantity);
-                var totalQuantity = existingCarts + Cart.Quantity;
-
-                if (totalQuantity > colorSize.Quantity)
-                {
-                    return BadRequest(new { message = $"Số lượng vượt quá tồn kho. Chỉ còn {colorSize.Quantity} sản phẩm." });
-                }
-
                 await _CartRepository.UpdateAsync(Cart);
                 return NoContent();
             }
@@ -102,23 +82,6 @@ namespace WebAPI.Controllers
         {
             try
             {
-                // Validate quantity against ColorSize stock
-                var colorSize = await _context.ColorSizes
-                    .FirstOrDefaultAsync(cs => cs.Id == Cart.ColorSizeId);
-                if (colorSize == null)
-                {
-                    return BadRequest(new { message = "ColorSize không tồn tại." });
-                }
-
-                var existingCarts = await _context.Carts
-                    .Where(c => c.UserId == Cart.UserId && c.ColorSizeId == Cart.ColorSizeId)
-                    .SumAsync(c => c.Quantity);
-                var totalQuantity = existingCarts + Cart.Quantity;
-
-                if (totalQuantity > colorSize.Quantity)
-                {
-                    return BadRequest(new { message = $"Số lượng vượt quá tồn kho. Chỉ còn {colorSize.Quantity} sản phẩm." });
-                }
 
                 await _CartRepository.AddAsync(Cart);
                 return CreatedAtAction(nameof(GetCart), new { id = Cart.Id }, Cart);
