@@ -58,7 +58,6 @@ namespace WebAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutColorSize(int id, ColorSize colorSize)
         {
-           
 
             try
             {
@@ -95,7 +94,6 @@ namespace WebAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteColorSize(int id)
         {
-            
             try
             {
                 await _colorSizesService.DeleteDependencieAsync(id);

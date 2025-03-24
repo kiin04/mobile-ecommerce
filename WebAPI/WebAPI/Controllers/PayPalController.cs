@@ -19,11 +19,11 @@ namespace WebAPI.Controllers
             PayPalUrl = configuration["PayPalSettings:Url"];
         }
 
-        // [HttpGet("Token")]
-        // public async Task<string> Token()
-        // {
-        //     return await GetPayPalAccessToken();
-        // }
+        [HttpGet("Token")]
+        public async Task<string> Token()
+        {
+            return await GetPayPalAccessToken();
+        }
 
         private async Task<string> GetPayPalAccessToken()
         {
