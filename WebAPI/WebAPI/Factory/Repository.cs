@@ -90,15 +90,12 @@ namespace WebAPI.Factory
                 throw new InvalidOperationException($"Lỗi khi cập nhật {typeof(T).Name}: {ex.Message}");
             }
         }
-
-
         public async Task DeleteAsync(int id)
         {
             var entity = await GetByIdAsync(id);
             _dbSet.Remove(entity);
             await _context.SaveChangesAsync();
         }
-
         public async Task<bool> ExistsAsync(int id)
         {
             return await _dbSet.FindAsync(id) != null;

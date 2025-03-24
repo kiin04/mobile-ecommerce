@@ -1,26 +1,22 @@
+import React, { useState } from "react";
 import {
     Box,
-    Button,
-    MenuItem,
     TextField,
+    Button,
     Typography,
+    Grid,
+    IconButton,
+    Autocomplete,
 } from "@mui/material";
-import Grid from '@mui/material/Grid2';
-import { useQuery } from "@tanstack/react-query";
-import { message, notification } from "antd";
-import axios from "axios";
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import apiConfigInstance from "../../../SingletonParttern.js";
-import Detail from "../../components/Detail.jsx";
-import ColorSize from "../../components/ColorSize.jsx";
 const API_URL = apiConfigInstance.getApiUrl();
-
+import { MenuItem } from "@mui/material";
+import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
+import Detail from "../../components/Detail.jsx";
+import { message, notification } from "antd";
 const AddProduct = () => {
-    const [productImage, setProductImage] = useState(
-                product?.image ? `data:image/jpeg;base64,${product.image}` : ""
-            );
-
     const navigate = useNavigate();
     // Fetch dữ liệu từ API
     const fetchCategory = async () => {
@@ -45,7 +41,7 @@ const AddProduct = () => {
         price: 0,
         categortId: 1,
         brand: "SphoneC",
-        starsRate : 0,
+        startRate : 0,
         description: "",
         image: null,
     });
@@ -95,7 +91,7 @@ const AddProduct = () => {
         formData.append("categoryId", product.categortId);
         formData.append("sold", 0);
         formData.append("rate", 0);
-        formData.append("starsRate", 0);
+        formData.append("startRate", 0);
         if (product.image) {
             formData.append("image", product.image);
         }
@@ -150,6 +146,7 @@ const AddProduct = () => {
         "Xám",
     ];
     const osOptions = ["Android", "IOS"];
+    
     const screenTechOptions = [
         "OLED",
         "AMOLED",
@@ -216,7 +213,7 @@ const AddProduct = () => {
                             margin="normal"
                         />
                     </Grid>
-
+                 
                     <Grid item xs={12} sm={6}>
                         <TextField
                             select
@@ -251,7 +248,7 @@ const AddProduct = () => {
                                                 margin="normal"
                                                 inputProps={{ min: 0 }}
                                             />
-                    </Grid>
+                     </Grid>
 
                     <Grid item xs={12} sm={4}>
                         <Typography variant="subtitle1" gutterBottom>
@@ -273,41 +270,6 @@ const AddProduct = () => {
                             </Box>
                         )}
                     </Grid>
-
-                    <Grid item xs={12} sm={4}>
-                                            <input
-                                                accept="image/*"
-                                                type="file"
-                                                onChange={handleFileChange}
-                                                style={{ display: "none" }}
-                                                id="image-upload"
-                                            />
-                                            <label htmlFor="image-upload">
-                                                <Button variant="contained" component="span">
-                                                    Chọn hình ảnh
-                                                </Button>
-                                            </label>
-                                            {imagePreview ? (
-                                                <Box mt={4}>
-                                                    <img
-                                                        src={imagePreview}
-                                                        alt="Preview"
-                                                        style={{ maxWidth: "400px" }}
-                                                    />
-                                                </Box>
-                                            ) : (
-                                                productImage && (
-                                                    <Box mt={4}>
-                                                        <img
-                                                            src={productImage}
-                                                            alt="Preview"
-                                                            style={{ maxWidth: "400px" }}
-                                                        />
-                                                    </Box>
-                                                )
-                                            )}
-                                        </Grid>
-                    <ColorSize productId={product.id}></ColorSize>
 
                     <Grid item xs={12}>
                         <TextField

@@ -38,6 +38,7 @@ function App() {
         const fetchUser = async () => {
             if (userId) {
                 try {
+                    //facade
                     const user = await userService.fetchUserDetails(userId);
 
                     dispatch(
@@ -57,7 +58,6 @@ function App() {
 
         fetchUser();
     }, [userId, dispatch]);
-    console.log(userId);
 
     return (
         <>

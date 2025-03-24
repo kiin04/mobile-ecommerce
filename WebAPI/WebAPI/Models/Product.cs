@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using WebAPI.VisitorParttern;
 
 namespace WebAPI.Models;
 
@@ -27,4 +28,10 @@ public partial class Product : BaseEntity,IHasImage
 
     public int? StarsRate { get; set; }
 
+
+
+    public void Accept(IVisitor visitor)
+    {
+        visitor.Visit(this);
+    }
 }

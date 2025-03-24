@@ -5,6 +5,7 @@ using WebAPI.DTO;
 using WebAPI.Factory;
 using WebAPI.Models;
 using WebAPI.Services;
+using WebAPI.VisitorParttern;
 
 namespace WebAPI.Controllers
 {
@@ -75,11 +76,7 @@ namespace WebAPI.Controllers
         {
             try
             {
-                // var category = new Category
-                // {
-                //     Name = categoryDTO.Name,
-                //     Description = categoryDTO.Description,
-                // };
+            
 
                 // Build the Category using the Builder Pattern
                 var category = new CategoryBuilder()
@@ -93,7 +90,8 @@ namespace WebAPI.Controllers
                     await image.CopyToAsync(memoryStream);
                     category.Image = memoryStream.ToArray();
                 }
-
+                var validationVisitor = new ValidationVisitor();
+                category.Accept(validationVisitor);
                 await _CategoryRepository.AddAsync(category, image);
                 return CreatedAtAction(nameof(GetCategory), new { id = category.Id }, category);
             }

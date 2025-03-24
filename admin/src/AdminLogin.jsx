@@ -64,7 +64,7 @@ const AdminLogin = ({ onLoginSuccess }) => {
             if (loginError.response) {
                 const status = loginError.response.status;
                 if (status === 401 || status === 400) {
-                    setLoginError("Email hoặc mật khẩu không chính xác!");
+                    setLoginError(loginError.response.data?.message );
                 } else {
                     setLoginError(
                         `Lỗi server: ${
