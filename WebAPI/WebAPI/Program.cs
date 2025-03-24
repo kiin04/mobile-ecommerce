@@ -45,6 +45,7 @@ builder.Services.AddScoped<CartService>();
 builder.Services.AddScoped<OrderDetailsService>();
 builder.Services.AddScoped<CommentService>();
 
+builder.Services.AddHttpClient();
 
 var app = builder.Build();
 
