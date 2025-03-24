@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
-using System;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
@@ -62,7 +61,7 @@ public class PaymentController : ControllerBase
                 partnerName = "GOSY Strore",
                 storeId = "MomoTestStore",
                 requestId = requestId,
-                amount = request.Amount, 
+                amount = request.Amount,
                 orderId = orderId,
                 orderInfo = request.OrderInfo,
                 redirectUrl = RedirectUrl,
@@ -94,7 +93,7 @@ public class PaymentController : ControllerBase
             return StatusCode(500, new { message = ex.Message });
         }
     }
-   
+
     private string GenerateHmacSha256(string data, string key)
     {
         using (var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(key)))

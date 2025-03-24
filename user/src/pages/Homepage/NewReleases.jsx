@@ -83,7 +83,7 @@ const NewReleases = () => {
         if (quantity > availableQuantity || quantity <= 0) {
             notification.error({
                 message: "Lỗi",
-                description: `Không còn đủ sản phẩm trong kho! Chỉ còn ${availableQuantity} sản phẩm.`,
+                description: `Chỉ còn ${availableQuantity} sản phẩm.`,
                 duration: 4,
                 placement: "bottomLeft",
                 pauseOnHover: true,
@@ -120,7 +120,7 @@ const NewReleases = () => {
                     ) {
                         notification.error({
                             message: "Lỗi",
-                            description: `Không còn đủ sản phẩm trong kho! Chỉ còn ${availableQuantity} sản phẩm.`,
+                            description: `Chỉ còn ${availableQuantity} sản phẩm.`,
                             duration: 4,
                             placement: "bottomLeft",
                             pauseOnHover: true,
@@ -154,19 +154,43 @@ const NewReleases = () => {
                 });
             }
         } else {
-            // Handle logged-in user with API
+            // Handle logged-in user cart
             try {
+                const { data: existingCartItems } = await axios.get(
+                    `${API_URL}/api/Carts`,
+                    {
+                        params: { userId },
+                    }
+                );
+
+                const existingItem = existingCartItems.find(
+                    (item) =>
+                        item.productId === cartItem.productId &&
+                        item.colorSizeId === cartItem.colorSizeId
+                );
+
+                if (existingItem) {
+                    if (existingItem.quantity + cartItem.quantity > availableQuantity)
+                    {
+                        notification.error({
+                            message: "Lỗi",
+                            description: `Chỉ còn ${availableQuantity} sản phẩm.`,
+                            duration: 4,
+                            placement: "bottomLeft",
+                            pauseOnHover: true,
+                        });
+                        return;
+                    }
+                    cartItem.quantity += existingItem.quantity;
+                }
+
                 const response = await axios.post(
                     `${API_URL}/api/Carts`,
                     cartItem,
                     {
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
+                        headers: { "Content-Type": "application/json" },
                     }
                 );
-
-                const data = await response.data;
 
                 notification.success({
                     message: "Thành công",
