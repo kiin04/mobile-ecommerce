@@ -214,15 +214,15 @@ const CheckoutBuyNow = () => {
                             orderInfo: `Thanh toán đơn hàng cho ${customerInfo.name}`,
                         }),
                     });
-    
+
                     const result = await paymentResponse.json();
-    
+
                     if (!paymentResponse.ok) {
                         throw new Error(
                             result.message || "Lỗi kết nối đến cổng thanh toán"
                         );
                     }
-    
+
                     if (result.payUrl) {
                         localStorage.setItem("pendingOrder", JSON.stringify({
                             userId:userId,
@@ -233,12 +233,12 @@ const CheckoutBuyNow = () => {
                             address:
                                 shippingOption === "store" ? storeAddress : customerInfo.address,
                             status: "Đã thanh toán",
-                            cartItems:[cartItems], 
+                            cartItems:[cartItems],
                         }));
                         // Chuyển hướng đến trang thanh toán MOMO
                         window.location.href = result.payUrl;
                     } else {
-                       
+
                         throw new Error("Không nhận được URL thanh toán");
                     }
                 } catch (error) {
@@ -257,17 +257,17 @@ const CheckoutBuyNow = () => {
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(paymentData),
                 });
-    
+
                 if (!orderResponse.ok) {
                     const errorData = await orderResponse.json();
                     const errorMessages = Object.entries(errorData.errors || {}).map(([field, messages]) => `${field}: ${messages.join(", ")}`).join("; ");
                     throw new Error(errorMessages || "Lỗi khi tạo đơn hàng");
                 }
-    
+
                 if (!userId) {
                     localStorage.removeItem("localCart");
                 }
-    
+
                 notification.success({
                     message: "Thành công!",
                     description: "Đơn hàng mới đã được tạo.",
@@ -276,7 +276,7 @@ const CheckoutBuyNow = () => {
                 });
                 navigate(userId ? PathNames.MY_ORDERS : "/");
             }
-           
+
         } catch (error) {
             console.error("Lỗi trong quá trình xử lý:", error);
             notification.error({
@@ -344,7 +344,7 @@ const CheckoutBuyNow = () => {
                             <div className="ml-4">
                             <h3 className="text-lg font-semibold">
                             {item.name } - {item.color} - {item.size}
-                            </h3> 
+                            </h3>
                                 <p className="text-red-500">{item.price.toLocaleString()}đ</p>
                                 <p>Số lượng: {item.quantity}</p>
                             </div>

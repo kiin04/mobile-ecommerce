@@ -4,10 +4,11 @@ import { API_URL } from "../config";
 import { notification } from "antd";
 import PathNames from "../PathNames.js";
 import { useSelector } from "react-redux";
+import { useCart } from "../context/useCart.jsx";
 
 const Cart = () => {
-    const [cartItems, setCartItems] = useState([]);
-    const [cartAmount, setCartAmount] = useState(0);
+    const { cartItems, setCartItems } = useCart();
+    // const [cartItems, setCartItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
@@ -15,7 +16,7 @@ const Cart = () => {
     const [overStockError, setOverStockError] = useState(null);
     const [selectedItems, setSelectedItems] = useState([]);
     const navigate = useNavigate();
-    const location = useLocation(); // Lấy state từ navigation
+    const location = useLocation();
     const user = useSelector((state) => state.user);
     const userId = user?.id;
 

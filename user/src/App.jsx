@@ -29,6 +29,7 @@ import userService from "./facadeParttern/userService.js";
 import { useDispatch } from "react-redux";
 import { setUser } from "./redux/userSlide.js";
 import CheckoutBuyNow from "./pages/CheckOutBuyNow.jsx";
+import { CartProvider } from "./context/CartContext.jsx";
 function App() {
     const [cartOpen, setCartOpen] = useState(false);
     const userId = localStorage.getItem("userId");
@@ -60,7 +61,7 @@ function App() {
     }, [userId, dispatch]);
 
     return (
-        <>
+        <CartProvider>
             <Header cartOpen={cartOpen} setCartOpen={setCartOpen} />
             <CartSidebar cartOpen={cartOpen} setCartOpen={setCartOpen} />
 
@@ -116,7 +117,7 @@ function App() {
             </div>
 
             <Footer />
-        </>
+        </CartProvider>
     );
 }
 

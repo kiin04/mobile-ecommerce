@@ -5,11 +5,13 @@ import { useNavigate } from "react-router-dom";
 import { API_URL } from "../config";
 import PathNames from "../PathNames.js";
 import { useSelector } from "react-redux";
+import { useCart } from "../context/useCart.jsx";
 
 const CartSidebar = ({ cartOpen, setCartOpen }) => {
+    const {cartItems, setCartItems} = useCart();
     const user = useSelector((state) => state.user);
     const userId = user?.id;
-    const [cartItems, setCartItems] = useState([]);
+    // const [cartItems, setCartItems] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [overStockError, setOverStockError] = useState(null);
