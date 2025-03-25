@@ -22,6 +22,7 @@ import { useNavigate } from "react-router-dom";
 import apiConfigInstance from "../../../SingletonParttern.js";
 const API_URL = apiConfigInstance.getApiUrl();
 import axios from "axios";
+import { notification } from "antd";
 
 const UserManagement = () => {
     const navigate = useNavigate();
@@ -104,8 +105,23 @@ const UserManagement = () => {
             });
             if (response.ok) {
                 setUsers(users.filter((user) => user.id !== userId));
+                notification.success({
+                    message: 'Thành công',
+                    description: "Người dùng đã được xóa thành công",
+                    duration: 4,
+                    placement: "bottomRight",
+                    showProgress: true,
+                    pauseOnHover: true
+                });
             } else {
-                console.error("Failed to delete user");
+                notification.error({
+                    message: 'Thất bại',
+                    description: "Không thể xóa người dùng vì họ đang có đơn đặt hàng",
+                    duration: 4,
+                    placement: "bottomRight",
+                    showProgress: true,
+                    pauseOnHover: true
+                });
             }
         } catch (error) {
             console.error("Error deleting user:", error);
