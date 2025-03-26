@@ -84,7 +84,7 @@ const MyOrders = () => {
         try {
             const response = await axios.get(
                 `${API_URL}/api/OrderDetails/ByOrder/${order.id}`
-            );
+             );
             if (response.status === 200) {
                 setOrderDetails(response.data);
                 setSelectedOrder(order);

@@ -22,7 +22,7 @@ import { useNavigate } from "react-router-dom";
 import apiConfigInstance from "../../../SingletonParttern.js";
 const API_URL = apiConfigInstance.getApiUrl();
 import axios from "axios";
-import { notification } from "antd";
+import { message, notification } from "antd";
 
 const UserManagement = () => {
     const navigate = useNavigate();
@@ -100,10 +100,8 @@ const UserManagement = () => {
 
     const handleDeleteUser = async (userId) => {
         try {
-            const response = await fetch(`${API_URL}/api/users/${userId}`, {
-                method: "DELETE",
-            });
-            if (response.ok) {
+            const response = await axios.delete(`${API_URL}/api/users/${userId}`);
+            if (response.status === 200) {
                 setUsers(users.filter((user) => user.id !== userId));
                 notification.success({
                     message: 'Thành công',
@@ -114,17 +112,31 @@ const UserManagement = () => {
                     pauseOnHover: true
                 });
             } else {
-                notification.error({
-                    message: 'Thất bại',
-                    description: "Không thể xóa người dùng vì họ đang có đơn đặt hàng",
-                    duration: 4,
-                    placement: "bottomRight",
-                    showProgress: true,
-                    pauseOnHover: true
-                });
+                const errorData = await response.json();
+                if (response.status === 400 && errorData.message) {
+                    notification.error({
+                        message: 'Thất bại',
+                        description: `Không thể xóa người dùng: ${errorData.message}`,
+                        duration: 4,
+                        placement: "bottomRight",
+                        showProgress: true,
+                        pauseOnHover: true
+                    });
+                } else {
+                    console.error("Failed to delete user:", errorData);
+                    notification.error({
+                        message: 'Thất bại',
+                        description: `Xóa người dùng thất bại: ${response.status} ${response.statusText}`,
+                        duration: 4,
+                        placement: "bottomRight",
+                        showProgress: true,
+                        pauseOnHover: true
+                    });
+                }
             }
         } catch (error) {
             console.error("Error deleting user:", error);
+            message.error("Có lỗi xảy ra khi xóa người dùng.");
         }
     };
 
