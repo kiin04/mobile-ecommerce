@@ -79,19 +79,28 @@ const Login = ({ onSwitchToRegister }) => {
 
     // Initialize Google Sign-In SDK
     useEffect(() => {
+        if (!window.gapi) {
+            console.error("Google API script not loaded");
+            return;
+        }
         window.gapi.load("auth2", () => {
-            window.gapi.auth2.init({
-                client_id: "743750561195-lgsj8sd1l5ghv92ecad4fvoh3m0feko3.apps.googleusercontent.com"
-            });
+            window.gapi.auth2
+                .init({
+                    client_id:
+                        "743750561195-lgsj8sd1l5ghv92ecad4fvoh3m0feko3.apps.googleusercontent.com",
+                })
+                .then(() => {
+                    console.log("Google Auth2 initialized successfully");
+                })
+                .catch((error) => {
+                    console.error("Google Auth2 init failed:", error);
+                });
         });
     }, []);
 
-    const handleGoogleLogin = async () => {
+    const handleGoogleLogin = async (credentialResponse) => {
         try {
-            const googleAuth = window.gapi.auth2.getAuthInstance();
-            const googleUser = await googleAuth.signIn();
-            const idToken = googleUser.getAuthResponse().id_token;
-
+            const idToken = credentialResponse.credential;
             console.log("Google ID Token:", idToken);
 
             const response = await axios.post(`${API_URL}/api/Google/Login`, {
@@ -124,6 +133,28 @@ const Login = ({ onSwitchToRegister }) => {
             message.error("Đăng nhập bằng Google thất bại");
         }
     };
+
+    useEffect(() => {
+        if (!window.google) {
+            console.error("Google Identity Services script not loaded");
+            return;
+        }
+
+        window.google.accounts.id.initialize({
+            client_id: "743750561195-lgsj8sd1l5ghv92ecad4fvoh3m0feko3.apps.googleusercontent.com",
+            callback: handleGoogleLogin,
+        });
+
+        window.google.accounts.id.renderButton(
+            document.getElementById("googleSignInButton"),
+            {
+                theme: "outline",
+                size: "large",
+            }
+        );
+
+        window.google.accounts.id.prompt(); // Show One Tap prompt
+    }, []);
 
     return (
         <div className="flex justify-center items-center">
@@ -180,7 +211,7 @@ const Login = ({ onSwitchToRegister }) => {
                 </Form.Item>
             </Form>
 
-            <GoogleBtn onClick={handleGoogleLogin}/>
+            <GoogleBtn onClick={handleGoogleLogin} />
         </div>
     );
 };
