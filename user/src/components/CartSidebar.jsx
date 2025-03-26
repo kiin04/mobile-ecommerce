@@ -1,14 +1,15 @@
 import { ExclamationCircleFilled } from "@ant-design/icons";
-import { Alert, Drawer, Modal } from "antd";
+import { Alert, Drawer, Empty, Modal } from "antd";
 import { useEffect, useState } from "react";
+import { LuShoppingCart } from "react-icons/lu";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { API_URL } from "../config";
-import PathNames from "../PathNames.js";
-import { useSelector } from "react-redux";
 import { useCart } from "../context/useCart.jsx";
+import PathNames from "../PathNames.js";
 
 const CartSidebar = ({ cartOpen, setCartOpen }) => {
-    const {cartItems, setCartItems} = useCart();
+    const { cartItems, setCartItems } = useCart();
     const user = useSelector((state) => state.user);
     const userId = user?.id;
     // const [cartItems, setCartItems] = useState([]);
@@ -342,7 +343,7 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
             open={cartOpen}
             width={600}
             footer={
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between py-1">
                     <div className="flex items-center gap-2">
                         <span className="text-xl font-bold">Tạm tính:</span>
                         <span className="text-xl font-semibold">
@@ -376,7 +377,14 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
                 {loading ? (
                     <p>Đang tải...</p>
                 ) : cartItems.length === 0 ? (
-                    <p>Giỏ hàng trống</p>
+                    <div style={{ textAlign: "center", padding: "50px" }}>
+                        <Empty
+                            image={<LuShoppingCart style={{ fontSize: '64px', color: '#808080' }}/>}
+                            description={
+                                <span>Giỏ hàng của bạn đang trống 🥀</span>
+                            }
+                        />
+                    </div>
                 ) : (
                     <div className="flex-1 overflow-y-auto pb-16">
                         {cartItems.map((item) => {

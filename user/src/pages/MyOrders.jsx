@@ -45,7 +45,7 @@ const MyOrders = () => {
                 throw new Error(await response.text());
             }
             const data = await response.json();
-            setOrders(data);
+            setOrders(data || []);
             setError(null);
             setLoading(false);
         } catch (err) {
