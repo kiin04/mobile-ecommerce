@@ -1,82 +1,259 @@
 import styled from "styled-components";
 
-const GoogleBtn = ({style, onClick}) => {
+const Button = ({ style, onClick }) => {
     return (
         <StyledWrapper style={style}>
-            <p className="p line">Hoặc đăng nhập với</p>
-            <div className="flex-row">
-                <button className="btn google" onClick={onClick}>
-                    <svg
-                        xmlSpace="preserve"
-                        style={{ enableBackground: "new 0 0 512 512" }}
-                        viewBox="0 0 512 512"
-                        y="0px"
-                        x="0px"
-                        xmlnsXlink="http://www.w3.org/1999/xlink"
-                        xmlns="http://www.w3.org/2000/svg"
-                        id="Layer_1"
-                        width={20}
-                        version="1.1"
-                    >
-                        <path
-                            d="M113.47,309.408L95.648,375.94l-65.139,1.378C11.042,341.211,0,299.9,0,256
-          c0-42.451,10.324-82.483,28.624-117.732h0.014l57.992,10.632l25.404,57.644c-5.317,15.501-8.215,32.141-8.215,49.456
-          C103.821,274.792,107.225,292.797,113.47,309.408z"
-                            style={{ fill: "#FBBB00" }}
-                        />
-                        <path
-                            d="M507.527,208.176C510.467,223.662,512,239.655,512,256c0,18.328-1.927,36.206-5.598,53.451
-          c-12.462,58.683-45.025,109.925-90.134,146.187l-0.014-0.014l-73.044-3.727l-10.338-64.535
-          c29.932-17.554,53.324-45.025,65.646-77.911h-136.89V208.176h138.887L507.527,208.176L507.527,208.176z"
-                            style={{ fill: "#518EF8" }}
-                        />
-                        <path
-                            d="M416.253,455.624l0.014,0.014C372.396,490.901,316.666,512,256,512
-          c-97.491,0-182.252-54.491-225.491-134.681l82.961-67.91c21.619,57.698,77.278,98.771,142.53,98.771
-          c28.047,0,54.323-7.582,76.87-20.818L416.253,455.624z"
-                            style={{ fill: "#28B446" }}
-                        />
-                        <path
-                            d="M419.404,58.936l-82.933,67.896c-23.335-14.586-50.919-23.012-80.471-23.012
-          c-66.729,0-123.429,42.957-143.965,102.724l-83.397-68.276h-0.014C71.23,56.123,157.06,0,256,0
-          C318.115,0,375.068,22.126,419.404,58.936z"
-                            style={{ fill: "#F14336" }}
-                        />
-                    </svg>
-                    Google
-                </button>
-            </div>
+            <button className="button" onClick={onClick}>
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    preserveAspectRatio="xMidYMid"
+                    viewBox="0 0 256 262"
+                    className="svg"
+                >
+                    <path
+                        fill="#4285F4"
+                        d="M255.878 133.451c0-10.734-.871-18.567-2.756-26.69H130.55v48.448h71.947c-1.45 12.04-9.283 30.172-26.69 42.356l-.244 1.622 38.755 30.023 2.685.268c24.659-22.774 38.875-56.282 38.875-96.027"
+                        className="blue"
+                    />
+                    <path
+                        fill="#34A853"
+                        d="M130.55 261.1c35.248 0 64.839-11.605 86.453-31.622l-41.196-31.913c-11.024 7.688-25.82 13.055-45.257 13.055-34.523 0-63.824-22.773-74.269-54.25l-1.531.13-40.298 31.187-.527 1.465C35.393 231.798 79.49 261.1 130.55 261.1"
+                        className="green"
+                    />
+                    <path
+                        fill="#FBBC05"
+                        d="M56.281 156.37c-2.756-8.123-4.351-16.827-4.351-25.82 0-8.994 1.595-17.697 4.206-25.82l-.073-1.73L15.26 71.312l-1.335.635C5.077 89.644 0 109.517 0 130.55s5.077 40.905 13.925 58.602l42.356-32.782"
+                        className="yellow"
+                    />
+                    <path
+                        fill="#EB4335"
+                        d="M130.55 50.479c24.514 0 41.05 10.589 50.479 19.438l36.844-35.974C195.245 12.91 165.798 0 130.55 0 79.49 0 35.393 29.301 13.925 71.947l42.211 32.783c10.59-31.477 39.891-54.251 74.414-54.251"
+                        className="red"
+                    />
+                </svg>
+                <span className="text">Đăng nhập với Google</span>
+            </button>
         </StyledWrapper>
     );
 };
 
 const StyledWrapper = styled.div`
-    .p {
-        text-align: center;
-        color: black;
-        font-size: 14px;
-        margin: 5px 0;
-    }
+    /* Fancy Google hover button made by: csozi | Website: www.csozi.hu*/
 
-    .btn {
-        margin-top: 10px;
-        width: 100%;
-        height: 50px;
-        border-radius: 10px;
+    .button {
+        padding: 10px;
+        font-weight: bold;
         display: flex;
-        justify-content: center;
+        position: relative;
+        overflow: hidden;
+        border-radius: 35px;
         align-items: center;
-        font-weight: 500;
-        gap: 10px;
-        border: 1px solid #ededef;
-        background-color: white;
-        cursor: pointer;
-        transition: 0.2s ease-in-out;
+        border: solid #c7c7c7 1px;
+        outline: none;
     }
 
-    .btn:hover {
-        border: 1px solid red;
+    .svg {
+        height: 25px;
+        margin-right: 10px;
+    }
+
+    .button .text {
+        z-index: 10;
+        font-size: 14px;
+    }
+
+    .button:hover .text {
+        animation: text forwards 0.3s;
+        /*color: white;*/
+    }
+
+    @keyframes text {
+        from {
+            color: black;
+        }
+
+        to {
+            color: white;
+        }
+    }
+
+    .svg {
+        z-index: 6;
+    }
+
+    .button:hover::before {
+        content: "";
+        display: block;
+        position: absolute;
+        top: 50%;
+        left: 9%;
+        transform: translate(-50%, -50%);
+        width: 0;
+        height: 0;
+        opacity: 0;
+        border-radius: 300px;
+        animation: wave1 2.5s ease-in-out forwards;
+    }
+
+    .button:hover::after {
+        content: "";
+        display: block;
+        position: absolute;
+        top: 50%;
+        left: 9%;
+        transform: translate(-50%, -50%);
+        width: 0;
+        height: 0;
+        opacity: 0;
+        border-radius: 300px;
+        animation: wave2 2.5s ease-in-out forwards;
+    }
+
+    @keyframes wave1 {
+        0% {
+            z-index: 1;
+            background: #eb4335;
+            width: 0;
+            height: 0;
+            opacity: 1;
+        }
+
+        1% {
+            z-index: 1;
+            background: #eb4335;
+            width: 0;
+            height: 0;
+            opacity: 1;
+        }
+
+        25% {
+            z-index: 1;
+            background: #eb4335;
+            width: 800px;
+            height: 800px;
+            opacity: 1;
+        }
+
+        26% {
+            z-index: 3;
+            background: #34a853;
+            width: 0;
+            height: 0;
+            opacity: 1;
+        }
+
+        50% {
+            z-index: 3;
+            background: #34a853;
+            width: 800px;
+            height: 800px;
+            opacity: 1;
+        }
+
+        70% {
+            z-index: 3;
+            background: #34a853;
+            width: 800px;
+            height: 800px;
+            opacity: 1;
+        }
+
+        100% {
+            z-index: 3;
+            background: #34a853;
+            width: 800px;
+            height: 800px;
+            opacity: 1;
+        }
+    }
+
+    @keyframes wave2 {
+        0% {
+            z-index: 2;
+            background: #fbbc05;
+            width: 0;
+            height: 0;
+            opacity: 1;
+        }
+
+        11% {
+            z-index: 2;
+            background: #fbbc05;
+            width: 0;
+            height: 0;
+            opacity: 1;
+        }
+
+        35% {
+            z-index: 2;
+            background: #fbbc05;
+            width: 800px;
+            height: 800px;
+            opacity: 1;
+        }
+
+        39% {
+            z-index: 2;
+            background: #fbbc05;
+            width: 800px;
+            height: 800px;
+            opacity: 1;
+        }
+
+        40% {
+            z-index: 4;
+            background: #4285f4;
+            width: 0;
+            height: 0;
+            opacity: 1;
+        }
+
+        64% {
+            z-index: 4;
+            background: #4285f4;
+            width: 800px;
+            height: 800px;
+            opacity: 1;
+        }
+
+        100% {
+            z-index: 4;
+            background: #4285f4;
+            width: 800px;
+            height: 800px;
+            opacity: 1;
+        }
+    }
+
+    .button:hover .red {
+        animation: disappear 0.1s forwards;
+        animation-delay: 0.1s;
+    }
+
+    .button:hover .yellow {
+        animation: disappear 0.1s forwards;
+        animation-delay: 0.3s;
+    }
+
+    .button:hover .green {
+        animation: disappear 0.1s forwards;
+        animation-delay: 0.7s;
+    }
+
+    .button:hover .blue {
+        animation: disappear 0.1s forwards;
+        animation-delay: 1.1s;
+    }
+
+    @keyframes disappear {
+        from {
+            filter: brightness(1);
+        }
+
+        to {
+            filter: brightness(100);
+        }
     }
 `;
 
-export default GoogleBtn;
+export default Button;

@@ -157,7 +157,7 @@ const Login = ({ onSwitchToRegister }) => {
     }, []);
 
     return (
-        <div className="flex justify-center items-center">
+        <div className="flex justify-center items-center flex-col">
             <Form
                 name="login"
                 initialValues={{
@@ -210,8 +210,8 @@ const Login = ({ onSwitchToRegister }) => {
                     </span>
                 </Form.Item>
             </Form>
-
-            <GoogleBtn onClick={handleGoogleLogin} />
+            <p className="p line text-center" style={{marginTop: "-2.5em", marginBottom: "1em"}}>Hoặc</p>
+            <GoogleBtn onClick={handleGoogleLogin}/>
         </div>
     );
 };
