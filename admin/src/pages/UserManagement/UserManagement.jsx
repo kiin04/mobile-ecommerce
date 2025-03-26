@@ -22,6 +22,7 @@ import { useNavigate } from "react-router-dom";
 import apiConfigInstance from "../../../SingletonParttern.js";
 const API_URL = apiConfigInstance.getApiUrl();
 import axios from "axios";
+import { message } from "antd";
 
 const UserManagement = () => {
     const navigate = useNavigate();
@@ -99,16 +100,21 @@ const UserManagement = () => {
 
     const handleDeleteUser = async (userId) => {
         try {
-            const response = await fetch(`${API_URL}/api/users/${userId}`, {
-                method: "DELETE",
-            });
-            if (response.ok) {
+            const response = await axios.delete(`${API_URL}/api/users/${userId}`);
+            if (response.status === 200) {
                 setUsers(users.filter((user) => user.id !== userId));
             } else {
-                console.error("Failed to delete user");
+                const errorData = await response.json();
+                if (response.status === 400 && errorData.message) {
+                    message.error(`Không thể xóa người dùng: ${errorData.message}`);
+                } else {
+                    console.error("Failed to delete user:", errorData);
+                    message.error(`Xóa người dùng thất bại: ${response.status} ${response.statusText}`);
+                }
             }
         } catch (error) {
             console.error("Error deleting user:", error);
+            message.error("Có lỗi xảy ra khi xóa người dùng.");
         }
     };
 
