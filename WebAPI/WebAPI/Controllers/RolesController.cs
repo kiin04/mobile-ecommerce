@@ -40,7 +40,7 @@ namespace WebAPI.Controllers
                 return NotFound(new { message = ex.Message });
             }
         }
-       
+
 
         // PUT: api/Role/5
         [HttpPut("{id}")]
@@ -81,7 +81,7 @@ namespace WebAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRole(int id)
         {
-            
+
             try
             {
                 await _roleService.DeleteDependencieAsync(id);

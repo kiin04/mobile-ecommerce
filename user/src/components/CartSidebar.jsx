@@ -5,11 +5,13 @@ import { useNavigate } from "react-router-dom";
 import { API_URL } from "../config";
 import PathNames from "../PathNames.js";
 import { useSelector } from "react-redux";
+import { useCart } from "../context/useCart.jsx";
 
 const CartSidebar = ({ cartOpen, setCartOpen }) => {
+    const {cartItems, setCartItems} = useCart();
     const user = useSelector((state) => state.user);
     const userId = user?.id;
-    const [cartItems, setCartItems] = useState([]);
+    // const [cartItems, setCartItems] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [overStockError, setOverStockError] = useState(null);
@@ -195,25 +197,29 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
         if (!item) return;
 
         try {
-            // Fetch stock information for the product
             const response = await fetch(
                 `${API_URL}/api/ColorSizes/${item.colorSizeId}`
             );
             if (!response.ok) throw new Error("Không thể kiểm tra tồn kho");
             const colorSizeData = await response.json();
 
-            // Validate the new quantity against the available stock
             if (newQuantity > colorSizeData.quantity) {
                 setOverStockError(`Chỉ còn ${colorSizeData.quantity} sản phẩm`);
                 return;
             }
 
+            // Calculate updated items first
+            const updatedItems = cartItems.map((cartItem) =>
+                cartItem.ids?.includes(cartIds[0]) ||
+                cartItem.productId === cartIds[0]
+                    ? { ...cartItem, quantity: newQuantity }
+                    : cartItem
+            );
+
             if (userId) {
-                // update the quantity on the server for users
                 const keepId = cartIds[0];
                 const deleteIds = cartIds.slice(1);
 
-                // Delete duplicates
                 if (deleteIds.length > 0) {
                     await Promise.all(
                         deleteIds.map((id) =>
@@ -225,31 +231,21 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
                     );
                 }
 
-                // Update the remaining item
                 await fetch(`${API_URL}/api/Carts/${keepId}`, {
                     method: "PUT",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
+                        ...item,
                         id: keepId,
                         quantity: newQuantity,
-                        productId: item.productId,
-                        userId: userId,
-                        price: item.price,
-                        colorSizeId: item.colorSizeId,
                     }),
                 });
             } else {
-                // update the quantity in the local cart
-                const updatedItems = cartItems.map((cartItem) =>
-                    cartItem.productId === item.productId &&
-                    cartItem.colorSizeId === item.colorSizeId
-                        ? { ...cartItem, quantity: newQuantity }
-                        : cartItem
-                );
-                setCartItems(updatedItems);
                 saveLocalCart(updatedItems);
             }
 
+            // Update state for all cases
+            setCartItems(updatedItems);
             setOverStockError(null);
         } catch (error) {
             console.error("Lỗi khi cập nhật số lượng:", error);

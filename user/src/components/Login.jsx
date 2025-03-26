@@ -1,12 +1,12 @@
 import { LockOutlined, MailOutlined } from "@ant-design/icons";
 import { message, Form, Input, Button } from "antd";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { setUser } from "../redux/userSlide"; // Import action
 import { API_URL } from "../config";
 import userService from "../facadeParttern/userService";
+import GoogleBtn from "../shared/GoogleBtn";
 
 const Login = ({ onSwitchToRegister }) => {
     const [formData, setFormData] = useState({
@@ -14,7 +14,6 @@ const Login = ({ onSwitchToRegister }) => {
         password: "",
     });
     const [loading, setLoading] = useState(false);
-    const navigate = useNavigate();
     const dispatch = useDispatch();
 
     // Cập nhật dữ liệu form khi nhập input
@@ -29,10 +28,12 @@ const Login = ({ onSwitchToRegister }) => {
                 email,
                 password,
             });
-            console.log(response)
-            return response.data // Trả về userId từ API
+            console.log(response);
+            return response.data; // Trả về userId từ API
         } catch (error) {
-            throw new Error(error.response?.data?.message || "Đăng nhập thất bại");
+            throw new Error(
+                error.response?.data?.message || "Đăng nhập thất bại"
+            );
         }
     };
 
@@ -50,10 +51,12 @@ const Login = ({ onSwitchToRegister }) => {
             const userDetails = await userService.fetchUserDetails(userId);
 
             // Lưu vào Redux
-            dispatch(setUser({
-                ...userDetails,
-                email: formData.email,
-            }));
+            dispatch(
+                setUser({
+                    ...userDetails,
+                    email: formData.email,
+                })
+            );
 
             // Lưu vào localStorage
             localStorage.setItem("userId", userId);
@@ -64,14 +67,65 @@ const Login = ({ onSwitchToRegister }) => {
             window.location.reload();
         } catch (error) {
             console.error("Error:", error.message);
-            message.warning(error.message || "Email hoặc mật khẩu không chính xác");
+            message.warning(
+                error.message || "Email hoặc mật khẩu không chính xác"
+            );
         } finally {
             setLoading(false); // Dừng loading
         }
     };
 
+    const handleGoogleLogin = async (credentialResponse) => {
+        try {
+            const idToken = credentialResponse.credential;
+            console.log("Credential Response:", credentialResponse);
+            console.log("ID Token:", idToken);
+
+            const response = await axios.post(`${API_URL}/api/Google/Login`, {
+                idToken,
+            });
+            const { userId, data } = response.data;
+
+            if (!userId) {
+                throw new Error("Không tìm thấy tài khoản Google!");
+            }
+
+            // Fetch user details using the userId
+            const userDetails = await userService.fetchUserDetails(userId);
+
+            // Save user details to Redux
+            dispatch(
+                setUser({
+                    ...userDetails,
+                    email: data.Email,
+                })
+            );
+
+            localStorage.setItem("userId", userId);
+            localStorage.setItem("email", data.Email);
+
+            message.success("Đăng nhập bằng Google thành công");
+            window.location.reload();
+        } catch (error) {
+            console.error("Google Login Error:", error);
+            message.error("Đăng nhập bằng Google thất bại");
+        }
+    };
+
+    useEffect(() => {
+        if (!window.google) {
+            console.error("Google Identity Services script not loaded");
+            return;
+        }
+
+        window.google.accounts.id.initialize({
+            client_id: "743750561195-lgsj8sd1l5ghv92ecad4fvoh3m0feko3.apps.googleusercontent.com",
+            callback: handleGoogleLogin,
+        });
+    }, []);
+
     return (
-        <div className="flex justify-center items-center">
+        <div className="flex justify-center items-center flex-col">
             <Form
                 name="login"
                 initialValues={{
@@ -124,6 +178,8 @@ const Login = ({ onSwitchToRegister }) => {
                     </span>
                 </Form.Item>
             </Form>
+            <p className="p line text-center" style={{marginTop: "-2.5em", marginBottom: "1em"}}>Hoặc</p>
+            <GoogleBtn />
         </div>
     );
 };

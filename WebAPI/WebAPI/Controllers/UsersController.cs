@@ -15,11 +15,13 @@ namespace WebAPI.Controllers
         //factory design parttern
         private readonly IRepository<User> _UserRepository;
         private UserService _UserService;
+        private readonly OrderService _OrderService;
 
-        public UsersController(CSDLBanHang context, UserService userService)
+        public UsersController(CSDLBanHang context, UserService userService, OrderService orderService)
         {
             _UserRepository = RepositoryFactory.CreateRepository<User>(context);
             _UserService = userService;
+            _OrderService = orderService;
         }
 
         // GET: api/Users
@@ -114,7 +116,7 @@ namespace WebAPI.Controllers
                     Role = userDTO.Role,
                     TotalBuy = userDTO.TotalBuy,
                     Account = 0,
-                   // DateofBirth = userDTO.DateofBirth,
+                    // DateofBirth = userDTO.DateofBirth,
                 };
                 if (image == null)
                 {
@@ -139,6 +141,18 @@ namespace WebAPI.Controllers
 
             try
             {
+                // Preventing deletion if user has active orders (!= "Đã hủy")
+                var orders = await _OrderService.GetOrdersByUserAsync(id);
+                if (orders.Any(order =>
+                    order.Status == "Chờ xác nhận" ||
+                    order.Status == "Đã xác nhận" ||
+                    order.Status == "Đang xử lý" ||
+                    order.Status == "Đang giao hàng" ||
+                    order.Status == "Đã thanh toán"))
+                {
+                    return BadRequest(new { message = "Người dùng đang có đơn đặt hàng." });
+                }
+
                 await _UserService.DeleteDependencieAsync(id);
                 return NoContent();
             }
@@ -146,7 +160,10 @@ namespace WebAPI.Controllers
             {
                 return NotFound(new { message = ex.Message });
             }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred.", details = ex.Message });
+            }
         }
     }
-
 }

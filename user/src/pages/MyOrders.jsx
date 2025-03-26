@@ -75,18 +75,16 @@ const MyOrders = () => {
         }
     }, [userId]);
 
-    // Pagination
     const indexOfLastOrder = currentPage * ordersPerPage;
     const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
     const currentOrders = orders.slice(indexOfFirstOrder, indexOfLastOrder);
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-    // Modal handlers
     const showOrderDetails = async (order) => {
         try {
             const response = await axios.get(
                 `${API_URL}/api/OrderDetails/ByOrder/${order.id}`
-            );
+             );
             if (response.status === 200) {
                 setOrderDetails(response.data);
                 setSelectedOrder(order);
@@ -105,7 +103,6 @@ const MyOrders = () => {
         setOrderDetails([]);
     };
 
-    // Format utilities
     const formatCurrency = (amount) => {
         return new Intl.NumberFormat("vi-VN", {
             style: "currency",
@@ -174,7 +171,6 @@ const MyOrders = () => {
         return styles[status] || styles["Chờ xác nhận"];
     };
 
-    // Cancel handlers
     const handleCancelOrder = async (order, e) => {
         e.stopPropagation();
         setCancellingOrder(order);

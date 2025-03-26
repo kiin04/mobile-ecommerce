@@ -201,30 +201,82 @@ const CheckoutBuyNow = () => {
                     price: item.price,
                 })),
             };
+            if (paymentMethod === "MoMo") {
+                try {
+                    // Gọi API tạo thanh toán MOMO
+                    const paymentResponse = await fetch(`${API_URL}/api/Payment/create-payment`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            amount: finalAmount,
+                            orderInfo: `Thanh toán đơn hàng cho ${customerInfo.name}`,
+                        }),
+                    });
 
-            const orderResponse = await fetch(`${API_URL}/api/Orders`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(paymentData),
-            });
+                    const result = await paymentResponse.json();
 
-            if (!orderResponse.ok) {
-                const errorData = await orderResponse.json();
-                const errorMessages = Object.entries(errorData.errors || {}).map(([field, messages]) => `${field}: ${messages.join(", ")}`).join("; ");
-                throw new Error(errorMessages || "Lỗi khi tạo đơn hàng");
+                    if (!paymentResponse.ok) {
+                        throw new Error(
+                            result.message || "Lỗi kết nối đến cổng thanh toán"
+                        );
+                    }
+
+                    if (result.payUrl) {
+                        localStorage.setItem("pendingOrder", JSON.stringify({
+                            userId:userId,
+                            totalPrice: finalAmount,
+                            paymentMethod:paymentMethod,
+                            phone: customerInfo.phone,
+                            note: notes,
+                            address:
+                                shippingOption === "store" ? storeAddress : customerInfo.address,
+                            status: "Đã thanh toán",
+                            cartItems:[cartItems],
+                        }));
+                        // Chuyển hướng đến trang thanh toán MOMO
+                        window.location.href = result.payUrl;
+                    } else {
+
+                        throw new Error("Không nhận được URL thanh toán");
+                    }
+                } catch (error) {
+                    console.error("Lỗi khi xử lý thanh toán:", error);
+                    notification.error({
+                        message: "Lỗi thanh toán",
+                        description:
+                            error.message || "Có lỗi xảy ra khi xử lý thanh toán",
+                        duration: 4,
+                        placement: "bottomLeft",
+                    });
+                }
+            } else{
+                const orderResponse = await fetch(`${API_URL}/api/Orders`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(paymentData),
+                });
+
+                if (!orderResponse.ok) {
+                    const errorData = await orderResponse.json();
+                    const errorMessages = Object.entries(errorData.errors || {}).map(([field, messages]) => `${field}: ${messages.join(", ")}`).join("; ");
+                    throw new Error(errorMessages || "Lỗi khi tạo đơn hàng");
+                }
+
+                if (!userId) {
+                    localStorage.removeItem("localCart");
+                }
+
+                notification.success({
+                    message: "Thành công!",
+                    description: "Đơn hàng mới đã được tạo.",
+                    duration: 4,
+                    placement: "bottomLeft",
+                });
+                navigate(userId ? PathNames.MY_ORDERS : "/");
             }
 
-            if (!userId) {
-                localStorage.removeItem("localCart");
-            }
-
-            notification.success({
-                message: "Thành công!",
-                description: "Đơn hàng mới đã được tạo.",
-                duration: 4,
-                placement: "bottomLeft",
-            });
-            navigate(userId ? PathNames.MY_ORDERS : "/");
         } catch (error) {
             console.error("Lỗi trong quá trình xử lý:", error);
             notification.error({
@@ -292,7 +344,7 @@ const CheckoutBuyNow = () => {
                             <div className="ml-4">
                             <h3 className="text-lg font-semibold">
                             {item.name } - {item.color} - {item.size}
-                            </h3> 
+                            </h3>
                                 <p className="text-red-500">{item.price.toLocaleString()}đ</p>
                                 <p>Số lượng: {item.quantity}</p>
                             </div>
@@ -385,6 +437,7 @@ const CheckoutBuyNow = () => {
                     onChange={(e) => setPaymentMethod(e.target.value)}
                 >
                     <option value="Tiền mặt">Tiền mặt</option>
+                    <option value="MoMo">Thanh toán qua MOMO</option>
                     <option value="PayPal">Thanh toán qua PAYPAL</option>
                 </select>
             </div>

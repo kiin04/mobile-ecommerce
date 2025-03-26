@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http.Features;
+﻿using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 using WebAPI.Models;
 using WebAPI.Services;
@@ -7,7 +8,17 @@ using WebAPI.Decorator;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = "External";
+    options.DefaultChallengeScheme = "External";
+})
+.AddGoogle(googleOptions =>
+{
+    googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"];
+    googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+    googleOptions.SignInScheme = "External";
+});
 
 builder.Services.AddControllers()
     .AddNewtonsoftJson(options =>
@@ -45,6 +56,7 @@ builder.Services.AddScoped<CartService>();
 builder.Services.AddScoped<OrderDetailsService>();
 builder.Services.AddScoped<CommentService>();
 
+builder.Services.AddHttpClient();
 
 var app = builder.Build();
 

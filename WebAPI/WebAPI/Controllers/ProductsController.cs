@@ -4,6 +4,7 @@ using WebAPI.DTO;
 using WebAPI.Factory;
 using WebAPI.Models;
 using WebAPI.Services;
+using WebAPI.VisitorParttern;
 
 namespace WebAPI.Controllers
 {
@@ -64,25 +65,36 @@ namespace WebAPI.Controllers
                     Brand = productDto.Brand,
                     StarsRate = productDto.StarsRate,
                 };
+
                 if (productDto.CreatedAt == null)
                 {
                     return BadRequest(new { message = "CreatedAt không được để trống." });
                 }
-                if(image != null)
+
+                var validationVisitor = new ValidationVisitor();
+
+                // Xử lý lỗi từ ProductValidationVisitor
+                product.Accept(validationVisitor);
+
+                if (image != null)
                     await _ProductRepository.UpdateAsync(product, image);
                 else
                     await _ProductRepository.UpdateAsync(product);
+
                 return NoContent();
             }
-            catch (DbUpdateConcurrencyException ex)
+            catch (InvalidOperationException ex)
             {
-                return Conflict(new { message = ex.Message });
+                // Lỗi từ ProductValidationVisitor
+                return BadRequest(new { message = ex.Message });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = ex.Message });
+                // Lỗi không xác định
+                return StatusCode(500, new { message = $"Đã xảy ra lỗi: {ex.Message}" });
             }
         }
+
 
         // POST: api/Product
         [HttpPost]
@@ -103,6 +115,9 @@ namespace WebAPI.Controllers
                     Brand = productDto.Brand,
                     Promo = productDto.Promo,
                 };
+
+                var validationVisitor = new ValidationVisitor();
+                product.Accept(validationVisitor);
 
                 await _ProductRepository.AddAsync(product, image);
                 return CreatedAtAction(nameof(GetProduct), new { id = product.Id }, product);

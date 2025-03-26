@@ -4,10 +4,11 @@ import { API_URL } from "../config";
 import { notification } from "antd";
 import PathNames from "../PathNames.js";
 import { useSelector } from "react-redux";
+import { useCart } from "../context/useCart.jsx";
 
 const Cart = () => {
-    const [cartItems, setCartItems] = useState([]);
-    const [cartAmount, setCartAmount] = useState(0);
+    const { cartItems, setCartItems } = useCart();
+    // const [cartItems, setCartItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
@@ -15,7 +16,7 @@ const Cart = () => {
     const [overStockError, setOverStockError] = useState(null);
     const [selectedItems, setSelectedItems] = useState([]);
     const navigate = useNavigate();
-    const location = useLocation(); // Lấy state từ navigation
+    const location = useLocation();
     const user = useSelector((state) => state.user);
     const userId = user?.id;
 
@@ -36,6 +37,7 @@ const Cart = () => {
                     throw new Error("Failed to fetch cart items");
                 }
                 const data = await response.json();
+                console.log("cart item", data);
                 items = data;
             } catch (error) {
                 console.error("Error fetching cart items:", error);
@@ -147,21 +149,35 @@ const Cart = () => {
         } else {
             try {
                 if (userId) {
-                    const response = await fetch(`${API_URL}/api/Carts/${id}`, {
-                        method: "PUT",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ ...cart, quantity: newQuantity }),
-                    });
-                    const data = await response.json();
-                    if (response.status === 400) {
-                        setOverStockError(data.message);
+                    const response = await fetch(
+                        `${API_URL}/api/Carts/${id}`,
+                        {
+                            method: "PUT",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({
+                                ...cart,
+                                quantity: newQuantity,
+                            }),
+                        }
+                    );
+
+                    // const data = await response.json();
+                    // console.log('data ', data);
+                    if (response.status == 400) {
+                        //setOverStockError(data.message); // Hiển thị lỗi nếu vượt quá tồn kho
+                        setOverStockError(" vượt quá tồn kho");
                     } else {
+                        console.log('update quantity');
                         setCartItems((prevItems) =>
                             prevItems.map((item) =>
-                                item.id === id ? { ...item, quantity: newQuantity } : item
+                                item.id === id
+                                    ? { ...item, quantity: newQuantity }
+                                    : item
                             )
                         );
-                        setOverStockError(null);
+                        setOverStockError(null); // Xóa lỗi nếu cập nhật thành công
                     }
                 } else {
                     // Cập nhật localCart khi chưa đăng nhập
@@ -229,7 +245,7 @@ const Cart = () => {
             });
             return;
         }
-    
+
         // Phân biệt user và guest
         if (userId) {
             // User: Chuyển hướng đến Checkout
@@ -296,7 +312,7 @@ const Cart = () => {
                                 >
                                     -
                                 </button>
-                                <span>{item.quantity}</span>
+                                <span>{item?.quantity}</span>
                                 <button
                                     onClick={() => updateQuantity(item.id, item, item.quantity + 1)}
                                     className="px-3 py-1 border rounded-md"

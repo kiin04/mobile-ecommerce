@@ -99,7 +99,7 @@ const Detail = ({ productId }) => {
             </Grid>
 
             {detailKeys.map((key) => (
-                <Grid item xs={10} sm={6} key={key}>
+                <Grid item xs={12} sm={6} key={key}>
                     <TextField
                         label={detailLable[key] || key}
                         value={editedDetail[key] ?? (details[0]?.[key] || "")}
@@ -115,7 +115,7 @@ const Detail = ({ productId }) => {
                 </Grid>
             ))}
 
-            <Grid item xs={10} sm={6} mt={3}>
+            <Grid item xs={12} sm={6} mt={3}>
                 {details.length > 0 ? (
                     <Button
                         variant="contained"

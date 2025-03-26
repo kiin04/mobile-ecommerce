@@ -241,7 +241,7 @@ const ProductDetails = () => {
                     ) {
                         notification.error({
                             message: "Lỗi",
-                            description: `Không còn đủ sản phẩm trong kho! Chỉ còn ${selectedColor.quantity} sản phẩm.`,
+                            description: `Chỉ còn ${selectedColor.quantity} sản phẩm.`,
                             duration: 4,
                             placement: "bottomLeft",
                             pauseOnHover: true,
@@ -287,7 +287,7 @@ const ProductDetails = () => {
                 if (updatedData.quantity > selectedColor.quantity) {
                     notification.error({
                         message: "Lỗi",
-                        description: `Không còn đủ sản phẩm trong kho! Chỉ còn ${selectedColor.quantity} sản phẩm.`,
+                        description: `Chỉ còn ${selectedColor.quantity} sản phẩm.`,
                         duration: 4,
                         placement: "bottomLeft",
                         pauseOnHover: true,

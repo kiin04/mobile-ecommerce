@@ -3,6 +3,7 @@ import { API_URL } from "../config";
 import { useLocation, useNavigate } from "react-router-dom";
 import { notification } from "antd";
 import PathNames from "../PathNames.js";
+import {  useSelector } from "react-redux";
 
 const Checkout = () => {
     const location = useLocation();
@@ -19,11 +20,12 @@ const Checkout = () => {
     const [totalAmount, setTotalAmount] = useState(0);
     const [notes, setNotes] = useState("");
     const [showDiscountDialog, setShowDiscountDialog] = useState(false);
-    const [discountCodes, setDiscountCodes] = useState([]);
+    const [discounts, setDiscounts] = useState([]);
     const [selectedDiscount, setSelectedDiscount] = useState(null);
     const [discountedAmount, setDiscountedAmount] = useState(0);
     const [error, setError] = useState(null);
 
+    const user = useSelector((state) => state.user);
     const userId = localStorage.getItem("userId");
 
     useEffect(() => {
@@ -113,21 +115,59 @@ const Checkout = () => {
     }, [cartItems]);
 
     useEffect(() => {
-        const fetchDiscountCodes = async () => {
+        const fetchDiscounts = async () => {
             try {
                 const response = await fetch(`${API_URL}/api/Promotions`);
                 if (!response.ok) throw new Error("Failed to fetch discount codes");
                 const data = await response.json();
-                const sortedCodes = data.sort((a, b) => b.value - a.value);
+
+                
+                // Sắp xếp theo phn trăm giảm giá từ cao đến thấp
+                const sortedCodes = data.sort(
+                    (a, b) => b.value - a.value
+                );
                 const enableDiscount = sortedCodes.filter(
                     (discount) => new Date(discount.endAt).getTime() > Date.now()
                 );
-                setDiscountCodes(enableDiscount);
+                let memberDiscount;
+                if (user?.role === 5) {
+                    memberDiscount = {
+                        name: "Ưu đãi khách hàng bạc",
+                        value: 7,
+                        minPrice: 200000,
+                        maxValue: 2500000,
+                        code: "MEMBERVIP",
+                    };
+                } else if (user?.role === 6) {
+                    memberDiscount = {
+                        name: "Ưu đãi khách hàng vàng",
+                        value: 10,
+                        minPrice: 200000,
+                        maxValue: 3500000,
+                        code: "MEMBERVIP",
+                    };
+                } else if (user?.role === 7) {
+                    memberDiscount = {
+                        name: "Ưu đãi khách hàng kim cương",
+                        value: 10,
+                        minPrice: 200000,
+                        maxValue: 4500000,
+                        code: "MEMBERVIP",
+                    };
+                }
+    
+                // Cập nhật danh sách mã giảm giá
+                const updatedDiscounts = memberDiscount
+                    ? [...enableDiscount, memberDiscount]
+                    : enableDiscount;
+                setDiscounts(updatedDiscounts);
+                
+
             } catch (error) {
                 console.error("Error fetching discount codes:", error);
             }
         };
-        fetchDiscountCodes();
+        fetchDiscounts();
     }, []);
 
     const handleSelectDiscount = (discount) => {
@@ -220,7 +260,59 @@ const Checkout = () => {
                     placement: "bottomLeft",
                 });
             }
-        } else if (paymentMethod === "COD") {
+        }else if (paymentMethod === "Momo") {
+            try {
+                // Gọi API tạo thanh toán MOMO
+                const paymentResponse = await fetch(`${API_URL}/api/Payment/create-payment`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        amount: finalAmount,
+                        orderInfo: `Thanh toán đơn hàng cho ${customerInfo.name}`,
+                    }),
+                });
+
+                const result = await paymentResponse.json();
+
+                if (!paymentResponse.ok) {
+                    throw new Error(
+                        result.message || "Lỗi kết nối đến cổng thanh toán"
+                    );
+                }
+
+                if (result.payUrl) {
+                    localStorage.setItem("pendingOrder", JSON.stringify({
+                        userId:userId,
+                        name:customerInfo.name,
+                        totalPrice: finalAmount,
+                        paymentMethod:paymentMethod,
+                        phone: customerInfo.phone,
+                        note: notes,
+                        address:
+                            shippingOption === "store" ? storeAddress : customerInfo.address,
+                        status: "Đã thanh toán",
+                        cartItems:cartItems, 
+                    }));
+                    // Chuyển hướng đến trang thanh toán MOMO
+                    window.location.href = result.payUrl;
+                } else {
+                   
+                    throw new Error("Không nhận được URL thanh toán");
+                }
+            } catch (error) {
+                console.error("Lỗi khi xử lý thanh toán:", error);
+                notification.error({
+                    message: "Lỗi thanh toán",
+                    description:
+                        error.message || "Có lỗi xảy ra khi xử lý thanh toán",
+                    duration: 4,
+                    placement: "bottomLeft",
+                });
+            }
+        } 
+        else if (paymentMethod === "COD") {
             try {
                 const orderResponse = await fetch(`${API_URL}/api/Orders`, {
                     method: "POST",
@@ -444,6 +536,7 @@ const Checkout = () => {
                     onChange={(e) => setPaymentMethod(e.target.value)}
                 >
                     <option value="COD">Thanh toán khi nhận hàng</option>
+                    <option value="Momo">Thanh toán qua Momo</option>
                     <option value="PayPal">Thanh toán qua PayPal</option>
                 </select>
             </div>
@@ -497,8 +590,12 @@ const Checkout = () => {
                             </button>
                         </div>
                         <div className="space-y-4">
-                            {discountCodes.map((discount) => {
-                                const isApplicable = totalAmount >= discount.minPrice;
+
+                            {discounts.map((discount) => {
+                                // Kiểm tra điều kiện áp dụng mã giảm giá
+                                const isApplicable =
+                                    totalAmount >= discount.minPrice;
+
                                 return (
                                     <div
                                         key={discount.id}
