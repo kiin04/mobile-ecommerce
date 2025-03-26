@@ -1,9 +1,28 @@
 import styled from "styled-components";
 
-const Button = ({ style, onClick }) => {
+const Button = ({ style }) => {
+    const handleClick = () => {
+        if (window.google) {
+            console.log("Triggering Google Sign-In prompt...");
+            window.google.accounts.id.prompt((notification) => {
+                if (notification.isNotDisplayed()) {
+                    console.log("Prompt not displayed. Reason:", notification.getNotDisplayedReason());
+                } else if (notification.isSkippedMoment()) {
+                    console.log("Prompt skipped. Reason:", notification.getSkippedReason());
+                } else if (notification.isDismissedMoment()) {
+                    console.log("Prompt dismissed. Reason:", notification.getDismissedReason());
+                } else {
+                    console.log("Prompt displayed successfully");
+                }
+            });
+        } else {
+            console.error("Google Identity Services not loaded");
+        }
+    };
+
     return (
         <StyledWrapper style={style}>
-            <button className="button" onClick={onClick}>
+            <button className="button" onClick={handleClick}>
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
                     preserveAspectRatio="xMidYMid"

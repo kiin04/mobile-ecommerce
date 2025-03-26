@@ -78,7 +78,8 @@ const Login = ({ onSwitchToRegister }) => {
     const handleGoogleLogin = async (credentialResponse) => {
         try {
             const idToken = credentialResponse.credential;
-            console.log("Google ID Token:", idToken);
+            console.log("Credential Response:", credentialResponse);
+            console.log("ID Token:", idToken);
 
             const response = await axios.post(`${API_URL}/api/Google/Login`, {
                 idToken,
@@ -121,16 +122,6 @@ const Login = ({ onSwitchToRegister }) => {
             client_id: "743750561195-lgsj8sd1l5ghv92ecad4fvoh3m0feko3.apps.googleusercontent.com",
             callback: handleGoogleLogin,
         });
-
-        window.google.accounts.id.renderButton(
-            document.getElementById("googleSignInButton"),
-            {
-                theme: "outline",
-                size: "large",
-            }
-        );
-
-        window.google.accounts.id.prompt(); // Show One Tap prompt
     }, []);
 
     return (
@@ -188,7 +179,7 @@ const Login = ({ onSwitchToRegister }) => {
                 </Form.Item>
             </Form>
             <p className="p line text-center" style={{marginTop: "-2.5em", marginBottom: "1em"}}>Hoặc</p>
-            <GoogleBtn onClick={handleGoogleLogin}/>
+            <GoogleBtn />
         </div>
     );
 };
