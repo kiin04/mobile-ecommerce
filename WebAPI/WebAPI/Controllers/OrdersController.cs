@@ -49,6 +49,10 @@ namespace WebAPI.Controllers
             try
             {
                 var orders = await _OrderService.GetOrdersByUserAsync(id);
+                if (orders == null || orders.Count == 0)
+                {
+                    return Ok(new List<Order>());
+                }
 
                 return Ok(orders);
             }

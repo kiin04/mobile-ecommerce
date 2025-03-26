@@ -93,12 +93,12 @@ const Login = ({ onSwitchToRegister }) => {
             dispatch(
                 setUser({
                     ...userDetails,
-                    email: data.Email,
+                    email: data.email,
                 })
             );
 
             localStorage.setItem("userId", userId);
-            localStorage.setItem("email", data.Email);
+            localStorage.setItem("email", data.email);
 
             message.success("Đăng nhập bằng Google thành công");
             window.location.reload();

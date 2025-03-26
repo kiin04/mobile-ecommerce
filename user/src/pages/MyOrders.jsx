@@ -46,6 +46,7 @@ const MyOrders = () => {
             }
             const data = await response.json();
             setOrders(data);
+            setError(null);
             setLoading(false);
         } catch (err) {
             setError(err.message);
@@ -84,7 +85,7 @@ const MyOrders = () => {
         try {
             const response = await axios.get(
                 `${API_URL}/api/OrderDetails/ByOrder/${order.id}`
-             );
+            );
             if (response.status === 200) {
                 setOrderDetails(response.data);
                 setSelectedOrder(order);
@@ -346,436 +347,393 @@ const MyOrders = () => {
                     <p>Loading...</p>
                 ) : error ? (
                     <p className="text-red-600">Error: {error}</p>
+                ) : orders.length === 0 ? (
+                    <p className="text-center text-lg">
+                        Bạn không có đơn hàng nào.
+                    </p>
                 ) : (
                     <>
-                        {orders.length === 0 ? (
-                            <p className="text-center text-lg">
-                                Bạn không có đơn hàng nào.
-                            </p>
-                        ) : (
-                            <>
-                                <ul className="grid gap-5">
-                                    {currentOrders.map((order) => {
-                                        const statusStyle = getStatusStyle(
-                                            order.status
-                                        );
-                                        const canCancel = ![
-                                            "Đã hủy",
-                                            "Đã giao hàng",
-                                            "Đang giao hàng",
-                                            "Đã hoàn tiền",
-                                        ].includes(order.status);
+                        <ul className="grid gap-5">
+                            {currentOrders.map((order) => {
+                                const statusStyle = getStatusStyle(
+                                    order.status
+                                );
+                                const canCancel = ![
+                                    "Đã hủy",
+                                    "Đã giao hàng",
+                                    "Đang giao hàng",
+                                    "Đã hoàn tiền",
+                                ].includes(order.status);
 
-                                        return (
-                                            <li
-                                                key={order.id}
-                                                className="bg-white border border-gray-200 p-6 rounded-lg hover:shadow-lg transition-all duration-300 cursor-pointer"
-                                                onClick={() =>
-                                                    showOrderDetails(order)
-                                                }
-                                            >
-                                                <div className="flex justify-between items-start">
-                                                    <div>
-                                                        <p className="text-lg font-semibold text-gray-800">
-                                                            Mã đơn hàng: #
-                                                            {order.id}
-                                                        </p>
-                                                        <p className="text-lg text-gray-600">
-                                                            Tổng tiền:{" "}
-                                                            {formatCurrency(
-                                                                order.totalPrice
-                                                            )}
-                                                        </p>
-                                                        <p className="text-md text-gray-500">
-                                                            Ngày đặt:{" "}
-                                                            {formatDate(
-                                                                order.createdAt
-                                                            )}
-                                                        </p>
-                                                    </div>
-                                                    <div className="flex flex-col gap-2">
-                                                        <div
-                                                            className={`px-4 py-2 rounded-full border ${statusStyle.bg} ${statusStyle.text} ${statusStyle.border}`}
-                                                        >
-                                                            {order.status}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div className="flex gap-2 mt-4">
-                                                    <button
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            showOrderDetails(
-                                                                order
-                                                            );
-                                                        }}
-                                                        className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-300"
-                                                    >
-                                                        Xem chi tiết
-                                                    </button>
-                                                    {canCancel && (
-                                                        <button
-                                                            onClick={(e) =>
-                                                                handleCancelOrder(
-                                                                    order,
-                                                                    e
-                                                                )
-                                                            }
-                                                            className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors duration-300"
-                                                        >
-                                                            Hủy đơn hàng
-                                                        </button>
+                                return (
+                                    <li
+                                        key={order.id}
+                                        className="bg-white border border-gray-200 p-6 rounded-lg hover:shadow-lg transition-all duration-300 cursor-pointer"
+                                        onClick={() => showOrderDetails(order)}
+                                    >
+                                        <div className="flex justify-between items-start">
+                                            <div>
+                                                <p className="text-lg font-semibold text-gray-800">
+                                                    Mã đơn hàng: #{order.id}
+                                                </p>
+                                                <p className="text-lg text-gray-600">
+                                                    Tổng tiền:{" "}
+                                                    {formatCurrency(
+                                                        order.totalPrice
                                                     )}
-                                                </div>
-                                            </li>
-                                        );
-                                    })}
-                                </ul>
-
-                                {/* Pagination controls */}
-                                <div className="flex justify-between items-center mt-6">
-                                    <button
-                                        onClick={() =>
-                                            paginate(currentPage - 1)
-                                        }
-                                        disabled={currentPage === 1}
-                                        className="bg-blue-500 text-white px-4 py-2 rounded-md disabled:bg-gray-300"
-                                    >
-                                        Trang trước
-                                    </button>
-                                    <span>Trang {currentPage}</span>
-                                    <button
-                                        onClick={() =>
-                                            paginate(currentPage + 1)
-                                        }
-                                        disabled={
-                                            indexOfLastOrder >= orders.length
-                                        }
-                                        className="bg-blue-500 text-white px-4 py-2 rounded-md disabled:bg-gray-300"
-                                    >
-                                        Trang sau
-                                    </button>
-                                </div>
-
-                                {/* Modal for order details */}
-                                {selectedOrder && (
-                                    <Modal
-                                        title={`Chi tiết đơn hàng #${selectedOrder.id}`}
-                                        open={isModalVisible}
-                                        onCancel={handleCancel}
-                                        footer={null}
-                                        width={800}
-                                        className="rounded-lg"
-                                    >
-                                        <div className="p-6 bg-white rounded-lg">
-                                            <div className="grid grid-cols-2 gap-4 mb-6">
-                                                <div>
-                                                    <p className="text-gray-600">
-                                                        Thời gian đặt hàng
-                                                    </p>
-                                                    <p className="font-semibold">
-                                                        {formatDate(
-                                                            selectedOrder.createdAt
-                                                        )}
-                                                    </p>
-                                                </div>
-                                                <div>
-                                                    <p className="text-gray-600">
-                                                        Trạng thái
-                                                    </p>
-                                                    <p
-                                                        className={`font-semibold ${
-                                                            getStatusStyle(
-                                                                selectedOrder.status
-                                                            ).text
-                                                        } ${
-                                                            getStatusStyle(
-                                                                selectedOrder.status
-                                                            ).bg
-                                                        } px-3 py-1 rounded-full inline-block mt-1`}
-                                                    >
-                                                        {selectedOrder.status}
-                                                    </p>
-                                                </div>
-                                                <div>
-                                                    <p className="text-gray-600">
-                                                        Tổng giá
-                                                    </p>
-                                                    <p className="font-semibold">
-                                                        {formatCurrency(
-                                                            selectedOrder.totalPrice
-                                                        )}
-                                                    </p>
-                                                </div>
-                                                <div>
-                                                    <p className="text-gray-600">
-                                                        Địa chỉ giao hàng
-                                                    </p>
-                                                    <p className="font-semibold">
-                                                        {selectedOrder.address}
-                                                    </p>
-                                                </div>
-                                                <div>
-                                                    <p className="text-gray-600">
-                                                        Phương thức thanh toán
-                                                    </p>
-                                                    <p className="font-semibold">
-                                                        {
-                                                            selectedOrder.paymentMethod
-                                                        }
-                                                    </p>
+                                                </p>
+                                                <p className="text-md text-gray-500">
+                                                    Ngày đặt:{" "}
+                                                    {formatDate(
+                                                        order.createdAt
+                                                    )}
+                                                </p>
+                                            </div>
+                                            <div className="flex flex-col gap-2">
+                                                <div
+                                                    className={`px-4 py-2 rounded-full border ${statusStyle.bg} ${statusStyle.text} ${statusStyle.border}`}
+                                                >
+                                                    {order.status}
                                                 </div>
                                             </div>
+                                        </div>
+                                        <div className="flex gap-2 mt-4">
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    showOrderDetails(order);
+                                                }}
+                                                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-300"
+                                            >
+                                                Xem chi tiết
+                                            </button>
+                                            {canCancel && (
+                                                <button
+                                                    onClick={(e) =>
+                                                        handleCancelOrder(
+                                                            order,
+                                                            e
+                                                        )
+                                                    }
+                                                    className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors duration-300"
+                                                >
+                                                    Hủy đơn hàng
+                                                </button>
+                                            )}
+                                        </div>
+                                    </li>
+                                );
+                            })}
+                        </ul>
 
-                                            {/* Table for order items */}
-                                            <h3 className="text-xl font-semibold mb-4">
-                                                Sản phẩm trong đơn hàng:
-                                            </h3>
-                                            <table className="min-w-full bg-gray-100 rounded-md shadow-md">
-                                                <thead className="bg-blue-200">
-                                                    <tr>
-                                                        <th className="border px-4 py-2 text-left">
-                                                            Mã sản phẩm
-                                                        </th>
-                                                        <th className="border px-4 py-2 text-left">
-                                                            Tên sản phẩm
-                                                        </th>
-                                                        <th className="border px-4 py-2 text-left">
-                                                            Số lượng
-                                                        </th>
-                                                        <th className="border px-4 py-2 text-left">
-                                                            Giá
-                                                        </th>
+                        {/* Pagination controls */}
+                        <div className="flex justify-between items-center mt-6">
+                            <button
+                                onClick={() => paginate(currentPage - 1)}
+                                disabled={currentPage === 1}
+                                className="bg-blue-500 text-white px-4 py-2 rounded-md disabled:bg-gray-300"
+                            >
+                                Trang trước
+                            </button>
+                            <span>Trang {currentPage}</span>
+                            <button
+                                onClick={() => paginate(currentPage + 1)}
+                                disabled={indexOfLastOrder >= orders.length}
+                                className="bg-blue-500 text-white px-4 py-2 rounded-md disabled:bg-gray-300"
+                            >
+                                Trang sau
+                            </button>
+                        </div>
+
+                        {/* Modal for order details */}
+                        {selectedOrder && (
+                            <Modal
+                                title={`Chi tiết đơn hàng #${selectedOrder.id}`}
+                                open={isModalVisible}
+                                onCancel={handleCancel}
+                                footer={null}
+                                width={800}
+                                className="rounded-lg"
+                            >
+                                <div className="p-6 bg-white rounded-lg">
+                                    <div className="grid grid-cols-2 gap-4 mb-6">
+                                        <div>
+                                            <p className="text-gray-600">
+                                                Thời gian đặt hàng
+                                            </p>
+                                            <p className="font-semibold">
+                                                {formatDate(
+                                                    selectedOrder.createdAt
+                                                )}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <p className="text-gray-600">
+                                                Trạng thái
+                                            </p>
+                                            <p
+                                                className={`font-semibold ${
+                                                    getStatusStyle(
+                                                        selectedOrder.status
+                                                    ).text
+                                                } ${
+                                                    getStatusStyle(
+                                                        selectedOrder.status
+                                                    ).bg
+                                                } px-3 py-1 rounded-full inline-block mt-1`}
+                                            >
+                                                {selectedOrder.status}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <p className="text-gray-600">
+                                                Tổng giá
+                                            </p>
+                                            <p className="font-semibold">
+                                                {formatCurrency(
+                                                    selectedOrder.totalPrice
+                                                )}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <p className="text-gray-600">
+                                                Địa chỉ giao hàng
+                                            </p>
+                                            <p className="font-semibold">
+                                                {selectedOrder.address}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <p className="text-gray-600">
+                                                Phương thức thanh toán
+                                            </p>
+                                            <p className="font-semibold">
+                                                {selectedOrder.paymentMethod}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    {/* Table for order items */}
+                                    <h3 className="text-xl font-semibold mb-4">
+                                        Sản phẩm trong đơn hàng:
+                                    </h3>
+                                    <table className="min-w-full bg-gray-100 rounded-md shadow-md">
+                                        <thead className="bg-blue-200">
+                                            <tr>
+                                                <th className="border px-4 py-2 text-left">
+                                                    Mã sản phẩm
+                                                </th>
+                                                <th className="border px-4 py-2 text-left">
+                                                    Tên sản phẩm
+                                                </th>
+                                                <th className="border px-4 py-2 text-left">
+                                                    Số lượng
+                                                </th>
+                                                <th className="border px-4 py-2 text-left">
+                                                    Giá
+                                                </th>
+                                                {selectedOrder.status ===
+                                                    "Đã giao hàng" && (
+                                                    <th className="border px-4 py-2 text-left">
+                                                        Đánh giá
+                                                    </th>
+                                                )}
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {orderDetails.map((detail) => {
+                                                const product = products.find(
+                                                    (prod) =>
+                                                        prod.id ===
+                                                        detail.productId
+                                                );
+                                                const userReview =
+                                                    userReviews.find(
+                                                        (review) =>
+                                                            review.productId ===
+                                                            detail.productId
+                                                    );
+                                                return (
+                                                    <tr
+                                                        key={detail.id}
+                                                        className="hover:bg-gray-200 transition-colors duration-200"
+                                                    >
+                                                        <td className="border px-4 py-2">
+                                                            {detail.productId}
+                                                        </td>
+                                                        <td className="border px-4 py-2">
+                                                            {product
+                                                                ? product.name
+                                                                : "Unknown Product"}
+                                                        </td>
+                                                        <td className="border px-4 py-2">
+                                                            {detail.quantity}
+                                                        </td>
+                                                        <td className="border px-4 py-2">
+                                                            {formatCurrency(
+                                                                detail.price
+                                                            )}
+                                                        </td>
                                                         {selectedOrder.status ===
                                                             "Đã giao hàng" && (
-                                                            <th className="border px-4 py-2 text-left">
-                                                                Đánh giá
-                                                            </th>
-                                                        )}
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {orderDetails.map(
-                                                        (detail) => {
-                                                            const product =
-                                                                products.find(
-                                                                    (prod) =>
-                                                                        prod.id ===
-                                                                        detail.productId
-                                                                );
-                                                            const userReview =
-                                                                userReviews.find(
+                                                            <td className="border px-4 py-2">
+                                                                {userReviews.find(
                                                                     (review) =>
                                                                         review.productId ===
-                                                                        detail.productId
-                                                                );
-                                                            return (
-                                                                <tr
-                                                                    key={
-                                                                        detail.id
-                                                                    }
-                                                                    className="hover:bg-gray-200 transition-colors duration-200"
-                                                                >
-                                                                    <td className="border px-4 py-2">
-                                                                        {
-                                                                            detail.productId
+                                                                            detail.productId &&
+                                                                        review.userId ===
+                                                                            userId
+                                                                ) ? (
+                                                                    <button
+                                                                        onClick={() =>
+                                                                            handleOpenReviewModal(
+                                                                                products.find(
+                                                                                    (
+                                                                                        prod
+                                                                                    ) =>
+                                                                                        prod.id ===
+                                                                                        detail.productId
+                                                                                )
+                                                                            )
                                                                         }
-                                                                    </td>
-                                                                    <td className="border px-4 py-2">
-                                                                        {product
-                                                                            ? product.name
-                                                                            : "Unknown Product"}
-                                                                    </td>
-                                                                    <td className="border px-4 py-2">
-                                                                        {
-                                                                            detail.quantity
+                                                                    >
+                                                                        <Rate
+                                                                            value={
+                                                                                userReviews.find(
+                                                                                    (
+                                                                                        review
+                                                                                    ) =>
+                                                                                        review.productId ===
+                                                                                            detail.productId &&
+                                                                                        review.userId ===
+                                                                                            userId
+                                                                                )
+                                                                                    .stars
+                                                                            }
+                                                                            allowHalf
+                                                                            disabled
+                                                                        />
+                                                                    </button>
+                                                                ) : (
+                                                                    <button
+                                                                        onClick={() =>
+                                                                            handleOpenReviewModal(
+                                                                                products.find(
+                                                                                    (
+                                                                                        prod
+                                                                                    ) =>
+                                                                                        prod.id ===
+                                                                                        detail.productId
+                                                                                )
+                                                                            )
                                                                         }
-                                                                    </td>
-                                                                    <td className="border px-4 py-2">
-                                                                        {formatCurrency(
-                                                                            detail.price
-                                                                        )}
-                                                                    </td>
-                                                                    {selectedOrder.status ===
-                                                                        "Đã giao hàng" && (
-                                                                        <td className="border px-4 py-2">
-                                                                            {userReviews.find(
-                                                                                (
-                                                                                    review
-                                                                                ) =>
-                                                                                    review.productId ===
-                                                                                        detail.productId &&
-                                                                                    review.userId ===
-                                                                                        userId
-                                                                            ) ? (
-                                                                                <button
-                                                                                    onClick={() =>
-                                                                                        handleOpenReviewModal(
-                                                                                            products.find(
-                                                                                                (
-                                                                                                    prod
-                                                                                                ) =>
-                                                                                                    prod.id ===
-                                                                                                    detail.productId
-                                                                                            )
-                                                                                        )
-                                                                                    }
-                                                                                >
-                                                                                    <Rate
-                                                                                        value={
-                                                                                            userReviews.find(
-                                                                                                (
-                                                                                                    review
-                                                                                                ) =>
-                                                                                                    review.productId ===
-                                                                                                        detail.productId &&
-                                                                                                    review.userId ===
-                                                                                                        userId
-                                                                                            )
-                                                                                                .stars
-                                                                                        }
-                                                                                        allowHalf
-                                                                                        disabled
-                                                                                    />
-                                                                                </button>
-                                                                            ) : (
-                                                                                <button
-                                                                                    onClick={() =>
-                                                                                        handleOpenReviewModal(
-                                                                                            products.find(
-                                                                                                (
-                                                                                                    prod
-                                                                                                ) =>
-                                                                                                    prod.id ===
-                                                                                                    detail.productId
-                                                                                            )
-                                                                                        )
-                                                                                    }
-                                                                                    className="text-yellow-500 hover:text-yellow-600"
-                                                                                >
-                                                                                    <Rate
-                                                                                        allowClear={
-                                                                                            true
-                                                                                        }
-                                                                                    />
-                                                                                </button>
-                                                                            )}
-                                                                        </td>
-                                                                    )}
-                                                                </tr>
-                                                            );
-                                                        }
-                                                    )}
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </Modal>
-                                )}
-
-                                {/* Modal for writing reviews */}
-                                <Modal
-                                    title={`Đánh giá sản phẩm: ${reviewingProduct?.name}`}
-                                    open={reviewModalVisible}
-                                    onCancel={() =>
-                                        setReviewModalVisible(false)
-                                    }
-                                    footer={[
-                                        <Button
-                                            key="cancel"
-                                            onClick={() =>
-                                                setReviewModalVisible(false)
-                                            }
-                                        >
-                                            Hủy
-                                        </Button>,
-                                        <Button
-                                            key="submit"
-                                            type="primary"
-                                            onClick={handleSubmitReview}
-                                        >
-                                            {userReviews.find(
-                                                (review) =>
-                                                    review.productId ===
-                                                    reviewingProduct?.id
-                                            )
-                                                ? "Cập nhật đánh giá"
-                                                : "Gửi đánh giá"}
-                                        </Button>,
-                                    ]}
-                                >
-                                    <div className="space-y-4">
-                                        <Rate
-                                            value={reviewStars}
-                                            onChange={(value) =>
-                                                setReviewStars(value)
-                                            }
-                                            allowHalf
-                                        />
-                                        <Input.TextArea
-                                            value={reviewContent}
-                                            onChange={(e) =>
-                                                setReviewContent(e.target.value)
-                                            }
-                                            placeholder="Nhập nội dung đánh giá"
-                                            rows={4}
-                                        />
-                                    </div>
-                                </Modal>
-
-                                {/* Modal hủy đơn hàng */}
-                                <Modal
-                                    title="Hủy đơn hàng"
-                                    open={cancelModalVisible}
-                                    onCancel={() => {
-                                        setCancelModalVisible(false);
-                                        setCancelReason("");
-                                        setCancellingOrder(null);
-                                    }}
-                                    footer={[
-                                        <Button
-                                            key="back"
-                                            onClick={() =>
-                                                setCancelModalVisible(false)
-                                            }
-                                        >
-                                            Đóng
-                                        </Button>,
-                                        <Button
-                                            key="submit"
-                                            type="primary"
-                                            danger
-                                            onClick={handleCancelSubmit}
-                                        >
-                                            Xác nhận hủy
-                                        </Button>,
-                                    ]}
-                                >
-                                    <div className="space-y-4">
-                                        <p>
-                                            Bạn có chắc chắn muốn hủy đơn hàng
-                                            này?
-                                        </p>
-                                        <div>
-                                            <p className="mb-2">
-                                                Lý do hủy đơn:
-                                            </p>
-                                            <Input.TextArea
-                                                value={cancelReason}
-                                                onChange={(e) =>
-                                                    setCancelReason(
-                                                        e.target.value
-                                                    )
-                                                }
-                                                placeholder="Vui lòng nhập lý do hủy đơn hàng"
-                                                rows={4}
-                                            />
-                                        </div>
-                                    </div>
-                                </Modal>
-                            </>
+                                                                        className="text-yellow-500 hover:text-yellow-600"
+                                                                    >
+                                                                        <Rate
+                                                                            allowClear={
+                                                                                true
+                                                                            }
+                                                                        />
+                                                                    </button>
+                                                                )}
+                                                            </td>
+                                                        )}
+                                                    </tr>
+                                                );
+                                            })}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </Modal>
                         )}
+
+                        {/* Modal for writing reviews */}
+                        <Modal
+                            title={`Đánh giá sản phẩm: ${reviewingProduct?.name}`}
+                            open={reviewModalVisible}
+                            onCancel={() => setReviewModalVisible(false)}
+                            footer={[
+                                <Button
+                                    key="cancel"
+                                    onClick={() => setReviewModalVisible(false)}
+                                >
+                                    Hủy
+                                </Button>,
+                                <Button
+                                    key="submit"
+                                    type="primary"
+                                    onClick={handleSubmitReview}
+                                >
+                                    {userReviews.find(
+                                        (review) =>
+                                            review.productId ===
+                                            reviewingProduct?.id
+                                    )
+                                        ? "Cập nhật đánh giá"
+                                        : "Gửi đánh giá"}
+                                </Button>,
+                            ]}
+                        >
+                            <div className="space-y-4">
+                                <Rate
+                                    value={reviewStars}
+                                    onChange={(value) => setReviewStars(value)}
+                                    allowHalf
+                                />
+                                <Input.TextArea
+                                    value={reviewContent}
+                                    onChange={(e) =>
+                                        setReviewContent(e.target.value)
+                                    }
+                                    placeholder="Nhập nội dung đánh giá"
+                                    rows={4}
+                                />
+                            </div>
+                        </Modal>
+
+                        {/* Modal hủy đơn hàng */}
+                        <Modal
+                            title="Hủy đơn hàng"
+                            open={cancelModalVisible}
+                            onCancel={() => {
+                                setCancelModalVisible(false);
+                                setCancelReason("");
+                                setCancellingOrder(null);
+                            }}
+                            footer={[
+                                <Button
+                                    key="back"
+                                    onClick={() => setCancelModalVisible(false)}
+                                >
+                                    Đóng
+                                </Button>,
+                                <Button
+                                    key="submit"
+                                    type="primary"
+                                    danger
+                                    onClick={handleCancelSubmit}
+                                >
+                                    Xác nhận hủy
+                                </Button>,
+                            ]}
+                        >
+                            <div className="space-y-4">
+                                <p>Bạn có chắc chắn muốn hủy đơn hàng này?</p>
+                                <div>
+                                    <p className="mb-2">Lý do hủy đơn:</p>
+                                    <Input.TextArea
+                                        value={cancelReason}
+                                        onChange={(e) =>
+                                            setCancelReason(e.target.value)
+                                        }
+                                        placeholder="Vui lòng nhập lý do hủy đơn hàng"
+                                        rows={4}
+                                    />
+                                </div>
+                            </div>
+                        </Modal>
                     </>
-                )}
+                )}  
             </div>
         </div>
     );
