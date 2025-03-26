@@ -103,6 +103,14 @@ const UserManagement = () => {
             const response = await axios.delete(`${API_URL}/api/users/${userId}`);
             if (response.status === 200) {
                 setUsers(users.filter((user) => user.id !== userId));
+                notification.success({
+                    message: 'Thành công',
+                    description: "Người dùng đã được xóa thành công",
+                    duration: 4,
+                    placement: "bottomRight",
+                    showProgress: true,
+                    pauseOnHover: true
+                });
             } else {
                 const errorData = await response.json();
                 if (response.status === 400 && errorData.message) {
