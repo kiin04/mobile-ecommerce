@@ -1,7 +1,6 @@
 import { LockOutlined, MailOutlined } from "@ant-design/icons";
 import { message, Form, Input, Button } from "antd";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { setUser } from "../redux/userSlide"; // Import action
@@ -15,7 +14,6 @@ const Login = ({ onSwitchToRegister }) => {
         password: "",
     });
     const [loading, setLoading] = useState(false);
-    const navigate = useNavigate();
     const dispatch = useDispatch();
 
     // Cập nhật dữ liệu form khi nhập input
@@ -76,27 +74,6 @@ const Login = ({ onSwitchToRegister }) => {
             setLoading(false); // Dừng loading
         }
     };
-
-    // Initialize Google Sign-In SDK
-    useEffect(() => {
-        if (!window.gapi) {
-            console.error("Google API script not loaded");
-            return;
-        }
-        window.gapi.load("auth2", () => {
-            window.gapi.auth2
-                .init({
-                    client_id:
-                        "743750561195-lgsj8sd1l5ghv92ecad4fvoh3m0feko3.apps.googleusercontent.com",
-                })
-                .then(() => {
-                    console.log("Google Auth2 initialized successfully");
-                })
-                .catch((error) => {
-                    console.error("Google Auth2 init failed:", error);
-                });
-        });
-    }, []);
 
     const handleGoogleLogin = async (credentialResponse) => {
         try {

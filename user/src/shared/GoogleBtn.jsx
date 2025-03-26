@@ -46,7 +46,7 @@ const StyledWrapper = styled.div`
         display: flex;
         position: relative;
         overflow: hidden;
-        border-radius: 35px;
+        border-radius: 8px;
         align-items: center;
         border: solid #c7c7c7 1px;
         outline: none;
