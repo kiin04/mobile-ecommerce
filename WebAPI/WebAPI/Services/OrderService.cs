@@ -17,10 +17,10 @@ namespace WebAPI.Services
                 .Where(o => o.UserId == userId)
                 .ToListAsync();
 
-            if (orders == null || !orders.Any())
-            {
-                throw new KeyNotFoundException($"No orders found for User with ID: {userId}");
-            }
+            // if (orders == null || !orders.Any())
+            // {
+            //     throw new KeyNotFoundException($"No orders found for User with ID: {userId}");
+            // }
 
             return orders;
         }
