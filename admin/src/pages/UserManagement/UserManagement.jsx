@@ -22,7 +22,7 @@ import { useNavigate } from "react-router-dom";
 import apiConfigInstance from "../../../SingletonParttern.js";
 const API_URL = apiConfigInstance.getApiUrl();
 import axios from "axios";
-import { message } from "antd";
+import { message, notification } from "antd";
 
 const UserManagement = () => {
     const navigate = useNavigate();
@@ -106,10 +106,24 @@ const UserManagement = () => {
             } else {
                 const errorData = await response.json();
                 if (response.status === 400 && errorData.message) {
-                    message.error(`Không thể xóa người dùng: ${errorData.message}`);
+                    notification.error({
+                        message: 'Thất bại',
+                        description: `Không thể xóa người dùng: ${errorData.message}`,
+                        duration: 4,
+                        placement: "bottomRight",
+                        showProgress: true,
+                        pauseOnHover: true
+                    });
                 } else {
                     console.error("Failed to delete user:", errorData);
-                    message.error(`Xóa người dùng thất bại: ${response.status} ${response.statusText}`);
+                    notification.error({
+                        message: 'Thất bại',
+                        description: `Xóa người dùng thất bại: ${response.status} ${response.statusText}`,
+                        duration: 4,
+                        placement: "bottomRight",
+                        showProgress: true,
+                        pauseOnHover: true
+                    });
                 }
             }
         } catch (error) {
