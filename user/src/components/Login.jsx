@@ -78,17 +78,13 @@ const Login = ({ onSwitchToRegister }) => {
     const handleGoogleLogin = async (credentialResponse) => {
         try {
             const idToken = credentialResponse.credential;
-            console.log("Credential Response:", credentialResponse);
-            console.log("ID Token:", idToken);
 
             const response = await axios.post(`${API_URL}/api/Google/Login`, {
                 idToken,
             });
-            const { userId, data } = response.data;
 
-            if (!userId) {
-                throw new Error("Không tìm thấy tài khoản Google!");
-            }
+            const { data } = response.data;
+            const userId = data.userId;
 
             // Fetch user details using the userId
             const userDetails = await userService.fetchUserDetails(userId);
@@ -97,12 +93,12 @@ const Login = ({ onSwitchToRegister }) => {
             dispatch(
                 setUser({
                     ...userDetails,
-                    email: data.Email,
+                    email: data.email,
                 })
             );
 
             localStorage.setItem("userId", userId);
-            localStorage.setItem("email", data.Email);
+            localStorage.setItem("email", data.email);
 
             message.success("Đăng nhập bằng Google thành công");
             window.location.reload();

@@ -89,12 +89,12 @@ namespace WebAPI.Controllers
                 var role = await _context.Roles.FindAsync(user.Role);
                 var responseData = new
                 {
-                    UserId = user.Id,
-                    account.Username,
-                    FullName = user.Name,
-                    account.Email,
-                    Role = role?.Name ?? "Unknown Role",
-                    account.CreatedAt
+                    userId = user.Id,
+                    username = account.Username,
+                    fullName  = user.Name,
+                    email = account.Email,
+                    role = role?.Name ?? "Unknown Role",
+                    createdAt = account.CreatedAt
                 };
 
                 return Ok(new { success = true, message = "Đăng nhập bằng Google thành công", data = responseData });
