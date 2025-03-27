@@ -28,7 +28,7 @@ const Login = ({ onSwitchToRegister }) => {
                 email,
                 password,
             });
-            console.log(response);
+            // console.log(response);
             return response.data; // Trả về userId từ API
         } catch (error) {
             throw new Error(

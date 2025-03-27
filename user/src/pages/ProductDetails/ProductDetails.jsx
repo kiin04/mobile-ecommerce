@@ -52,24 +52,24 @@ const ProductDetails = () => {
                 const response = await fetch(
                     `${API_URL}/api/ColorSizes/ProductColorSize/${productId}`
                 );
-        
+
                 if (response.ok) {
                     const data = await response.json();
                     console.log("Fetched colorSizes:", data); // Debug log
-        
+
                     const colorsWithQuantity = data.filter((item) => item.quantity > 0);
-        
+
                     const colors = [
                         ...new Set(colorsWithQuantity.map((item) => item.code)),
                     ];
-        
+
                     setAvailableColors(
                         colors.map((code) => ({
                             code,
                             items: colorsWithQuantity.filter((item) => item.code === code),
                         }))
                     );
-        
+
                     setColorSizes(data);
                 } else {
                     throw new Error("Failed to fetch product");
