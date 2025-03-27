@@ -24,3 +24,7 @@ dist-ssr
 *.sw?
 package-lock.json
 bun.lockb
+
+# Environment variables
+.env
+.env.production
