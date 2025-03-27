@@ -1,7 +1,6 @@
 import { notification, Select } from "antd";
 import { useEffect, useState } from "react";
 import { Navigate, useParams } from "react-router-dom";
-import { ShoppingCartOutlined } from "@ant-design/icons";
 import { API_URL } from "../../config";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";

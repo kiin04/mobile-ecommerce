@@ -1,5 +1,4 @@
-// Dev URL
-export const API_URL = 'https://localhost:7192';
+// Cho ai có file env
+export const API_URL = import.meta.env.VITE_API_BASE_URL;
 
-// Prod URL
-// export const API_URL = 'https://mobileshopapi.runasp.net';
+// export const API_URL = "https://localhost:7192";

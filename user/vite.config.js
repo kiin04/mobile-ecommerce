@@ -10,5 +10,11 @@ export default defineConfig({
         watch: {
             usePolling: true,
         },
+        proxy: {
+            "/api": {
+                target: process.env.VITE_API_BASE_URL,
+                changeOrigin: true
+            },
+        },
     },
 });
