@@ -35,23 +35,8 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
             const response = await fetch(`${API_URL}/api/Carts/User/${userId}`);
             if (!response.ok) throw new Error("Failed to fetch cart items");
             const data = await response.json();
-            // Group cart items by productId and colorSizeId
-            const groupedItems = data.reduce((acc, item) => {
-                const key = `${item.productId}-${item.colorSizeId}`;
-                const existingItem = acc.find(
-                    (i) => `${i.productId}-${i.colorSizeId}` === key
-                );
-                if (existingItem) {
-                    existingItem.quantity += item.quantity;
-                    existingItem.ids = existingItem.ids
-                        ? [...existingItem.ids, item.id]
-                        : [item.id];
-                } else {
-                    acc.push({ ...item, ids: [item.id] });
-                }
-                return acc;
-            }, []);
-            return groupedItems;
+
+            return data.map((item) => ({ ...item, ids: [item.id] }));
         } catch (error) {
             console.error("Error fetching cart items:", error);
             setError(error.message);
