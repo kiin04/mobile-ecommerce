@@ -30,16 +30,21 @@ import { useDispatch } from "react-redux";
 import { setUser } from "./redux/userSlide.js";
 import CheckoutBuyNow from "./pages/CheckOutBuyNow.jsx";
 import { CartProvider } from "./context/CartContext.jsx";
+import { API_URL } from "./config.js";
+
 function App() {
     const [cartOpen, setCartOpen] = useState(false);
+    const [cartItems, setCartItems] = useState([]);
+    const [cartItemCount, setCartItemCount] = useState(0);
     const userId = localStorage.getItem("userId");
     const emaillocal = localStorage.getItem("email");
     const dispatch = useDispatch();
+
     useEffect(() => {
         const fetchUser = async () => {
             if (userId) {
                 try {
-                    //facade
+                    // Facade
                     const user = await userService.fetchUserDetails(userId);
 
                     dispatch(
@@ -60,16 +65,76 @@ function App() {
         fetchUser();
     }, [userId, dispatch]);
 
+    // Function to fetch cart items for logged-in users
+    const fetchUserCart = async () => {
+        try {
+            const response = await fetch(`${API_URL}/api/Carts/User/${userId}`);
+            if (!response.ok) throw new Error("Failed to fetch cart items");
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error("Error fetching user cart:", error);
+            return [];
+        }
+    };
+
+    // Function to fetch local cart for guests
+    const getLocalCart = () => {
+        const localCart = localStorage.getItem("localCart");
+        try {
+            return localCart ? JSON.parse(localCart) : [];
+        } catch (error) {
+            console.error("Error parsing localCart from localStorage:", error);
+            return [];
+        }
+    };
+
+    // Function to calculate total cart items
+    const calculateCartItemCount = async () => {
+        let totalItems = 0;
+
+        if (userId) {
+            // Logged-in user: Fetch items from the database
+            const userCart = await fetchUserCart();
+            totalItems = userCart.reduce((sum, item) => sum + item.quantity, 0);
+        } else {
+            // Guest user: Fetch items from localStorage
+            const localCart = getLocalCart();
+            totalItems = localCart.reduce(
+                (sum, item) => sum + item.quantity,
+                0
+            );
+        }
+
+        setCartItemCount(totalItems);
+    };
+
+    // Recalculate cart item count whenever the app loads or cart changes
+    useEffect(() => {
+        calculateCartItemCount();
+    }, [userId, cartOpen]);
+
     return (
         <CartProvider>
-            <Header cartOpen={cartOpen} setCartOpen={setCartOpen} />
-            <CartSidebar cartOpen={cartOpen} setCartOpen={setCartOpen} />
+            <Header
+                cartOpen={cartOpen}
+                setCartOpen={setCartOpen}
+                cartItemCount={cartItemCount}
+                calculateCartItemCount={calculateCartItemCount}
+            />
+            <CartSidebar
+                cartOpen={cartOpen}
+                cartItems={cartItems}
+                setCartItems={setCartItems}
+                setCartOpen={setCartOpen}
+                onCartChange={calculateCartItemCount}
+            />
 
             <div className="container mx-auto p-4">
                 <Breadcrumbs />
 
                 <Routes>
-                    <Route path="/" element={<Homepage />} />
+                    <Route path="/" element={<Homepage calculateCartItemCount={calculateCartItemCount} />} />
                     <Route path={PathNames.ABOUT} element={<About />} />
                     <Route
                         path={PathNames.CHECKOUTBUYNOW}
@@ -111,7 +176,7 @@ function App() {
                     <Route path={PathNames.SHOP} element={<Shop />} />
                     <Route
                         path={`${PathNames.PRODUCT_DETAILS}/:productId`}
-                        element={<ProductDetails />}
+                        element={<ProductDetails calculateCartItemCount={calculateCartItemCount} />}
                     />
                 </Routes>
             </div>

@@ -14,12 +14,23 @@ namespace WebAPI.Services
 
         public async Task<List<Cart>> GetByUserAsync(int id)
         {
-            var carts = await _context
-                                    .Carts
-                                    .Where(cart => cart.UserId == id)
-                                    .ToListAsync();
+            var groupedCarts = await _context.Carts
+                                .Where(cart => cart.UserId == id)
+                                .GroupBy(cart => new { cart.ProductId, cart.ColorSizeId })
+                                .Select(group => new Cart
+            {
+                ProductId = group.Key.ProductId,
+                ColorSizeId = group.Key.ColorSizeId,
+                Quantity = group.Sum(cart => cart.Quantity),
+                UserId = id,
+                Price = group.First().Price,
+                CreatedAt = group.First().CreatedAt,
+                UpdatedAt = group.First().UpdatedAt,
+                Id = group.First().Id // Keep for reference
+            })
+            .ToListAsync();
 
-            return carts;
+            return groupedCarts;
         }
 
         public async Task DeleteAllByUser(int id)

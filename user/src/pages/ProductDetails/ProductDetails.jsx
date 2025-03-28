@@ -1,13 +1,12 @@
 import { notification, Select } from "antd";
 import { useEffect, useState } from "react";
 import { Navigate, useParams } from "react-router-dom";
-import { ShoppingCartOutlined } from "@ant-design/icons";
 import { API_URL } from "../../config";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { ReviewsSection } from "./ReviewsSection";
 
-const ProductDetails = () => {
+const ProductDetails = ({ calculateCartItemCount }) => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const { productId } = useParams();
@@ -57,7 +56,9 @@ const ProductDetails = () => {
                     const data = await response.json();
                     console.log("Fetched colorSizes:", data); // Debug log
 
-                    const colorsWithQuantity = data.filter((item) => item.quantity > 0);
+                    const colorsWithQuantity = data.filter(
+                        (item) => item.quantity > 0
+                    );
 
                     const colors = [
                         ...new Set(colorsWithQuantity.map((item) => item.code)),
@@ -66,7 +67,9 @@ const ProductDetails = () => {
                     setAvailableColors(
                         colors.map((code) => ({
                             code,
-                            items: colorsWithQuantity.filter((item) => item.code === code),
+                            items: colorsWithQuantity.filter(
+                                (item) => item.code === code
+                            ),
                         }))
                     );
 
@@ -191,7 +194,8 @@ const ProductDetails = () => {
         if (!selectedColor) {
             notification.error({
                 message: "Lỗi",
-                description: "Vui lòng chọn màu và kích thước trước khi thêm vào giỏ hàng.",
+                description:
+                    "Vui lòng chọn màu và kích thước trước khi thêm vào giỏ hàng.",
                 duration: 4,
                 placement: "bottomLeft",
                 pauseOnHover: true,
@@ -257,6 +261,9 @@ const ProductDetails = () => {
                 localStorage.setItem("localCart", JSON.stringify(localCart));
                 window.dispatchEvent(new Event("cartUpdated"));
 
+                // Update cart item count
+                calculateCartItemCount();
+
                 notification.success({
                     message: "Thành công",
                     description: "Đã thêm sản phẩm vào giỏ hàng",
@@ -316,6 +323,9 @@ const ProductDetails = () => {
                         );
                     }
 
+                    // Update cart item count
+                    calculateCartItemCount();
+
                     notification.success({
                         message: "Thành công",
                         description: "Đã thêm sản phẩm vào giỏ hàng",
@@ -352,6 +362,9 @@ const ProductDetails = () => {
                                 "Có lỗi xảy ra khi thêm vào giỏ hàng"
                         );
                     }
+
+                    // Update cart item count
+                    calculateCartItemCount();
 
                     notification.success({
                         message: "Thành công",

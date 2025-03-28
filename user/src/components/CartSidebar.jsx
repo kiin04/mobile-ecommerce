@@ -21,7 +21,12 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
     // Fetch local cart for guests
     const getLocalCart = () => {
         const localCart = localStorage.getItem("localCart");
-        return localCart ? JSON.parse(localCart) : [];
+        try {
+            return localCart ? JSON.parse(localCart) : [];
+        } catch (error) {
+            console.error("Error parsing localCart from localStorage:", error);
+            return [];
+        }
     };
 
     // Save cart to localStorage for guests
@@ -35,23 +40,8 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
             const response = await fetch(`${API_URL}/api/Carts/User/${userId}`);
             if (!response.ok) throw new Error("Failed to fetch cart items");
             const data = await response.json();
-            // Group cart items by productId and colorSizeId
-            const groupedItems = data.reduce((acc, item) => {
-                const key = `${item.productId}-${item.colorSizeId}`;
-                const existingItem = acc.find(
-                    (i) => `${i.productId}-${i.colorSizeId}` === key
-                );
-                if (existingItem) {
-                    existingItem.quantity += item.quantity;
-                    existingItem.ids = existingItem.ids
-                        ? [...existingItem.ids, item.id]
-                        : [item.id];
-                } else {
-                    acc.push({ ...item, ids: [item.id] });
-                }
-                return acc;
-            }, []);
-            return groupedItems;
+
+            return data.map((item) => ({ ...item, ids: [item.id] }));
         } catch (error) {
             console.error("Error fetching cart items:", error);
             setError(error.message);
@@ -65,13 +55,16 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
         let items = [];
         if (userId) {
             items = await fetchUserCart();
+
+            // BUG: causing cart items to be multiplied x2 on re render
             // For logged-in users, sync local cart if it exists
-            const localCart = getLocalCart();
-            if (localCart.length > 0) {
-                await syncLocalCartToServer(localCart);
-                items = await fetchUserCart(); // Refresh after sync
-                saveLocalCart([]); // Clear local cart after syncing
-            }
+            // const localCart = getLocalCart();
+            // if (localCart.length > 0) {
+            //     await syncLocalCartToServer(localCart);
+            //     items = await fetchUserCart(); // Refresh after sync
+            //     saveLocalCart([]); // Clear local cart after syncing
+            // }
+
         } else {
             items = getLocalCart();
         }
