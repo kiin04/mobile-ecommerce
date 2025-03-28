@@ -21,7 +21,12 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
     // Fetch local cart for guests
     const getLocalCart = () => {
         const localCart = localStorage.getItem("localCart");
-        return localCart ? JSON.parse(localCart) : [];
+        try {
+            return localCart ? JSON.parse(localCart) : [];
+        } catch (error) {
+            console.error("Error parsing localCart from localStorage:", error);
+            return [];
+        }
     };
 
     // Save cart to localStorage for guests
@@ -50,13 +55,16 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
         let items = [];
         if (userId) {
             items = await fetchUserCart();
+
+            // BUG: causing cart items to be multiplied x2 on re render
             // For logged-in users, sync local cart if it exists
-            const localCart = getLocalCart();
-            if (localCart.length > 0) {
-                await syncLocalCartToServer(localCart);
-                items = await fetchUserCart(); // Refresh after sync
-                saveLocalCart([]); // Clear local cart after syncing
-            }
+            // const localCart = getLocalCart();
+            // if (localCart.length > 0) {
+            //     await syncLocalCartToServer(localCart);
+            //     items = await fetchUserCart(); // Refresh after sync
+            //     saveLocalCart([]); // Clear local cart after syncing
+            // }
+
         } else {
             items = getLocalCart();
         }
