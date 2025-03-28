@@ -144,6 +144,7 @@ const Header = ({ cartOpen, setCartOpen, cartItemCount }) => {
                                         <Badge
                                             count={cartItemCount}
                                             offset={[7, 0]}
+                                            color="#f42c37"
                                         >
                                             <ShoppingOutlined className="text-xl text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white" />
                                         </Badge>{" "}
@@ -206,7 +207,7 @@ const Header = ({ cartOpen, setCartOpen, cartItemCount }) => {
                                 className="relative p-3"
                                 onClick={() => handleCartClick()}
                             >
-                                <Badge count={cartItemCount} offset={[7, 0]}>
+                                <Badge count={cartItemCount} offset={[7, 0]} color="#f42c37">
                                     <ShoppingOutlined className="text-xl text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white" />
                                 </Badge>
                             </button>
