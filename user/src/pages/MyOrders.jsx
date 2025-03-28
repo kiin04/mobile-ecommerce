@@ -673,6 +673,7 @@ const MyOrders = () => {
                                         : "Gửi đánh giá"}
                                 </Button>,
                             ]}
+                            zIndex={1050}
                         >
                             <div className="space-y-4">
                                 <Rate
