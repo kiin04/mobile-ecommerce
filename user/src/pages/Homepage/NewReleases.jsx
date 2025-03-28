@@ -7,7 +7,7 @@ import { notification } from "antd";
 import PathNames from "../../PathNames.js";
 import AddtoCartBtn from "../../shared/AddtoCartBtn.jsx";
 
-const NewReleases = () => {
+const NewReleases = ({ calculateCartItemCount }) => {
     const userId = localStorage.getItem("userId");
     const [products, setProducts] = useState([]);
     const [quantity, setQuantity] = useState(1);
@@ -136,6 +136,9 @@ const NewReleases = () => {
                 localStorage.setItem("localCart", JSON.stringify(localCart));
                 window.dispatchEvent(new Event("cartUpdated"));
 
+                // Update cart item count
+                calculateCartItemCount();
+
                 notification.success({
                     message: "Thành công",
                     description: "Đã thêm sản phẩm vào giỏ hàng",
@@ -191,6 +194,9 @@ const NewReleases = () => {
                         headers: { "Content-Type": "application/json" },
                     }
                 );
+
+                // Update cart item count
+                calculateCartItemCount();
 
                 notification.success({
                     message: "Thành công",

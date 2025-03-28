@@ -23,7 +23,7 @@ const BannerData = {
     bgColor: "bg-gradient-to-br from-black/90 to-black/70",
 };
 
-const Homepage = () => {
+const Homepage = ({ calculateCartItemCount }) => {
 
     useEffect(() => {
         AOS.init({
@@ -56,7 +56,7 @@ const Homepage = () => {
             <Services />
             <Banner data={BannerData} />
             <AboutUsSection />
-            <NewReleases />
+            <NewReleases calculateCartItemCount={calculateCartItemCount} />
             <Blogs />
             {/* <Partners /> */}
         </main>

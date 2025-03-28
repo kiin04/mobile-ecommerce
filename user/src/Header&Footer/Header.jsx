@@ -10,6 +10,7 @@ import UserMenu from "../components/UserMenu.jsx";
 import CartSidebar from "../components/CartSidebar";
 import PathNames from "../PathNames.js";
 import DarkModeBtn from "../shared/DarkModeBtn.jsx";
+import { Badge } from "antd";
 
 const MenuItems = [
     {
@@ -29,7 +30,7 @@ const MenuItems = [
     },
 ];
 
-const Header = ({cartOpen, setCartOpen}) => {
+const Header = ({ cartOpen, setCartOpen, cartItemCount }) => {
     const [searchQuery, setSearchQuery] = useState("");
     const [isSearchExpanded, setIsSearchExpanded] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -140,9 +141,17 @@ const Header = ({cartOpen, setCartOpen}) => {
                                         // onClick={() => handleCartClick()}
                                         className="relative p-3 mr-4"
                                     >
-                                        <ShoppingOutlined className="text-xl text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white" />
+                                        <Badge
+                                            count={cartItemCount}
+                                            offset={[7, 0]}
+                                        >
+                                            <ShoppingOutlined className="text-xl text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white" />
+                                        </Badge>{" "}
                                     </button>
-                                    <CartSidebar cartOpen={cartOpen} setCartOpen={setCartOpen} />
+                                    <CartSidebar
+                                        cartOpen={cartOpen}
+                                        setCartOpen={setCartOpen}
+                                    />
                                     <DarkModeBtn />
                                 </div>
                             </div>
@@ -195,14 +204,11 @@ const Header = ({cartOpen, setCartOpen}) => {
                         <div className="flex justify-between items-center 2xl:gap-4 xl:gap-2 lg:gap-0">
                             <button
                                 className="relative p-3"
-                                // onClick={() => navigate(PathNames.CART)}
                                 onClick={() => handleCartClick()}
                             >
-                                <ShoppingOutlined className="text-xl text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white" />
-                                {/* NOTE abandoned showing cart amount of items */}
-                                {/* <div className="w-4 h-4 bg-red-500 text-white rounded-full absolute top-0 right-0 flex items-center justify-center text-xs">
-                                    4
-                                </div> */}
+                                <Badge count={cartItemCount} offset={[7, 0]}>
+                                    <ShoppingOutlined className="text-xl text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white" />
+                                </Badge>
                             </button>
 
                             <DarkModeBtn />
