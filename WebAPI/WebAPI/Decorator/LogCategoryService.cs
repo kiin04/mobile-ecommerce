@@ -3,20 +3,18 @@ using WebAPI.Services;
 
 namespace WebAPI.Decorator
 {
-    public class LoggingCategoriesService : CategoriesService
+    public class LoggingCategoriesService : ValidationCategoriesService
     {
         private readonly ILogger<LoggingCategoriesService> _logger;
-        private readonly CategoriesService _categoriesService;
 
-        // Constructor with logging
+        // constructor
         public LoggingCategoriesService(CSDLBanHang context, ProductService productService, ILogger<LoggingCategoriesService> logger)
-            : base(context, productService)
+            : base(context, productService, logger)
         {
             _logger = logger;
-            _categoriesService = this;
         }
 
-        // Override DeleteDependencieAsync to add logging
+        // add logging
         public override async Task DeleteDependencieAsync(int id)
         {
             _logger.LogInformation("Starting to delete dependencies for Category ID: {CategoryId}", id);
@@ -24,5 +22,4 @@ namespace WebAPI.Decorator
             _logger.LogInformation("Successfully deleted dependencies for Category ID: {CategoryId}", id);
         }
     }
-
 }
