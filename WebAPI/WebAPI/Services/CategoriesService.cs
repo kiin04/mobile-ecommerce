@@ -1,10 +1,11 @@
 ﻿using WebAPI.Models;
 using Microsoft.EntityFrameworkCore;
+using WebAPI.Decorator;
 
 
 namespace WebAPI.Services
 {
-    public class CategoriesService
+    public class CategoriesService : ICategoriesService
     {
         protected readonly CSDLBanHang _context;
         protected readonly ProductService _productService;

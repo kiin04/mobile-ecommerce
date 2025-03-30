@@ -47,7 +47,26 @@ builder.Services.Configure<FormOptions>(options =>
 
 builder.Services.AddScoped<ColorSizesService>();
 builder.Services.AddScoped<ProductService>();
-builder.Services.AddScoped<CategoriesService, LoggingCategoriesService>();
+
+
+builder.Services.AddScoped<ICategoriesService, CategoriesService>();
+builder.Services.AddScoped<ICategoriesService>(provider =>
+{
+    // get the service
+    var categoriesService = provider.GetRequiredService<CategoriesService>();
+
+    // create logging decorator
+    var loggerForLoggingDecorator = provider.GetRequiredService<ILogger<LoggingCategoriesService>>();
+    var loggingDecorator = new LoggingCategoriesService(categoriesService, loggerForLoggingDecorator);
+
+    // create nested validation decorator
+    var loggerForValidationDecorator = provider.GetRequiredService<ILogger<ValidationCategoriesService>>();
+    var validationDecorator = new ValidationCategoriesService(loggingDecorator, loggerForValidationDecorator);
+
+    return validationDecorator;
+});
+
+
 builder.Services.AddScoped<OrderService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<RoleService>();

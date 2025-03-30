@@ -1,28 +1,24 @@
-using WebAPI.Models;
-using WebAPI.Services;
-
 namespace WebAPI.Decorator
 {
-    public class LoggingCategoriesService : CategoriesService
+    public class LoggingCategoriesService : ICategoriesService
     {
-        private readonly ILogger<LoggingCategoriesService> _logger;
-        private readonly CategoriesService _categoriesService;
 
-        // Constructor with logging
-        public LoggingCategoriesService(CSDLBanHang context, ProductService productService, ILogger<LoggingCategoriesService> logger)
-            : base(context, productService)
+        private readonly ILogger<LoggingCategoriesService> _logger;
+        private readonly ICategoriesService _categoriesService;
+
+        // Constructor
+        public LoggingCategoriesService(ICategoriesService categoriesService, ILogger<LoggingCategoriesService> logger)
         {
+            _categoriesService = categoriesService;
             _logger = logger;
-            _categoriesService = this;
         }
 
-        // Override DeleteDependencieAsync to add logging
-        public override async Task DeleteDependencieAsync(int id)
+        // Add logging
+        public async Task DeleteDependencieAsync(int id)
         {
             _logger.LogInformation("Starting to delete dependencies for Category ID: {CategoryId}", id);
-            await base.DeleteDependencieAsync(id);
+            await _categoriesService.DeleteDependencieAsync(id);
             _logger.LogInformation("Successfully deleted dependencies for Category ID: {CategoryId}", id);
         }
     }
-
 }
