@@ -39,10 +39,15 @@ namespace WebAPI.Controllers
                         return StatusCode(500, new { success = false, message = "Vai trò 'Khách hàng thường' không tồn tại" });
                     }
 
+                    var lastUser = await _context.Users.OrderByDescending(u => u.Id).FirstOrDefaultAsync();
+                    string phoneNumber = lastUser != null
+                        ? (long.Parse(lastUser.Phone) + 1).ToString("0000000000")
+                        : "0000000001";
+
                     user = new User
                     {
                         Name = payload.Name ?? "Google User",
-                        Phone = "0000000000",
+                        Phone = phoneNumber,
                         Address = "Vui lòng cập nhật địa chỉ",
                         Role = defaultRole.Id,
                         TotalBuy = 0,
@@ -91,7 +96,7 @@ namespace WebAPI.Controllers
                 {
                     userId = user.Id,
                     username = account.Username,
-                    fullName  = user.Name,
+                    fullName = user.Name,
                     email = account.Email,
                     role = role?.Name ?? "Unknown Role",
                     createdAt = account.CreatedAt
