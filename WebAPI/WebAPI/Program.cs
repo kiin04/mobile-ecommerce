@@ -49,8 +49,19 @@ builder.Services.AddScoped<ColorSizesService>();
 builder.Services.AddScoped<ProductService>();
 
 
-builder.Services.AddScoped<CategoriesService, LoggingCategoriesService>();
+builder.Services.AddScoped<CategoriesService>();
+builder.Services.AddScoped<ICategoriesService>(provider =>
+{
+    var baseService = provider.GetRequiredService<CategoriesService>();
 
+    var validationLogger = provider.GetRequiredService<ILogger<ValidationCategoriesService>>();
+    var loggingLogger = provider.GetRequiredService<ILogger<LoggingCategoriesService>>();
+
+    var validationService = new ValidationCategoriesService(baseService, validationLogger);
+    var loggingService = new LoggingCategoriesService(validationService, loggingLogger);
+
+    return loggingService;
+});
 
 builder.Services.AddScoped<OrderService>();
 builder.Services.AddScoped<UserService>();
@@ -61,6 +72,9 @@ builder.Services.AddScoped<OrderDetailsService>();
 builder.Services.AddScoped<CommentService>();
 
 builder.Services.AddHttpClient();
+
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
 
 var app = builder.Build();
 
