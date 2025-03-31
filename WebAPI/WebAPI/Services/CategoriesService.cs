@@ -1,10 +1,10 @@
 ﻿using WebAPI.Models;
 using Microsoft.EntityFrameworkCore;
-
+using WebAPI.Decorator;
 
 namespace WebAPI.Services
 {
-    public class CategoriesService
+    public class CategoriesService : ICategoriesService
     {
         protected readonly CSDLBanHang _context;
         protected readonly ProductService _productService;
@@ -16,8 +16,8 @@ namespace WebAPI.Services
             _productService = productService;
         }
 
-        // Virtual method for deletion
-        public virtual async Task DeleteDependencieAsync(int id)
+        // method for deletion
+        public async Task DeleteDependencieAsync(int id)
         {
             var category = await _context.Categories.FindAsync(id);
             if (category == null) return;

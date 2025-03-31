@@ -1,11 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using WebAPI.Builder;
+using WebAPI.Decorator;
 using WebAPI.DTO;
 using WebAPI.Factory;
 using WebAPI.Models;
 using WebAPI.Services;
-using WebAPI.VisitorParttern;
 
 namespace WebAPI.Controllers
 {
@@ -14,14 +13,12 @@ namespace WebAPI.Controllers
     public class CategoriesController : ControllerBase
     {
         private readonly IRepository<Category> _CategoryRepository;
-        private CategoriesService _categoriesService;
+        private readonly ICategoriesService _categoriesService;
 
-        public CategoriesController(CSDLBanHang context, CategoriesService categoriesService)
+        public CategoriesController(CSDLBanHang context, ICategoriesService categoriesService)
         {
             _CategoryRepository = RepositoryFactory.CreateRepository<Category>(context);
             _categoriesService = categoriesService;
-
-
         }
 
         // GET: api/Categorys
@@ -76,8 +73,6 @@ namespace WebAPI.Controllers
         {
             try
             {
-            
-
                 // Build the Category using the Builder Pattern
                 var category = new CategoryBuilder()
                     .SetName(categoryDTO.Name)
@@ -116,5 +111,4 @@ namespace WebAPI.Controllers
             }
         }
     }
-
 }
