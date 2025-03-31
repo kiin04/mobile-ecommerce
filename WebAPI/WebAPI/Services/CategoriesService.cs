@@ -5,7 +5,7 @@ using WebAPI.Decorator;
 
 namespace WebAPI.Services
 {
-    public class CategoriesService : ICategoriesService
+    public class CategoriesService
     {
         protected readonly CSDLBanHang _context;
         protected readonly ProductService _productService;

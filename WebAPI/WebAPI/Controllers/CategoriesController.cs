@@ -5,7 +5,6 @@ using WebAPI.DTO;
 using WebAPI.Factory;
 using WebAPI.Models;
 using WebAPI.Services;
-using WebAPI.VisitorParttern;
 
 namespace WebAPI.Controllers
 {
@@ -20,8 +19,6 @@ namespace WebAPI.Controllers
         {
             _CategoryRepository = RepositoryFactory.CreateRepository<Category>(context);
             _categoriesService = categoriesService;
-
-
         }
 
         // GET: api/Categorys
@@ -76,8 +73,6 @@ namespace WebAPI.Controllers
         {
             try
             {
-            
-
                 // Build the Category using the Builder Pattern
                 var category = new CategoryBuilder()
                     .SetName(categoryDTO.Name)

@@ -1,20 +1,21 @@
+using WebAPI.Models;
+using WebAPI.Services;
+
 namespace WebAPI.Decorator
 {
-    public class ValidationCategoriesService : ICategoriesService
+    public class ValidationCategoriesService : CategoriesService
     {
-
         private readonly ILogger<ValidationCategoriesService> _logger;
-        private readonly ICategoriesService _categoriesService;
 
-        // Constructor
-        public ValidationCategoriesService(ICategoriesService categoriesService, ILogger<ValidationCategoriesService> logger)
+        // constructor
+        public ValidationCategoriesService(CSDLBanHang context, ProductService productService, ILogger<ValidationCategoriesService> logger)
+            : base(context, productService)
         {
-            _categoriesService = categoriesService;
             _logger = logger;
         }
 
-        // Add validation
-        public async Task DeleteDependencieAsync(int id)
+        // add validation
+        public override async Task DeleteDependencieAsync(int id)
         {
             if (id <= 0)
             {
@@ -23,7 +24,7 @@ namespace WebAPI.Decorator
             }
 
             _logger.LogInformation("Validation passed: Proceeding with deletion for Category ID: {CategoryId}", id);
-            await _categoriesService.DeleteDependencieAsync(id);
+            await base.DeleteDependencieAsync(id);
         }
     }
 }
