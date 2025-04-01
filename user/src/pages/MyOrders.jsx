@@ -1,9 +1,12 @@
-import { useState, useEffect } from "react";
-import AccountSidebar from "../components/AccountSidebar.jsx";
-import { Modal, Button, Input, Rate } from "antd";
+import { FilterOutlined } from "@ant-design/icons";
+import { Button, Input, Modal, Rate, Select } from "antd";
 import axios from "axios";
-import { API_URL } from "../config.js";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import AccountSidebar from "../components/AccountSidebar.jsx";
+import { API_URL } from "../config.js";
+
+const { Option } = Select;
 
 const MyOrders = () => {
     const [reviewModalVisible, setReviewModalVisible] = useState(false);
@@ -11,6 +14,7 @@ const MyOrders = () => {
     const [reviewContent, setReviewContent] = useState("");
     const [reviewStars, setReviewStars] = useState(0);
     const [userReviews, setUserReviews] = useState([]);
+    const [filterStatus, setFilterStatus] = useState("All");
 
     const [orders, setOrders] = useState([]);
     const [products, setProducts] = useState([]);
@@ -20,7 +24,6 @@ const MyOrders = () => {
     const [ordersPerPage] = useState(5);
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [orderDetails, setOrderDetails] = useState([]);
-    const [productOrder, setProductOrder] = useState([]);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [cancelModalVisible, setCancelModalVisible] = useState(false);
     const [cancelReason, setCancelReason] = useState("");
@@ -32,6 +35,11 @@ const MyOrders = () => {
     useEffect(() => {
         setUserId(user?.id);
     }, [user]);
+
+    const filteredOrders =
+        filterStatus === "All"
+            ? orders
+            : orders.filter((order) => order.status === filterStatus);
 
     const fetchOrders = async (id) => {
         if (!id) {
@@ -45,7 +53,12 @@ const MyOrders = () => {
                 throw new Error(await response.text());
             }
             const data = await response.json();
-            setOrders(data || []);
+
+            const sortedOrders = data.sort(
+                (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+            );
+
+            setOrders(sortedOrders || []);
             setError(null);
             setLoading(false);
         } catch (err) {
@@ -78,7 +91,10 @@ const MyOrders = () => {
 
     const indexOfLastOrder = currentPage * ordersPerPage;
     const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
-    const currentOrders = orders.slice(indexOfFirstOrder, indexOfLastOrder);
+    const currentOrders = filteredOrders.slice(
+        indexOfFirstOrder,
+        indexOfLastOrder
+    );
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
     const showOrderDetails = async (order) => {
@@ -121,55 +137,60 @@ const MyOrders = () => {
         });
     };
 
+    const statusStyles = {
+        "Chờ xác nhận": {
+            bg: "bg-yellow-100",
+            text: "text-yellow-800",
+            border: "border-yellow-200",
+        },
+        "Đã xác nhận": {
+            bg: "bg-blue-100",
+            text: "text-blue-800",
+            border: "border-blue-200",
+        },
+        "Đang xử lý": {
+            bg: "bg-purple-100",
+            text: "text-purple-800",
+            border: "border-purple-200",
+        },
+        "Đang giao hàng": {
+            bg: "bg-indigo-100",
+            text: "text-indigo-800",
+            border: "border-indigo-200",
+        },
+        "Đã giao hàng": {
+            bg: "bg-green-100",
+            text: "text-green-800",
+            border: "border-green-200",
+        },
+        "Đã thanh toán": {
+            bg: "bg-emerald-100",
+            text: "text-emerald-800",
+            border: "border-emerald-200",
+        },
+        "Thanh toán lỗi": {
+            bg: "bg-red-100",
+            text: "text-red-800",
+            border: "border-red-200",
+        },
+        "Đã hủy": {
+            bg: "bg-gray-100",
+            text: "text-gray-800",
+            border: "border-gray-200",
+        },
+        "Đã hoàn tiền": {
+            bg: "bg-orange-100",
+            text: "text-orange-800",
+            border: "border-orange-200",
+        },
+    };
+
     const getStatusStyle = (status) => {
-        const styles = {
-            "Chờ xác nhận": {
-                bg: "bg-yellow-100",
-                text: "text-yellow-800",
-                border: "border-yellow-200",
-            },
-            "Đã xác nhận": {
-                bg: "bg-blue-100",
-                text: "text-blue-800",
-                border: "border-blue-200",
-            },
-            "Đang xử lý": {
-                bg: "bg-purple-100",
-                text: "text-purple-800",
-                border: "border-purple-200",
-            },
-            "Đang giao hàng": {
-                bg: "bg-indigo-100",
-                text: "text-indigo-800",
-                border: "border-indigo-200",
-            },
-            "Đã giao hàng": {
-                bg: "bg-green-100",
-                text: "text-green-800",
-                border: "border-green-200",
-            },
-            "Đã thanh toán": {
-                bg: "bg-emerald-100",
-                text: "text-emerald-800",
-                border: "border-emerald-200",
-            },
-            "Thanh toán lỗi": {
-                bg: "bg-red-100",
-                text: "text-red-800",
-                border: "border-red-200",
-            },
-            "Đã hủy": {
-                bg: "bg-gray-100",
-                text: "text-gray-800",
-                border: "border-gray-200",
-            },
-            "Đã hoàn tiền": {
-                bg: "bg-orange-100",
-                text: "text-orange-800",
-                border: "border-orange-200",
-            },
-        };
-        return styles[status] || styles["Chờ xác nhận"];
+        return statusStyles[status] || statusStyles["Chờ xác nhận"];
+    };
+
+    const handleFilterChange = (value) => {
+        setFilterStatus(value);
     };
 
     const handleCancelOrder = async (order, e) => {
@@ -343,11 +364,29 @@ const MyOrders = () => {
                 <h1 className="text-2xl font-semibold mb-6 text-blue-800">
                     Lịch sử giao dịch
                 </h1>
+
+                {/* Filter Dropdown */}
+                <div className="mb-4 flex justify-end items-center">
+                    <FilterOutlined className="text-lg text-gray-600 mr-2" />
+                    <Select
+                        defaultValue="All"
+                        style={{ width: 200 }}
+                        onChange={handleFilterChange}
+                    >
+                        <Option value="All">Tất cả</Option>
+                        {Object.keys(statusStyles).map((status) => (
+                            <Option key={status} value={status}>
+                                {status}
+                            </Option>
+                        ))}
+                    </Select>
+                </div>
+
                 {loading ? (
                     <p>Loading...</p>
                 ) : error ? (
                     <p className="text-red-600">Error: {error}</p>
-                ) : orders.length === 0 ? (
+                ) : filteredOrders.length === 0 ? (
                     <p className="text-center text-lg">
                         Bạn không có đơn hàng nào.
                     </p>
@@ -438,7 +477,9 @@ const MyOrders = () => {
                             <span>Trang {currentPage}</span>
                             <button
                                 onClick={() => paginate(currentPage + 1)}
-                                disabled={indexOfLastOrder >= orders.length}
+                                disabled={
+                                    indexOfLastOrder >= filteredOrders.length
+                                }
                                 className="bg-blue-500 text-white px-4 py-2 rounded-md disabled:bg-gray-300"
                             >
                                 Trang sau
@@ -734,7 +775,7 @@ const MyOrders = () => {
                             </div>
                         </Modal>
                     </>
-                )}  
+                )}
             </div>
         </div>
     );
