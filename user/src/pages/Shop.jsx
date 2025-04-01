@@ -1,21 +1,21 @@
+import { notification } from "antd";
 import axios from "axios";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
 import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { API_URL } from "../config";
 import PathNames from "../PathNames.js";
 import Heading from "../shared/Heading";
-import { notification } from "antd";
-import { useLocation, useNavigate } from "react-router-dom";
+
 const Shop = () => {
     const location = useLocation();
     const [products, setProducts] = useState([]);
     const [filteredProducts, setFilteredProducts] = useState([]);
     const [brands, setBrands] = useState(["Apple", "Xiaomi", "Huawei"]);
-    const [colors, setColors] = useState([]);
 
     const [colorSizes, setColorSizes] = useState([]);
-    const [selectedColor, setSelectedColor] = useState("");
+
     // Temporary states for filter changes
     const [tempSelectedBrands, setTempSelectedBrands] = useState([
         location.state?.brand || "",
@@ -26,13 +26,11 @@ const Shop = () => {
     const [selectedBrands, setSelectedBrands] = useState([
         location.state?.brand || "",
     ]);
-    const [selectedColors, setSelectedColors] = useState([]);
     const [priceRange, setPriceRange] = useState([0, 20000000]);
 
     const [maxPrice, setMaxPrice] = useState(20000000);
     const [isBrandOpen, setIsBrandOpen] = useState(false);
     const [isPriceOpen, setIsPriceOpen] = useState(false);
-    const [isColorOpen, setIsColorOpen] = useState(false);
 
     const [currentPage, setCurrentPage] = useState(1);
     const productsPerPage = 20;
@@ -62,7 +60,7 @@ const Shop = () => {
         const fetchBrands = async () => {
             try {
                 const response = await axios.get(
-                    "http://localhost:7192/api/Products"
+                    `${API_URL}/api/Categories`
                 );
                 setBrands(response.data);
             } catch (error) {
@@ -70,20 +68,8 @@ const Shop = () => {
             }
         };
 
-        const fetchColors = async () => {
-            try {
-                const response = await axios.get(
-                    "http://localhost:7192/api/colors"
-                );
-                setColors(response.data);
-            } catch (error) {
-                console.error(error);
-            }
-        };
-
         fetchAllProducts();
         // fetchBrands();
-        // fetchColors();
     }, []);
     useEffect(() => {
         if (tempSelectedBrands.length > 0) {
@@ -96,19 +82,11 @@ const Shop = () => {
     const toggleBrandFilter = () => {
         setIsBrandOpen(!isBrandOpen);
         setIsPriceOpen(false);
-        setIsColorOpen(false);
     };
 
     const togglePriceFilter = () => {
         setIsPriceOpen(!isPriceOpen);
         setIsBrandOpen(false);
-        setIsColorOpen(false);
-    };
-
-    const toggleColorFilter = () => {
-        setIsColorOpen(!isColorOpen);
-        setIsBrandOpen(false);
-        setIsPriceOpen(false);
     };
 
     const handleProductClick = (productId) => {
@@ -120,14 +98,6 @@ const Shop = () => {
             return prevSelectedBrands.includes(brand)
                 ? prevSelectedBrands.filter((b) => b !== brand)
                 : [...prevSelectedBrands, brand];
-        });
-    };
-
-    const handleColorSelection = (color) => {
-        setTempSelectedColors((prevSelectedColors) => {
-            return prevSelectedColors.includes(color)
-                ? prevSelectedColors.filter((c) => c !== color)
-                : [...prevSelectedColors, color];
         });
     };
 
@@ -159,11 +129,9 @@ const Shop = () => {
 
     const resetFilters = () => {
         setTempSelectedBrands([]);
-        setTempSelectedColors([]);
         setTempPriceRange([0, maxPrice]);
 
         setSelectedBrands([]);
-        setSelectedColors([]);
         setPriceRange([0, maxPrice]);
 
         setFilteredProducts(products);
@@ -242,12 +210,6 @@ const Shop = () => {
                             className="bg-gray-100 text-black py-2 px-4 rounded-full ml-2"
                         >
                             Giá
-                        </button>
-                        <button
-                            onClick={toggleColorFilter}
-                            className="bg-gray-100 text-black py-2 px-4 rounded-full ml-2"
-                        >
-                            Màu
                         </button>
 
                         {/* Apply Filters Button */}
@@ -341,39 +303,6 @@ const Shop = () => {
                                     className="w-30 border rounded px-2 py-1"
                                 />
                             </div>
-                        </div>
-                    )}
-
-                    {/* Color Filter Section */}
-                    {isColorOpen && (
-                        <div className="absolute z-10 mt-2 w-72 bg-white border border-gray-300 rounded-md shadow-lg p-4">
-                            <h3 className="font-semibold mb-1">Màu</h3>
-                            <ul>
-                                {colors.map((color, index) => (
-                                    <li
-                                        key={index}
-                                        className="flex items-center"
-                                    >
-                                        <input
-                                            type="checkbox"
-                                            checked={tempSelectedColors.includes(
-                                                color
-                                            )}
-                                            onChange={() =>
-                                                handleColorSelection(color)
-                                            }
-                                            className="mr-2"
-                                        />
-                                        <label
-                                            onClick={() =>
-                                                handleColorSelection(color)
-                                            }
-                                        >
-                                            {color}
-                                        </label>
-                                    </li>
-                                ))}
-                            </ul>
                         </div>
                     )}
                 </div>

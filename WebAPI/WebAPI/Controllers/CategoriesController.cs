@@ -21,14 +21,14 @@ namespace WebAPI.Controllers
             _categoriesService = categoriesService;
         }
 
-        // GET: api/Categorys
+        // GET: api/Categories
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Category>>> GetCategorys()
+        public async Task<ActionResult<IEnumerable<Category>>> GetCategories()
         {
             return Ok(await _CategoryRepository.GetAllAsync());
         }
 
-        // GET: api/Categorys/5
+        // GET: api/Categories/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Category>> GetCategory(int id)
         {
@@ -43,7 +43,7 @@ namespace WebAPI.Controllers
             }
         }
 
-        // PUT: api/Categorys/5
+        // PUT: api/Categories/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutCategory(int id, [FromForm] CategoryDTO categoryDTO, IFormFile? image)
         {
@@ -67,7 +67,7 @@ namespace WebAPI.Controllers
         }
 
 
-        // POST: api/Categorys
+        // POST: api/Categories
         [HttpPost]
         public async Task<ActionResult<Category>> PostCategory([FromForm] CategoryDTO categoryDTO, IFormFile? image)
         {
@@ -96,7 +96,7 @@ namespace WebAPI.Controllers
             }
         }
 
-        // DELETE: api/Categorys/5
+        // DELETE: api/Categories/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCategory(int id)
         {
