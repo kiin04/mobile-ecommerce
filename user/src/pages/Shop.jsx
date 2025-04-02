@@ -1,7 +1,7 @@
-import { notification, Popover, Select } from "antd";
+import { notification, Popover, Select, Slider } from "antd";
 import axios from "axios";
-import Slider from "rc-slider";
-import "rc-slider/assets/index.css";
+import { Reuleaux } from "ldrs/react";
+import "ldrs/react/Reuleaux.css";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { API_URL } from "../config";
@@ -22,16 +22,14 @@ const Shop = () => {
     const [priceRange, setPriceRange] = useState([0, 50000000]);
     const [maxPrice, setMaxPrice] = useState(50000000);
 
-    const [isBrandOpen, setIsBrandOpen] = useState(false);
-    const [isPriceOpen, setIsPriceOpen] = useState(false);
-
+    const [loading, setLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const productsPerPage = 20;
-    let filtered = products;
     const navigate = useNavigate();
 
     useEffect(() => {
         const fetchAllProducts = async () => {
+            setLoading(true);
             try {
                 const response = await axios.get(`${API_URL}/api/Products`);
                 setProducts(response.data);
@@ -46,22 +44,35 @@ const Shop = () => {
                 setMaxPrice(highestPrice);
                 setPriceRange([0, highestPrice]);
             } catch (error) {
-                console.error(error);
+                console.error("Error fetching products:", error);
+            } finally {
+                setLoading(false);
             }
         };
 
         const fetchBrands = async () => {
             try {
                 const response = await axios.get(`${API_URL}/api/Categories`);
-                setBrands(response.data.map((category) => category.name));
+                const categoryNames = response.data.map(
+                    (category) => category.name
+                );
+                setBrands(categoryNames);
+
+                // Set initial selectedBrands from location.state.brand after brands are fetched
+                if (
+                    location.state?.brand &&
+                    categoryNames.includes(location.state.brand)
+                ) {
+                    setSelectedBrands([location.state.brand]);
+                }
             } catch (error) {
-                console.error(error);
+                console.error("Error fetching brands:", error);
             }
         };
 
         fetchAllProducts();
         fetchBrands();
-    }, []);
+    }, [location.state]);
 
     useEffect(() => {
         let filtered = [...products];
@@ -80,16 +91,6 @@ const Shop = () => {
         setCurrentPage(1); // Reset to first page when filters change
     }, [selectedBrands, priceRange, products]);
 
-    const toggleBrandFilter = () => {
-        setIsBrandOpen(!isBrandOpen);
-        setIsPriceOpen(false);
-    };
-
-    const togglePriceFilter = () => {
-        setIsPriceOpen(!isPriceOpen);
-        setIsBrandOpen(false);
-    };
-
     const handleProductClick = (productId) => {
         navigate(`${PathNames.PRODUCT_DETAILS}/${productId}`);
     };
@@ -97,11 +98,8 @@ const Shop = () => {
     const resetFilters = () => {
         setSelectedBrands([]);
         setPriceRange([0, maxPrice]);
-
-        setFilteredProducts(products);
     };
 
-    // Tính toán sản phẩm hiển thị dựa trên trang hiện tại
     const indexOfLastProduct = currentPage * productsPerPage;
     const currentProducts = filteredProducts.slice(0, indexOfLastProduct);
 
@@ -160,6 +158,7 @@ const Shop = () => {
             <div className="container">
                 <Heading title="Cửa Hàng" subtitle="Khám Phá Tất Cả Sản Phẩm" />
 
+                {/* Filters section */}
                 <div className="mb-10 relative">
                     <div className="flex items-center space-x-4">
                         {/* Brand Filter */}
@@ -193,8 +192,12 @@ const Shop = () => {
                                         onChange={setPriceRange}
                                     />
                                     <div className="flex justify-between mt-2">
-                                        <span>{priceRange[0].toLocaleString()} đ</span>
-                                        <span>{priceRange[1].toLocaleString()} đ</span>
+                                        <span>
+                                            {priceRange[0].toLocaleString()} đ
+                                        </span>
+                                        <span>
+                                            {priceRange[1].toLocaleString()} đ
+                                        </span>
                                     </div>
                                 </div>
                             }
@@ -217,67 +220,87 @@ const Shop = () => {
                     </div>
                 </div>
 
-                <div className="mb-10">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 place-items-center">
-                        {currentProducts.map((item) => (
-                            <div
-                                key={item.id}
-                                className="productcard-item group h-[21em] md:h-[23em] lg:h-[25.5em] rounded-2xl shadow p-4 cursor-pointer relative"
-                            >
-                                <div
-                                    onClick={() => handleProductClick(item.id)}
-                                    className="cursor-pointer"
-                                >
-                                    <div className="productcard-img relative">
-                                        {item.image ? (
-                                            <img
-                                                src={
-                                                    item?.image
-                                                        ? `data:image/jpeg;base64,${item.image}`
-                                                        : ""
-                                                }
-                                                alt={item.name}
-                                                className="h-[13em] w-[13em] lg:h-[18em] lg:w-[18em] sm:h-[13em] sm:w-[13em] md:h-[13.5em] md:w-[16em] object-cover rounded-xl mb-3"
-                                            />
-                                        ) : (
-                                            <p>Image not available</p>
-                                        )}
-                                    </div>
-                                    <div className="productcard-content text-left">
-                                        <h2 className="font-bold text-lg mb-2">
-                                            {item.name}
-                                        </h2>
-                                        <p className="text-gray-600">
-                                            {item.brand}
-                                        </p>
-                                        <p className="text-red-500 font-semibold">
-                                            {item.price.toLocaleString()} đ
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <button
-                                    onClick={() => handleBuyNow(item)}
-                                    className="absolute bottom-4 right-4 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"
-                                >
-                                    Mua ngay
-                                </button>
-                            </div>
-                        ))}
+                {loading ? ( // Show Reuleaux spinner while loading
+                    <div className="flex justify-center items-center h-[50vh]">
+                        <Reuleaux
+                            size="37"
+                            stroke="5"
+                            strokeLength="0.15"
+                            bgOpacity="0.1"
+                            speed="1.2"
+                            color="red"
+                        />
                     </div>
+                ) : (
+                    <>
+                        {/* Products section */}
+                        <div className="mb-10">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 place-items-center">
+                                {currentProducts.map((item) => (
+                                    <div
+                                        key={item.id}
+                                        className="productcard-item group h-[21em] md:h-[23em] lg:h-[25.5em] rounded-2xl shadow p-4 cursor-pointer relative"
+                                    >
+                                        <div
+                                            onClick={() =>
+                                                handleProductClick(item.id)
+                                            }
+                                            className="cursor-pointer"
+                                        >
+                                            <div className="productcard-img relative">
+                                                {item.image ? (
+                                                    <img
+                                                        src={
+                                                            item?.image
+                                                                ? `data:image/jpeg;base64,${item.image}`
+                                                                : ""
+                                                        }
+                                                        alt={item.name}
+                                                        className="h-[13em] w-[13em] lg:h-[18em] lg:w-[18em] sm:h-[13em] sm:w-[13em] md:h-[13.5em] md:w-[16em] object-cover rounded-xl mb-3"
+                                                    />
+                                                ) : (
+                                                    <p>Image not available</p>
+                                                )}
+                                            </div>
+                                            <div className="productcard-content text-left">
+                                                <h2 className="font-bold text-lg mb-2">
+                                                    {item.name}
+                                                </h2>
+                                                <p className="text-gray-600">
+                                                    {item.brand}
+                                                </p>
+                                                <p className="text-red-500 font-semibold">
+                                                    {item.price.toLocaleString()}{" "}
+                                                    đ
+                                                </p>
+                                            </div>
+                                        </div>
 
-                    {/* Thêm nút "Xem thêm" */}
-                    {currentProducts.length < filteredProducts.length && (
-                        <div className="flex justify-center mt-8">
-                            <button
-                                onClick={handleLoadMore}
-                                className="bg-blue-500 text-white font-semibold py-2 px-6 rounded-lg hover:bg-blue-600"
-                            >
-                                Xem thêm
-                            </button>
+                                        <button
+                                            onClick={() => handleBuyNow(item)}
+                                            className="absolute bottom-4 right-4 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"
+                                        >
+                                            Mua ngay
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* Thêm nút "Xem thêm" */}
+                            {currentProducts.length <
+                                filteredProducts.length && (
+                                <div className="flex justify-center mt-8">
+                                    <button
+                                        onClick={handleLoadMore}
+                                        className="bg-blue-500 text-white font-semibold py-2 px-6 rounded-lg hover:bg-blue-600"
+                                    >
+                                        Xem thêm
+                                    </button>
+                                </div>
+                            )}
                         </div>
-                    )}
-                </div>
+                    </>
+                )}
             </div>
         </div>
     );

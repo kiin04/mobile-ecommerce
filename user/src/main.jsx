@@ -65,6 +65,15 @@ createRoot(document.getElementById("root")).render(
                         optionSelectedBg: "#f42c37",
                         optionSelectedColor: "white",
                     },
+                    Slider: {
+                        dotActiveBorderColor: "red",
+                        dotBorderColor: "#f42c37",
+                        handleActiveColor: "#f42c37",
+                        handleActiveOutlineColor: "#f42c37",
+                        handleColor: "#f42c37",
+                        trackBg: "#f42c37",
+                        trackHoverBg: "red",
+                    },
                     Breadcrumb: {
                         linkHoverColor: "#f42c37",
                     },
