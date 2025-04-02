@@ -1,7 +1,5 @@
 import { useState } from "react";
 import axios from "axios";
-import { Form, Upload } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
 import { API_URL } from "../config.js";
 import { useNavigate } from "react-router-dom";
 import { message, Modal } from "antd";
@@ -125,22 +123,13 @@ const Register = ({ onRegisterSuccess }) => {
                 if (userAvatar) {
                     formData.append("userAvatar", userAvatar);
                 }
-                
-                
+
                 await axios.post(`${API_URL}/api/Users`, formData, {
                     headers: {
                         "Content-Type": "application/json"
                     },
                 });
-                
 
-                // notification.success({
-                //     message: 'Thành công',
-                //     description: 'Đăng ký thành công!',
-                //     duration: 4,
-                //     placement: "bottomRight",
-                //     pauseOnHover: true
-                // });
                 message.open({
                     type: "success",
                     content: "Đăng ký thành công!",
@@ -152,13 +141,6 @@ const Register = ({ onRegisterSuccess }) => {
                     "Error during registration:",
                     error.response?.data || error.message
                 );
-                // notification.error({
-                //     message: 'Lỗi',
-                //     description: "Đã xảy ra lỗi trong quá trình đăng ký. Vui lòng thử lại.",
-                //     duration: 4,
-                //     placement: "bottomRight",
-                //     pauseOnHover: true
-                // })
                 message.open({
                     type: "error",
                     content:

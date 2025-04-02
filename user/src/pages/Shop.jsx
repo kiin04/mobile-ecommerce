@@ -1,4 +1,4 @@
-import { notification } from "antd";
+import { notification, Popover, Select } from "antd";
 import axios from "axios";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
@@ -8,27 +8,20 @@ import { API_URL } from "../config";
 import PathNames from "../PathNames.js";
 import Heading from "../shared/Heading";
 
+const { Option } = Select;
+
 const Shop = () => {
     const location = useLocation();
     const [products, setProducts] = useState([]);
     const [filteredProducts, setFilteredProducts] = useState([]);
-    const [brands, setBrands] = useState(["Apple", "Xiaomi", "Huawei"]);
+    const [brands, setBrands] = useState([]);
 
-    const [colorSizes, setColorSizes] = useState([]);
+    const [selectedBrands, setSelectedBrands] = useState(
+        location.state?.brand ? [location.state.brand] : []
+    );
+    const [priceRange, setPriceRange] = useState([0, 50000000]);
+    const [maxPrice, setMaxPrice] = useState(50000000);
 
-    // Temporary states for filter changes
-    const [tempSelectedBrands, setTempSelectedBrands] = useState([
-        location.state?.brand || "",
-    ]);
-    const [tempSelectedColors, setTempSelectedColors] = useState([]);
-    const [tempPriceRange, setTempPriceRange] = useState([0, 20000000]);
-
-    const [selectedBrands, setSelectedBrands] = useState([
-        location.state?.brand || "",
-    ]);
-    const [priceRange, setPriceRange] = useState([0, 20000000]);
-
-    const [maxPrice, setMaxPrice] = useState(20000000);
     const [isBrandOpen, setIsBrandOpen] = useState(false);
     const [isPriceOpen, setIsPriceOpen] = useState(false);
 
@@ -51,7 +44,7 @@ const Shop = () => {
                             1000
                     ) * 1000;
                 setMaxPrice(highestPrice);
-                setTempPriceRange([0, highestPrice]);
+                setPriceRange([0, highestPrice]);
             } catch (error) {
                 console.error(error);
             }
@@ -59,26 +52,34 @@ const Shop = () => {
 
         const fetchBrands = async () => {
             try {
-                const response = await axios.get(
-                    `${API_URL}/api/Categories`
-                );
-                setBrands(response.data);
+                const response = await axios.get(`${API_URL}/api/Categories`);
+                setBrands(response.data.map((category) => category.name));
             } catch (error) {
                 console.error(error);
             }
         };
 
         fetchAllProducts();
-        // fetchBrands();
+        fetchBrands();
     }, []);
+
     useEffect(() => {
-        if (tempSelectedBrands.length > 0) {
+        let filtered = [...products];
+
+        if (selectedBrands.length > 0) {
             filtered = filtered.filter((item) =>
-                tempSelectedBrands.includes(item.brand)
+                selectedBrands.includes(item.brand)
             );
-            // console.log("fliter: ",filtered);
         }
-    }, [tempSelectedBrands]);
+
+        filtered = filtered.filter(
+            (item) => item.price >= priceRange[0] && item.price <= priceRange[1]
+        );
+
+        setFilteredProducts(filtered);
+        setCurrentPage(1); // Reset to first page when filters change
+    }, [selectedBrands, priceRange, products]);
+
     const toggleBrandFilter = () => {
         setIsBrandOpen(!isBrandOpen);
         setIsPriceOpen(false);
@@ -93,44 +94,7 @@ const Shop = () => {
         navigate(`${PathNames.PRODUCT_DETAILS}/${productId}`);
     };
 
-    const handleBrandSelection = (brand) => {
-        setTempSelectedBrands((prevSelectedBrands) => {
-            return prevSelectedBrands.includes(brand)
-                ? prevSelectedBrands.filter((b) => b !== brand)
-                : [...prevSelectedBrands, brand];
-        });
-    };
-
-    const handleSliderChange = (range) => {
-        setTempPriceRange(range);
-    };
-
-    const applyFilters = () => {
-        if (tempSelectedBrands.length > 0) {
-            filtered = filtered.filter((item) =>
-                tempSelectedBrands.includes(item.brand)
-            );
-        }
-
-        if (tempSelectedColors.length > 0) {
-            filtered = filtered.filter((item) =>
-                tempSelectedColors.includes(item.color)
-            );
-        }
-
-        filtered = filtered.filter(
-            (item) =>
-                item.price >= tempPriceRange[0] &&
-                item.price <= tempPriceRange[1]
-        );
-
-        setFilteredProducts(filtered);
-    };
-
     const resetFilters = () => {
-        setTempSelectedBrands([]);
-        setTempPriceRange([0, maxPrice]);
-
         setSelectedBrands([]);
         setPriceRange([0, maxPrice]);
 
@@ -141,10 +105,10 @@ const Shop = () => {
     const indexOfLastProduct = currentPage * productsPerPage;
     const currentProducts = filteredProducts.slice(0, indexOfLastProduct);
 
-    // Hàm xử lý nút "Xem thêm"
     const handleLoadMore = () => {
         setCurrentPage((prevPage) => prevPage + 1);
     };
+
     const fetchColorSize = async (productId) => {
         try {
             const response = await fetch(
@@ -154,8 +118,7 @@ const Shop = () => {
             if (response.ok) {
                 const data = await response.json();
                 console.log("data color", data);
-                setColorSizes(data);
-                return data
+                return data;
             } else {
                 throw new Error("Failed to fetch product");
             }
@@ -164,9 +127,9 @@ const Shop = () => {
             // setError("Failed to load product data. Please try again.");
         }
     };
-    const handleBuyNow = async(product) => {
+    const handleBuyNow = async (product) => {
         const colors = await fetchColorSize(product.id);
-        console.log('colorSizes',colors[0]);
+        console.log("colorSizes", colors[0]);
         if (colors.length > 0) {
             const productBuyNow = {
                 productId: product.id,
@@ -198,113 +161,60 @@ const Shop = () => {
                 <Heading title="Cửa Hàng" subtitle="Khám Phá Tất Cả Sản Phẩm" />
 
                 <div className="mb-10 relative">
-                    <div className="flex items-center">
-                        <button
-                            onClick={toggleBrandFilter}
-                            className="bg-gray-100 text-black py-2 px-4 rounded-full"
-                        >
-                            Thương hiệu
-                        </button>
-                        <button
-                            onClick={togglePriceFilter}
-                            className="bg-gray-100 text-black py-2 px-4 rounded-full ml-2"
-                        >
-                            Giá
-                        </button>
+                    <div className="flex items-center space-x-4">
+                        {/* Brand Filter */}
+                        <div className="w-72">
+                            <Select
+                                mode="multiple"
+                                placeholder="Thương hiệu"
+                                value={selectedBrands}
+                                onChange={setSelectedBrands}
+                                style={{ width: "100%" }}
+                                allowClear
+                            >
+                                {brands.map((brand, index) => (
+                                    <Option key={index} value={brand}>
+                                        {brand}
+                                    </Option>
+                                ))}
+                            </Select>
+                        </div>
 
-                        {/* Apply Filters Button */}
-                        <button
-                            onClick={applyFilters}
-                            className="bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-600 ml-2"
+                        {/* Price Range Slider */}
+                        <Popover
+                            content={
+                                <div className="w-80">
+                                    <Slider
+                                        range
+                                        min={0}
+                                        max={maxPrice}
+                                        step={5000}
+                                        value={priceRange}
+                                        onChange={setPriceRange}
+                                    />
+                                    <div className="flex justify-between mt-2">
+                                        <span>{priceRange[0].toLocaleString()} đ</span>
+                                        <span>{priceRange[1].toLocaleString()} đ</span>
+                                    </div>
+                                </div>
+                            }
+                            title="Chọn khoảng giá"
+                            trigger="click"
+                            placement="bottomLeft"
                         >
-                            Áp dụng
-                        </button>
+                            <button className="bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300">
+                                Khoảng giá
+                            </button>
+                        </Popover>
 
                         {/* Reset Filters Button */}
                         <button
                             onClick={resetFilters}
-                            className="bg-red-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-600 ml-2"
+                            className="bg-red-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-600"
                         >
                             Reset
                         </button>
                     </div>
-
-                    {/* Brand Filter Section */}
-                    {isBrandOpen && (
-                        <div className="absolute z-10 mt-2 w-72 bg-white border border-gray-300 rounded-md shadow-lg p-4">
-                            <h3 className="font-semibold mb-1">Thương hiệu</h3>
-                            <ul>
-                                {brands.map((brand, index) => (
-                                    <li
-                                        key={index}
-                                        className="flex items-center"
-                                    >
-                                        <input
-                                            type="checkbox"
-                                            checked={tempSelectedBrands.includes(
-                                                brand
-                                            )}
-                                            onChange={() =>
-                                                handleBrandSelection(brand)
-                                            }
-                                            className="mr-2"
-                                        />
-                                        <label
-                                            onClick={() =>
-                                                handleBrandSelection(brand)
-                                            }
-                                        >
-                                            {brand}
-                                        </label>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    )}
-
-                    {/* Price Filter Section */}
-                    {isPriceOpen && (
-                        <div className="absolute z-10 mt-2 w-80 bg-white border border-gray-300 rounded-md shadow-lg p-4">
-                            <h3 className="font-semibold mb-2">Khoảng giá</h3>
-                            <Slider
-                                range
-                                min={0}
-                                max={maxPrice} // Use the dynamically calculated maxPrice
-                                step={5000}
-                                value={tempPriceRange}
-                                onChange={handleSliderChange}
-                            />
-                            <div className="mt-4 flex justify-between">
-                                <input
-                                    type="number"
-                                    min={0}
-                                    max={maxPrice} // Update max here too
-                                    value={tempPriceRange[0]}
-                                    onChange={(e) =>
-                                        setTempPriceRange([
-                                            +e.target.value,
-                                            tempPriceRange[1],
-                                        ])
-                                    }
-                                    className="w-30 border rounded px-2 py-1"
-                                />
-                                <span className="px-2">-</span>
-                                <input
-                                    type="number"
-                                    min={0}
-                                    max={maxPrice} // Update max here too
-                                    value={tempPriceRange[1]}
-                                    onChange={(e) =>
-                                        setTempPriceRange([
-                                            tempPriceRange[0],
-                                            +e.target.value,
-                                        ])
-                                    }
-                                    className="w-30 border rounded px-2 py-1"
-                                />
-                            </div>
-                        </div>
-                    )}
                 </div>
 
                 <div className="mb-10">
