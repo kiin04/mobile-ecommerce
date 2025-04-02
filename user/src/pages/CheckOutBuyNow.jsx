@@ -141,7 +141,7 @@ const CheckoutBuyNow = () => {
                 message: "Lỗi",
                 description: `Vui lòng điền ${missingFields.join(", ")}`,
                 duration: 4,
-                placement: "bottomLeft",
+                placement: "bottomRight",
             });
             return;
         }
@@ -171,7 +171,7 @@ const CheckoutBuyNow = () => {
                             message: "Thành công!",
                             description: "Người dùng mới đã được tạo.",
                             duration: 4,
-                            placement: "bottomLeft",
+                            placement: "bottomRight",
                         });
                     } else {
                         throw new Error("Không thể tạo người dùng mới");
@@ -248,7 +248,7 @@ const CheckoutBuyNow = () => {
                         description:
                             error.message || "Có lỗi xảy ra khi xử lý thanh toán",
                         duration: 4,
-                        placement: "bottomLeft",
+                        placement: "bottomRight",
                     });
                 }
             } else{
@@ -272,7 +272,7 @@ const CheckoutBuyNow = () => {
                     message: "Thành công!",
                     description: "Đơn hàng mới đã được tạo.",
                     duration: 4,
-                    placement: "bottomLeft",
+                    placement: "bottomRight",
                 });
                 navigate(userId ? PathNames.MY_ORDERS : "/");
             }
@@ -283,7 +283,7 @@ const CheckoutBuyNow = () => {
                 message: "Thất bại",
                 description: error.message || "Đã xảy ra lỗi khi tạo đơn hàng. Vui lòng thử lại.",
                 duration: 4,
-                placement: "bottomLeft",
+                placement: "bottomRight",
             });
         }
     };

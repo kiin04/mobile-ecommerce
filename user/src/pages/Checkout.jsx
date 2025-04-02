@@ -203,7 +203,7 @@ const Checkout = () => {
                     message: "Lỗi",
                     description: `Vui lòng điền ${missingFields.join(", ")}`,
                     duration: 4,
-                    placement: "bottomLeft",
+                    placement: "bottomRight",
                 });
                 return;
             }
@@ -257,7 +257,7 @@ const Checkout = () => {
                     message: "Lỗi thanh toán",
                     description: error.message || "Có lỗi xảy ra khi xử lý thanh toán",
                     duration: 4,
-                    placement: "bottomLeft",
+                    placement: "bottomRight",
                 });
             }
         }else if (paymentMethod === "Momo") {
@@ -308,7 +308,7 @@ const Checkout = () => {
                     description:
                         error.message || "Có lỗi xảy ra khi xử lý thanh toán",
                     duration: 4,
-                    placement: "bottomLeft",
+                    placement: "bottomRight",
                 });
             }
         } 
@@ -372,7 +372,7 @@ const Checkout = () => {
                     message: "Đặt hàng thành công",
                     description: "Đơn hàng của bạn đang chờ xác nhận. Chúng tôi sẽ liên hệ với bạn sớm nhất!",
                     duration: 4,
-                    placement: "bottomLeft",
+                    placement: "bottomRight",
                 });
                 navigate(userId ? "/my-orders" : "/");
             } catch (error) {
@@ -381,7 +381,7 @@ const Checkout = () => {
                     message: "Lỗi",
                     description: error.message || "Có lỗi xảy ra khi tạo đơn hàng",
                     duration: 4,
-                    placement: "bottomLeft",
+                    placement: "bottomRight",
                 });
             }
         }

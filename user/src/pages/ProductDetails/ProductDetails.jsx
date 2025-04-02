@@ -169,7 +169,7 @@ const ProductDetails = ({ calculateCartItemCount }) => {
                 description:
                     "Số lượng bạn chọn đã đạt mức tối đa của sản phẩm này",
                 duration: 4,
-                placement: "bottomLeft",
+                placement: "bottomRight",
                 showProgress: true,
                 pauseOnHover: true,
             });
@@ -185,7 +185,7 @@ const ProductDetails = ({ calculateCartItemCount }) => {
                 message: "Lỗi",
                 description: "Không tìm thấy thông tin sản phẩm",
                 duration: 4,
-                placement: "bottomLeft",
+                placement: "bottomRight",
                 pauseOnHover: true,
             });
             return;
@@ -197,7 +197,7 @@ const ProductDetails = ({ calculateCartItemCount }) => {
                 description:
                     "Vui lòng chọn màu và kích thước trước khi thêm vào giỏ hàng.",
                 duration: 4,
-                placement: "bottomLeft",
+                placement: "bottomRight",
                 pauseOnHover: true,
             });
             return;
@@ -210,7 +210,7 @@ const ProductDetails = ({ calculateCartItemCount }) => {
                     selectedColor?.quantity || 0
                 } sản phẩm trong kho.`,
                 duration: 4,
-                placement: "bottomLeft",
+                placement: "bottomRight",
                 pauseOnHover: true,
             });
             return;
@@ -247,7 +247,7 @@ const ProductDetails = ({ calculateCartItemCount }) => {
                             message: "Lỗi",
                             description: `Chỉ còn ${selectedColor.quantity} sản phẩm.`,
                             duration: 4,
-                            placement: "bottomLeft",
+                            placement: "bottomRight",
                             pauseOnHover: true,
                         });
                         return;
@@ -268,7 +268,7 @@ const ProductDetails = ({ calculateCartItemCount }) => {
                     message: "Thành công",
                     description: "Đã thêm sản phẩm vào giỏ hàng",
                     duration: 4,
-                    placement: "bottomLeft",
+                    placement: "bottomRight",
                     pauseOnHover: true,
                 });
                 setQuantity(1);
@@ -278,7 +278,7 @@ const ProductDetails = ({ calculateCartItemCount }) => {
                     message: "Lỗi",
                     description: "Có lỗi khi thêm vào giỏ hàng",
                     duration: 4,
-                    placement: "bottomLeft",
+                    placement: "bottomRight",
                     pauseOnHover: true,
                 });
             }
@@ -296,7 +296,7 @@ const ProductDetails = ({ calculateCartItemCount }) => {
                         message: "Lỗi",
                         description: `Chỉ còn ${selectedColor.quantity} sản phẩm.`,
                         duration: 4,
-                        placement: "bottomLeft",
+                        placement: "bottomRight",
                         pauseOnHover: true,
                     });
                     return;
@@ -330,7 +330,7 @@ const ProductDetails = ({ calculateCartItemCount }) => {
                         message: "Thành công",
                         description: "Đã thêm sản phẩm vào giỏ hàng",
                         duration: 4,
-                        placement: "bottomLeft",
+                        placement: "bottomRight",
                         pauseOnHover: true,
                     });
                     setQuantity(1);
@@ -340,7 +340,7 @@ const ProductDetails = ({ calculateCartItemCount }) => {
                         message: "Lỗi",
                         description: error.message,
                         duration: 4,
-                        placement: "bottomLeft",
+                        placement: "bottomRight",
                         pauseOnHover: true,
                     });
                 }
@@ -370,7 +370,7 @@ const ProductDetails = ({ calculateCartItemCount }) => {
                         message: "Thành công",
                         description: "Đã thêm sản phẩm vào giỏ hàng",
                         duration: 4,
-                        placement: "bottomLeft",
+                        placement: "bottomRight",
                         pauseOnHover: true,
                     });
                     setQuantity(1);
@@ -380,7 +380,7 @@ const ProductDetails = ({ calculateCartItemCount }) => {
                         message: "Lỗi",
                         description: error.message,
                         duration: 4,
-                        placement: "bottomLeft",
+                        placement: "bottomRight",
                         pauseOnHover: true,
                     });
                 }
@@ -407,7 +407,7 @@ const ProductDetails = ({ calculateCartItemCount }) => {
         //         message: "Lỗi",
         //         description: "Vui lòng chọn màu trước khi mua",
         //         duration: 4,
-        //         placement: "bottomLeft",
+        //         placement: "bottomRight",
         //         showProgress: true,
         //         pauseOnHover: true,
         //     });
