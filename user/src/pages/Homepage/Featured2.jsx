@@ -6,14 +6,15 @@ import Samsung from "../../assets/BrandLogos/Samsung_Logo.svg";
 import Oppo from "../../assets/BrandLogos/OPPO_LOGO.svg";
 import Sony from "../../assets/BrandLogos/Sony_logo.svg";
 import { useNavigate } from "react-router-dom";
+import PathNames from "../../PathNames";
 
 // TODO: Điều hướng đến trang sản phẩm được lọc theo thương hiệu đó
 const Featured2 = () => {
     const navigate = useNavigate();
 
     const handleCategoryBrowse = (brand) => {
-        // navigate(`/products?brand=${brand}`);
-    }
+        navigate(`${PathNames.SHOP}`, { state: { brand: brand } });
+    };
 
     return (
         <section className="py-8 mt-2 mb-40">
@@ -41,6 +42,9 @@ const Featured2 = () => {
                                     bgColor={"bg-white"}
                                     fontSize= {"text-sm"}
                                     textColor="text-[rgba(0,0,128,1)]"
+                                    onClick={() =>
+                                        handleCategoryBrowse("Sony")
+                                    }
                                 />
                             </div>
                         </div>
@@ -71,6 +75,9 @@ const Featured2 = () => {
                                     bgColor={"bg-white"}
                                     textColor={"text-brandGreen"}
                                     fontSize= {"text-sm"}
+                                    onClick={() =>
+                                        handleCategoryBrowse("Oppo")
+                                    }
                                 />
                             </div>
                         </div>
@@ -101,6 +108,9 @@ const Featured2 = () => {
                                     bgColor={"bg-white"}
                                     textColor={"text-brandBlue"}
                                     fontSize= {"text-sm"}
+                                    onClick={() =>
+                                        handleCategoryBrowse("Samsung")
+                                    }
                                 />
                             </div>
                         </div>

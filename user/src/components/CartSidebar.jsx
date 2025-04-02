@@ -73,74 +73,74 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
     };
 
     // Sync local cart to server for newly logged-in users
-    const syncLocalCartToServer = async (localItems) => {
-        if (!userId || !localItems.length) return;
+    // const syncLocalCartToServer = async (localItems) => {
+    //     if (!userId || !localItems.length) return;
 
-        try {
-            const userCart = await fetchUserCart();
+    //     try {
+    //         const userCart = await fetchUserCart();
 
-            for (const localItem of localItems) {
-                const existingItem = userCart.find(
-                    (cartItem) =>
-                        cartItem.productId === localItem.productId &&
-                        cartItem.colorSizeId === localItem.colorSizeId
-                );
+    //         for (const localItem of localItems) {
+    //             const existingItem = userCart.find(
+    //                 (cartItem) =>
+    //                     cartItem.productId === localItem.productId &&
+    //                     cartItem.colorSizeId === localItem.colorSizeId
+    //             );
 
-                if (existingItem) {
-                    // Update existing item with total quantity
-                    const totalQuantity =
-                        existingItem.quantity + localItem.quantity;
-                    const cartIds = existingItem.ids;
-                    const keepId = cartIds[0];
-                    const deleteIds = cartIds.slice(1);
+    //             if (existingItem) {
+    //                 // Update existing item with total quantity
+    //                 const totalQuantity =
+    //                     existingItem.quantity + localItem.quantity;
+    //                 const cartIds = existingItem.ids;
+    //                 const keepId = cartIds[0];
+    //                 const deleteIds = cartIds.slice(1);
 
-                    // Delete duplicates
-                    if (deleteIds.length > 0) {
-                        await Promise.all(
-                            deleteIds.map((id) =>
-                                fetch(`${API_URL}/api/Carts/${id}`, {
-                                    method: "DELETE",
-                                    headers: {
-                                        "Content-Type": "application/json",
-                                    },
-                                })
-                            )
-                        );
-                    }
+    //                 // Delete duplicates
+    //                 if (deleteIds.length > 0) {
+    //                     await Promise.all(
+    //                         deleteIds.map((id) =>
+    //                             fetch(`${API_URL}/api/Carts/${id}`, {
+    //                                 method: "DELETE",
+    //                                 headers: {
+    //                                     "Content-Type": "application/json",
+    //                                 },
+    //                             })
+    //                         )
+    //                     );
+    //                 }
 
-                    // Update the remaining item
-                    await fetch(`${API_URL}/api/Carts/${keepId}`, {
-                        method: "PUT",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            id: keepId,
-                            quantity: totalQuantity,
-                            productId: localItem.productId,
-                            userId: userId,
-                            price: localItem.price,
-                            colorSizeId: localItem.colorSizeId,
-                        }),
-                    });
-                } else {
-                    // Add new item to server
-                    await fetch(`${API_URL}/api/Carts`, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            userId: userId,
-                            productId: localItem.productId,
-                            colorSizeId: localItem.colorSizeId,
-                            quantity: localItem.quantity,
-                            price: localItem.price,
-                        }),
-                    });
-                }
-            }
-        } catch (error) {
-            console.error("Error syncing local cart to server:", error);
-            setError("Không thể đồng bộ giỏ hàng. Vui lòng thử lại.");
-        }
-    };
+    //                 // Update the remaining item
+    //                 await fetch(`${API_URL}/api/Carts/${keepId}`, {
+    //                     method: "PUT",
+    //                     headers: { "Content-Type": "application/json" },
+    //                     body: JSON.stringify({
+    //                         id: keepId,
+    //                         quantity: totalQuantity,
+    //                         productId: localItem.productId,
+    //                         userId: userId,
+    //                         price: localItem.price,
+    //                         colorSizeId: localItem.colorSizeId,
+    //                     }),
+    //                 });
+    //             } else {
+    //                 // Add new item to server
+    //                 await fetch(`${API_URL}/api/Carts`, {
+    //                     method: "POST",
+    //                     headers: { "Content-Type": "application/json" },
+    //                     body: JSON.stringify({
+    //                         userId: userId,
+    //                         productId: localItem.productId,
+    //                         colorSizeId: localItem.colorSizeId,
+    //                         quantity: localItem.quantity,
+    //                         price: localItem.price,
+    //                     }),
+    //                 });
+    //             }
+    //         }
+    //     } catch (error) {
+    //         console.error("Error syncing local cart to server:", error);
+    //         setError("Không thể đồng bộ giỏ hàng. Vui lòng thử lại.");
+    //     }
+    // };
 
     useEffect(() => {
         if (cartOpen) {
@@ -336,7 +336,7 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
             open={cartOpen}
             width={600}
             footer={
-                <div className="flex items-center justify-between py-1">
+                <div className="flex items-center justify-between -my-1">
                     <div className="flex items-center gap-2">
                         <span className="text-xl font-bold">Tạm tính:</span>
                         <span className="text-xl font-semibold">
@@ -518,7 +518,7 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
                 )}
                 {overStockError && (
                     <div className="absolute bottom-0 left-0 p-4">
-                        <Alert message={overStockError} type="error" showIcon />
+                        <Alert message={overStockError} type="error" showIcon closable />
                     </div>
                 )}
             </div>

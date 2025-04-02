@@ -241,7 +241,7 @@ const Cart = () => {
                 message: "Lỗi",
                 description: "Vui lòng chọn ít nhất một sản phẩm để thanh toán.",
                 duration: 4,
-                placement: "bottomLeft",
+                placement: "bottomRight",
             });
             return;
         }

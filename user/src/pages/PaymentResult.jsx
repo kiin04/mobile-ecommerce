@@ -102,7 +102,7 @@ const PaymentResult = () => {
                 message: "Đặt hàng thành công",
                 description: "Đơn hàng của bạn đang chờ xác nhận. Chúng tôi sẽ liên hệ với bạn sớm nhất!",
                 duration: 4,
-                placement: "bottomLeft",
+                placement: "bottomRight",
             });
             navigate(pagesName.PAYMENT_SUCCESS);
         } catch (error) {

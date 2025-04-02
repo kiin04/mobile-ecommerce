@@ -7,13 +7,14 @@ import Xiaomi from "../../assets/BrandLogos/Xiaomi_logo.svg";
 import Huawei from "../../assets/BrandLogos/Huawei_logo.svg";
 import { useNavigate } from "react-router-dom";
 import PathNames from "../../PathNames";
-// TODO: Điều hướng đến trang sản phẩm được lọc theo thương hiệu đó
+
 const Featured = () => {
     const navigate = useNavigate();
+
     const handleCategoryBrowse = (brand) => {
-        navigate(`${PathNames.SHOP}`, { state: { brand: brand } })
-    }
-    
+        navigate(`${PathNames.SHOP}`, { state: { brand: brand } });
+    };
+
     return (
         <section className="py-8">
             <div className="container">
@@ -22,14 +23,16 @@ const Featured = () => {
                     <div className="py-10 pl-5 bg-gradient-to-tr from-gray-400/90 to-gray-100 text-white rounded-3xl relative h-[250px] sm:h-[320px] flex items-end">
                         <div>
                             <div className="mb-4">
-                                <p className="mb-[2px] text-gray-500">Trải nghiệm</p>
+                                <p className="mb-[2px] text-gray-500">
+                                    Trải nghiệm
+                                </p>
                                 <p className="text-2xl font-semibold mb-[2px]">
                                     Cùng
                                 </p>
                                 <p className="my-3 text-4xl translate-x-2 xl:text-5xl">
                                     <img
                                         src={Huawei}
-                                        alt=""
+                                        alt="Huawei logo"
                                         style={{
                                             width: "50%",
                                             "@media (minWidth: 640px)": {
@@ -51,8 +54,10 @@ const Featured = () => {
                                     text="Khám phá"
                                     bgColor={"bg-primary"}
                                     textColor={"text-white"}
-                                    fontSize= {"text-sm"}
-                                    onClick={() => handleCategoryBrowse("Huawei")}
+                                    fontSize={"text-sm"}
+                                    onClick={() =>
+                                        handleCategoryBrowse("Huawei")
+                                    }
                                 />
                             </div>
                         </div>
@@ -67,7 +72,9 @@ const Featured = () => {
                     <div className="py-10 pl-5 bg-gradient-to-br from-brandYellow/90 to-brandYellow/90 text-white rounded-3xl relative h-[320px] flex items-end">
                         <div>
                             <div className="mb-4">
-                                <p className="mb-[2px] text-white">Trải nghiệm</p>
+                                <p className="mb-[2px] text-white">
+                                    Trải nghiệm
+                                </p>
                                 <p className="text-2xl font-semibold mb-[2px]">
                                     Cùng
                                 </p>
@@ -96,8 +103,10 @@ const Featured = () => {
                                     text="Khám phá"
                                     bgColor={"bg-white"}
                                     textColor={"text-brandYellow"}
-                                    fontSize= {"text-sm"}
-                                    onClick={() => handleCategoryBrowse("Xiaomi")}
+                                    fontSize={"text-sm"}
+                                    onClick={() =>
+                                        handleCategoryBrowse("Xiaomi")
+                                    }
                                 />
                             </div>
                         </div>
@@ -112,7 +121,9 @@ const Featured = () => {
                     <div className="col-span-1 sm:col-span-2 py-10 pl-5 bg-gradient-to-br from-black/90 to-black/70 text-white rounded-3xl relative h-[250px] sm:h-[320px] flex items-end">
                         <div>
                             <div className="mb-4">
-                                <p className="mb-[2px] text-white">Trải nghiệm</p>
+                                <p className="mb-[2px] text-white">
+                                    Trải nghiệm
+                                </p>
                                 <p className="text-2xl font-semibold">Cùng</p>
                                 <p className="mt-3 font-bold 2xl:text-6xl xl:text-6xl md:text-5xl sm:text-6xl opacity-40 my-7">
                                     <img
@@ -126,10 +137,12 @@ const Featured = () => {
                                     text="Khám phá"
                                     bgColor={"bg-white"}
                                     textColor={"text-[#1b1b1b]"}
-                                    fontSize= {"text-sm"}
-                                    onClick={() => handleCategoryBrowse("Apple")}
+                                    fontSize={"text-sm"}
+                                    onClick={() =>
+                                        handleCategoryBrowse("Apple")
+                                    }
                                 />
-                            </div>
+                            </div>  
                         </div>
                         <img
                             src={Image3}

@@ -36,7 +36,7 @@ import "./index.css";
 
 createRoot(document.getElementById("root")).render(
     <StrictMode>
-        <AntdApp
+        <ConfigProvider
             theme={{
                 components: {
                     Badge: {
@@ -63,7 +63,16 @@ createRoot(document.getElementById("root")).render(
                         activeBorderColor: "#f42c37",
                         hoverBorderColor: "#f42c37",
                         optionSelectedBg: "#f42c37",
-                        optionSelectedColor: "#fff",
+                        optionSelectedColor: "white",
+                    },
+                    Slider: {
+                        dotActiveBorderColor: "red",
+                        dotBorderColor: "#f42c37",
+                        handleActiveColor: "#f42c37",
+                        handleActiveOutlineColor: "#f42c37",
+                        handleColor: "#f42c37",
+                        trackBg: "#f42c37",
+                        trackHoverBg: "red",
                     },
                     Breadcrumb: {
                         linkHoverColor: "#f42c37",
@@ -72,11 +81,13 @@ createRoot(document.getElementById("root")).render(
                 token: {},
             }}
         >
-            <BrowserRouter>
-                <Provider store={store}>
-                    <App />
-                </Provider>
-            </BrowserRouter>
-        </AntdApp>
+            <AntdApp>
+                <BrowserRouter>
+                    <Provider store={store}>
+                        <App />
+                    </Provider>
+                </BrowserRouter>
+            </AntdApp>
+        </ConfigProvider>
     </StrictMode>
 );
