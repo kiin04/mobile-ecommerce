@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { API_URL } from "../config.js";
 import { useLocation, useNavigate } from "react-router-dom";
 import { notification } from "antd";
@@ -10,7 +10,12 @@ const CheckoutBuyNow = () => {
     const navigate = useNavigate();
     const user = useSelector((state) => state.user);
     const userId = user?.id;
-    const initialCartItems = location.state?.cartItems || (location.state?.product ? [location.state.product] : []);
+    const initialCartItems = useMemo(() => {
+        return (
+            location.state?.cartItems ||
+            (location.state?.product ? [location.state.product] : [])
+        );
+    }, [location.state]);
     const [cartItems, setCartItems] = useState([]);
     const [paymentMethod, setPaymentMethod] = useState("Tiền mặt");
     const [customerInfo, setCustomerInfo] = useState({
@@ -41,7 +46,9 @@ const CheckoutBuyNow = () => {
 
                     // Lấy thông tin name và image từ API /api/Products/:id
                     try {
-                        const productResponse = await fetch(`${API_URL}/api/Products/${item.productId}`);
+                        const productResponse = await fetch(
+                            `${API_URL}/api/Products/${item.productId}`
+                        );
                         if (productResponse.ok) {
                             const productData = await productResponse.json();
                             updatedItem = {
@@ -51,22 +58,32 @@ const CheckoutBuyNow = () => {
                             };
                         }
                     } catch (error) {
-                        console.error(`Error fetching product ${item.productId}:`, error);
+                        console.error(
+                            `Error fetching product ${item.productId}:`,
+                            error
+                        );
                     }
 
                     // Lấy thông tin color và size từ API /api/ColorSizes/:colorSizeId
                     try {
-                        const colorSizeResponse = await fetch(`${API_URL}/api/ColorSizes/${item.colorSizeId}`);
+                        const colorSizeResponse = await fetch(
+                            `${API_URL}/api/ColorSizes/${item.colorSizeId}`
+                        );
                         if (colorSizeResponse.ok) {
-                            const colorSizeData = await colorSizeResponse.json();
+                            const colorSizeData =
+                                await colorSizeResponse.json();
                             updatedItem = {
                                 ...updatedItem,
                                 color: colorSizeData.color || "Không có màu",
-                                size: colorSizeData.size || "Không có kích thước",
+                                size:
+                                    colorSizeData.size || "Không có kích thước",
                             };
                         }
                     } catch (error) {
-                        console.error(`Error fetching colorSize ${item.colorSizeId}:`, error);
+                        console.error(
+                            `Error fetching colorSize ${item.colorSizeId}:`,
+                            error
+                        );
                         updatedItem = {
                             ...updatedItem,
                             color: "Không có màu",
@@ -80,7 +97,10 @@ const CheckoutBuyNow = () => {
 
             console.log("Updated cartItems:", updatedCartItems); // Log để kiểm tra dữ liệu
             setCartItems(updatedCartItems);
-            const initialTotal = updatedCartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+            const initialTotal = updatedCartItems.reduce(
+                (sum, item) => sum + item.price * item.quantity,
+                0
+            );
             setTotalAmount(initialTotal);
         };
 
@@ -92,11 +112,13 @@ const CheckoutBuyNow = () => {
         const fetchDiscountCodes = async () => {
             try {
                 const response = await fetch(`${API_URL}/api/Promotions`);
-                if (!response.ok) throw new Error("Failed to fetch discount codes");
+                if (!response.ok)
+                    throw new Error("Failed to fetch discount codes");
                 const data = await response.json();
                 const sortedCodes = data.sort((a, b) => b.value - a.value);
                 const enableDiscount = sortedCodes.filter(
-                    (discount) => new Date(discount.endAt).getTime() > Date.now()
+                    (discount) =>
+                        new Date(discount.endAt).getTime() > Date.now()
                 );
                 setDiscountCodes(enableDiscount);
             } catch (error) {
@@ -108,7 +130,10 @@ const CheckoutBuyNow = () => {
 
     const handleSelectDiscount = (discount) => {
         setSelectedDiscount(discount);
-        const initialTotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+        const initialTotal = cartItems.reduce(
+            (sum, item) => sum + item.price * item.quantity,
+            0
+        );
         const discountAmount = Math.min(
             Math.floor((initialTotal * discount.value) / 100),
             discount.maxValue
@@ -121,7 +146,10 @@ const CheckoutBuyNow = () => {
     const handleRemoveDiscount = () => {
         setSelectedDiscount(null);
         setDiscountedAmount(0);
-        const initialTotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+        const initialTotal = cartItems.reduce(
+            (sum, item) => sum + item.price * item.quantity,
+            0
+        );
         setTotalAmount(initialTotal);
     };
 
@@ -134,7 +162,8 @@ const CheckoutBuyNow = () => {
         const missingFields = [];
         if (!customerInfo.name) missingFields.push("họ tên");
         if (!customerInfo.phone) missingFields.push("số điện thoại");
-        if (shippingOption === "delivery" && !customerInfo.address) missingFields.push("địa chỉ");
+        if (shippingOption === "delivery" && !customerInfo.address)
+            missingFields.push("địa chỉ");
 
         if (missingFields.length > 0) {
             notification.error({
@@ -151,19 +180,27 @@ const CheckoutBuyNow = () => {
 
         try {
             if (!userIdToUse) {
-                const response = await fetch(`${API_URL}/api/Users/CheckUser/${customerInfo.phone}`);
+                const response = await fetch(
+                    `${API_URL}/api/Users/CheckUser/${customerInfo.phone}`
+                );
                 if (response.status === 404) {
                     const formData = new FormData();
                     formData.append("Name", customerInfo.name);
                     formData.append("Phone", customerInfo.phone);
-                    formData.append("Address", customerInfo.address || storeAddress);
+                    formData.append(
+                        "Address",
+                        customerInfo.address || storeAddress
+                    );
                     formData.append("Role", "1");
                     formData.append("TotalBuy", "0");
 
-                    const createUserResponse = await fetch(`${API_URL}/api/Users`, {
-                        method: "POST",
-                        body: formData,
-                    });
+                    const createUserResponse = await fetch(
+                        `${API_URL}/api/Users`,
+                        {
+                            method: "POST",
+                            body: formData,
+                        }
+                    );
                     if (createUserResponse.status === 201) {
                         const createdUser = await createUserResponse.json();
                         userIdToUse = createdUser.id;
@@ -191,10 +228,13 @@ const CheckoutBuyNow = () => {
                 note: notes,
                 paymentStatus: "Chưa thanh toán",
                 status: "Chờ xác nhận",
-                address: shippingOption === "store" ? storeAddress : customerInfo.address,
+                address:
+                    shippingOption === "store"
+                        ? storeAddress
+                        : customerInfo.address,
                 discountCode: selectedDiscount ? selectedDiscount.code : null,
                 discountAmount: discountedAmount,
-                orderDetails: cartItems.map(item => ({
+                orderDetails: cartItems.map((item) => ({
                     productId: item.productId,
                     colorSizeId: item.colorSizeId,
                     quantity: item.quantity,
@@ -204,16 +244,19 @@ const CheckoutBuyNow = () => {
             if (paymentMethod === "MoMo") {
                 try {
                     // Gọi API tạo thanh toán MOMO
-                    const paymentResponse = await fetch(`${API_URL}/api/Payment/create-payment`, {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({
-                            amount: finalAmount,
-                            orderInfo: `Thanh toán đơn hàng cho ${customerInfo.name}`,
-                        }),
-                    });
+                    const paymentResponse = await fetch(
+                        `${API_URL}/api/Payment/create-payment`,
+                        {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({
+                                amount: finalAmount,
+                                orderInfo: `Thanh toán đơn hàng cho ${customerInfo.name}`,
+                            }),
+                        }
+                    );
 
                     const result = await paymentResponse.json();
 
@@ -224,21 +267,54 @@ const CheckoutBuyNow = () => {
                     }
 
                     if (result.payUrl) {
-                        localStorage.setItem("pendingOrder", JSON.stringify({
-                            userId:userId,
-                            totalPrice: finalAmount,
-                            paymentMethod:paymentMethod,
-                            phone: customerInfo.phone,
-                            note: notes,
-                            address:
-                                shippingOption === "store" ? storeAddress : customerInfo.address,
-                            status: "Đã thanh toán",
-                            cartItems:[cartItems],
-                        }));
+                        // Call UpdateRole API if userId exists
+                        if (userId) {
+                            try {
+                                const updateRoleResponse = await fetch(
+                                    `${API_URL}/api/Users/UpdateRole/${userId}`,
+                                    {
+                                        method: "PUT",
+                                    }
+                                );
+
+                                if (!updateRoleResponse.ok) {
+                                    const roleError =
+                                        await updateRoleResponse.json();
+                                    console.error(
+                                        "Error updating user role:",
+                                        roleError
+                                    );
+                                    throw new Error(
+                                        roleError.message ||
+                                            "Lỗi khi cập nhật vai trò người dùng"
+                                    );
+                                }
+                            } catch (error) {
+                                console.error(
+                                    "Error calling UpdateRole API:",
+                                    error
+                                );
+                            }
+                        }
+                        localStorage.setItem(
+                            "pendingOrder",
+                            JSON.stringify({
+                                userId: userId,
+                                totalPrice: finalAmount,
+                                paymentMethod: paymentMethod,
+                                phone: customerInfo.phone,
+                                note: notes,
+                                address:
+                                    shippingOption === "store"
+                                        ? storeAddress
+                                        : customerInfo.address,
+                                status: "Đã thanh toán",
+                                cartItems: [cartItems],
+                            })
+                        );
                         // Chuyển hướng đến trang thanh toán MOMO
                         window.location.href = result.payUrl;
                     } else {
-
                         throw new Error("Không nhận được URL thanh toán");
                     }
                 } catch (error) {
@@ -246,12 +322,13 @@ const CheckoutBuyNow = () => {
                     notification.error({
                         message: "Lỗi thanh toán",
                         description:
-                            error.message || "Có lỗi xảy ra khi xử lý thanh toán",
+                            error.message ||
+                            "Có lỗi xảy ra khi xử lý thanh toán",
                         duration: 4,
                         placement: "bottomRight",
                     });
                 }
-            } else{
+            } else {
                 const orderResponse = await fetch(`${API_URL}/api/Orders`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
@@ -260,7 +337,12 @@ const CheckoutBuyNow = () => {
 
                 if (!orderResponse.ok) {
                     const errorData = await orderResponse.json();
-                    const errorMessages = Object.entries(errorData.errors || {}).map(([field, messages]) => `${field}: ${messages.join(", ")}`).join("; ");
+                    const errorMessages = Object.entries(errorData.errors || {})
+                        .map(
+                            ([field, messages]) =>
+                                `${field}: ${messages.join(", ")}`
+                        )
+                        .join("; ");
                     throw new Error(errorMessages || "Lỗi khi tạo đơn hàng");
                 }
 
@@ -276,12 +358,13 @@ const CheckoutBuyNow = () => {
                 });
                 navigate(userId ? PathNames.MY_ORDERS : "/");
             }
-
         } catch (error) {
             console.error("Lỗi trong quá trình xử lý:", error);
             notification.error({
                 message: "Thất bại",
-                description: error.message || "Đã xảy ra lỗi khi tạo đơn hàng. Vui lòng thử lại.",
+                description:
+                    error.message ||
+                    "Đã xảy ra lỗi khi tạo đơn hàng. Vui lòng thử lại.",
                 duration: 4,
                 placement: "bottomRight",
             });
@@ -296,7 +379,9 @@ const CheckoutBuyNow = () => {
 
             {/* Thông tin khách hàng */}
             <div className="bg-white p-4 rounded-lg shadow mb-4">
-                <h3 className="text-lg font-semibold mb-2">Thông tin khách hàng</h3>
+                <h3 className="text-lg font-semibold mb-2">
+                    Thông tin khách hàng
+                </h3>
                 {userId ? (
                     <>
                         <p>Tên: {customerInfo.name}</p>
@@ -334,18 +419,27 @@ const CheckoutBuyNow = () => {
             {/* Hiển thị danh sách sản phẩm */}
             {cartItems.length > 0 ? (
                 cartItems.map((item) => (
-                    <div key={`${item.productId}-${item.colorSizeId}`} className="bg-white p-4 rounded-lg shadow mb-4">
+                    <div
+                        key={`${item.productId}-${item.colorSizeId}`}
+                        className="bg-white p-4 rounded-lg shadow mb-4"
+                    >
                         <div className="flex items-center">
                             <img
-                                src={item.image ? `data:image/jpeg;base64,${item.image}` : "/default-image.jpg"}
+                                src={
+                                    item.image
+                                        ? `data:image/jpeg;base64,${item.image}`
+                                        : "/default-image.jpg"
+                                }
                                 alt={item.name || "Sản phẩm"}
                                 className="w-20 h-20 object-cover"
                             />
                             <div className="ml-4">
-                            <h3 className="text-lg font-semibold">
-                            {item.name } - {item.color} - {item.size}
-                            </h3>
-                                <p className="text-red-500">{item.price.toLocaleString()}đ</p>
+                                <h3 className="text-lg font-semibold">
+                                    {item.name} - {item.color} - {item.size}
+                                </h3>
+                                <p className="text-red-500">
+                                    {item.price.toLocaleString()}đ
+                                </p>
                                 <p>Số lượng: {item.quantity}</p>
                             </div>
                         </div>
@@ -357,40 +451,82 @@ const CheckoutBuyNow = () => {
 
             {/* Thông tin nhận hàng */}
             <div className="bg-white p-4 rounded-lg shadow mb-4">
-                <h3 className="text-lg font-semibold mb-2">Thông tin nhận hàng</h3>
+                <h3 className="text-lg font-semibold mb-2">
+                    Thông tin nhận hàng
+                </h3>
                 <div className="flex items-center space-x-8 mb-4">
-                    <div className="flex items-center cursor-pointer" onClick={() => setShippingOption("store")}>
-                        <div className={`w-5 h-5 rounded-full border-2 ${shippingOption === "store" ? "border-blue-500 bg-blue-500" : "border-gray-500"} mr-2 flex items-center justify-center`}>
-                            {shippingOption === "store" && <div className="w-2.5 h-2.5 bg-white rounded-full"></div>}
+                    <div
+                        className="flex items-center cursor-pointer"
+                        onClick={() => setShippingOption("store")}
+                    >
+                        <div
+                            className={`w-5 h-5 rounded-full border-2 ${
+                                shippingOption === "store"
+                                    ? "border-blue-500 bg-blue-500"
+                                    : "border-gray-500"
+                            } mr-2 flex items-center justify-center`}
+                        >
+                            {shippingOption === "store" && (
+                                <div className="w-2.5 h-2.5 bg-white rounded-full"></div>
+                            )}
                         </div>
-                        <label className="text-gray-800">Nhận tại cửa hàng</label>
+                        <label className="text-gray-800">
+                            Nhận tại cửa hàng
+                        </label>
                     </div>
-                    <div className="flex items-center cursor-pointer" onClick={() => setShippingOption("delivery")}>
-                        <div className={`w-5 h-5 rounded-full border-2 ${shippingOption === "delivery" ? "border-blue-500 bg-blue-500" : "border-gray-500"} mr-2 flex items-center justify-center`}>
-                            {shippingOption === "delivery" && <div className="w-2.5 h-2.5 bg-white rounded-full"></div>}
+                    <div
+                        className="flex items-center cursor-pointer"
+                        onClick={() => setShippingOption("delivery")}
+                    >
+                        <div
+                            className={`w-5 h-5 rounded-full border-2 ${
+                                shippingOption === "delivery"
+                                    ? "border-blue-500 bg-blue-500"
+                                    : "border-gray-500"
+                            } mr-2 flex items-center justify-center`}
+                        >
+                            {shippingOption === "delivery" && (
+                                <div className="w-2.5 h-2.5 bg-white rounded-full"></div>
+                            )}
                         </div>
-                        <label className="text-gray-800">Giao hàng tận nơi</label>
+                        <label className="text-gray-800">
+                            Giao hàng tận nơi
+                        </label>
                     </div>
                 </div>
                 {shippingOption === "store" ? (
                     <>
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <label className="block mb-2">Tỉnh / Thành phố</label>
-                                <select className="w-full p-2 border rounded-lg" disabled>
-                                    <option value="Ho Chi Minh">Hồ Chí Minh</option>
+                                <label className="block mb-2">
+                                    Tỉnh / Thành phố
+                                </label>
+                                <select
+                                    className="w-full p-2 border rounded-lg"
+                                    disabled
+                                >
+                                    <option value="Ho Chi Minh">
+                                        Hồ Chí Minh
+                                    </option>
                                 </select>
                             </div>
                             <div>
                                 <label className="block mb-2">Quận/huyện</label>
-                                <select className="w-full p-2 border rounded-lg" disabled>
+                                <select
+                                    className="w-full p-2 border rounded-lg"
+                                    disabled
+                                >
                                     <option value="Hoc Mon">Hóc Môn</option>
                                 </select>
                             </div>
                         </div>
                         <div className="mt-4">
-                            <label className="block mb-2">Địa chỉ cửa hàng</label>
-                            <p className="bg-gray-100 p-2 rounded-lg">{storeAddress}</p>
+                            <label className="block mb-2">
+                                Địa chỉ cửa hàng
+                            </label>
+                            <p className="bg-gray-100 p-2 rounded-lg">
+                                {storeAddress}
+                            </p>
                         </div>
                     </>
                 ) : (
@@ -419,7 +555,9 @@ const CheckoutBuyNow = () => {
 
             {/* Ghi chú */}
             <div className="bg-white p-4 rounded-lg shadow mb-4">
-                <h3 className="text-lg font-semibold mb-2">Ghi chú khác (nếu có)</h3>
+                <h3 className="text-lg font-semibold mb-2">
+                    Ghi chú khác (nếu có)
+                </h3>
                 <textarea
                     className="w-full p-2 border rounded-lg"
                     value={notes}
@@ -430,7 +568,9 @@ const CheckoutBuyNow = () => {
 
             {/* Phương thức thanh toán */}
             <div className="bg-white p-4 rounded-lg shadow mb-4">
-                <h3 className="text-lg font-semibold mb-2">Phương thức thanh toán</h3>
+                <h3 className="text-lg font-semibold mb-2">
+                    Phương thức thanh toán
+                </h3>
                 <select
                     className="w-full p-2 border rounded-lg"
                     value={paymentMethod}
@@ -447,11 +587,17 @@ const CheckoutBuyNow = () => {
                 <div className="flex justify-between items-center">
                     <h3 className="text-lg font-semibold">Mã giảm giá</h3>
                     {!selectedDiscount ? (
-                        <button onClick={() => setShowDiscountDialog(true)} className="text-blue-500 hover:text-blue-700">
+                        <button
+                            onClick={() => setShowDiscountDialog(true)}
+                            className="text-blue-500 hover:text-blue-700"
+                        >
                             Chọn mã giảm giá
                         </button>
                     ) : (
-                        <button onClick={handleRemoveDiscount} className="text-red-500 hover:text-red-700">
+                        <button
+                            onClick={handleRemoveDiscount}
+                            className="text-red-500 hover:text-red-700"
+                        >
                             Xóa mã giảm giá
                         </button>
                     )}
@@ -460,11 +606,24 @@ const CheckoutBuyNow = () => {
                     <div className="mt-2 p-2 bg-blue-50 rounded">
                         <div className="flex justify-between items-center">
                             <div>
-                                <p className="font-medium">{selectedDiscount.name}</p>
-                                <p className="text-sm text-gray-600">Giảm {selectedDiscount.value}% (Tối đa {selectedDiscount.maxValue.toLocaleString()}đ)</p>
-                                <p className="text-green-600 font-medium">-{discountedAmount.toLocaleString()}đ</p>
+                                <p className="font-medium">
+                                    {selectedDiscount.name}
+                                </p>
+                                <p className="text-sm text-gray-600">
+                                    Giảm {selectedDiscount.value}% (Tối đa{" "}
+                                    {selectedDiscount.maxValue.toLocaleString()}
+                                    đ)
+                                </p>
+                                <p className="text-green-600 font-medium">
+                                    -{discountedAmount.toLocaleString()}đ
+                                </p>
                             </div>
-                            <button onClick={handleRemoveDiscount} className="text-gray-500 hover:text-gray-700">✕</button>
+                            <button
+                                onClick={handleRemoveDiscount}
+                                className="text-gray-500 hover:text-gray-700"
+                            >
+                                ✕
+                            </button>
                         </div>
                     </div>
                 )}
@@ -475,28 +634,74 @@ const CheckoutBuyNow = () => {
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white rounded-lg p-6 w-96 max-h-[75vh] overflow-y-auto">
                         <div className="flex justify-between items-center mb-4">
-                            <h3 className="text-xl font-semibold">Chọn mã giảm giá</h3>
-                            <button onClick={() => setShowDiscountDialog(false)} className="text-gray-500 hover:text-gray-700">✕</button>
+                            <h3 className="text-xl font-semibold">
+                                Chọn mã giảm giá
+                            </h3>
+                            <button
+                                onClick={() => setShowDiscountDialog(false)}
+                                className="text-gray-500 hover:text-gray-700"
+                            >
+                                ✕
+                            </button>
                         </div>
                         <div className="space-y-4">
                             {discountCodes.map((discount) => {
-                                const initialTotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-                                const isApplicable = initialTotal >= discount.minPrice;
+                                const initialTotal = cartItems.reduce(
+                                    (sum, item) =>
+                                        sum + item.price * item.quantity,
+                                    0
+                                );
+                                const isApplicable =
+                                    initialTotal >= discount.minPrice;
                                 return (
-                                    <div key={discount.id} className={`border rounded p-3 ${isApplicable ? "hover:bg-gray-50" : "opacity-50"}`}>
+                                    <div
+                                        key={discount.id}
+                                        className={`border rounded p-3 ${
+                                            isApplicable
+                                                ? "hover:bg-gray-50"
+                                                : "opacity-50"
+                                        }`}
+                                    >
                                         <div className="flex justify-between items-center">
                                             <div>
-                                                <h4 className="font-semibold text-lg">{discount.name}</h4>
-                                                <p className="text-sm text-gray-600">Giảm {discount.value}% (Tối đa {discount.maxValue.toLocaleString()}đ)</p>
-                                                <p className="text-xs text-gray-500">Đơn tối thiểu {discount.minPrice.toLocaleString()}đ</p>
-                                                {!isApplicable && <p className="text-xs text-red-500">Đơn hàng chưa đủ giá trị tối thiểu</p>}
+                                                <h4 className="font-semibold text-lg">
+                                                    {discount.name}
+                                                </h4>
+                                                <p className="text-sm text-gray-600">
+                                                    Giảm {discount.value}% (Tối
+                                                    đa{" "}
+                                                    {discount.maxValue.toLocaleString()}
+                                                    đ)
+                                                </p>
+                                                <p className="text-xs text-gray-500">
+                                                    Đơn tối thiểu{" "}
+                                                    {discount.minPrice.toLocaleString()}
+                                                    đ
+                                                </p>
+                                                {!isApplicable && (
+                                                    <p className="text-xs text-red-500">
+                                                        Đơn hàng chưa đủ giá trị
+                                                        tối thiểu
+                                                    </p>
+                                                )}
                                             </div>
                                             <button
-                                                className={`px-4 py-1.5 rounded text-sm ${isApplicable ? "bg-blue-500 hover:bg-blue-600 text-white" : "bg-gray-300 text-gray-500 cursor-not-allowed"}`}
-                                                onClick={() => isApplicable && handleSelectDiscount(discount)}
+                                                className={`px-4 py-1.5 rounded text-sm ${
+                                                    isApplicable
+                                                        ? "bg-blue-500 hover:bg-blue-600 text-white"
+                                                        : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                                                }`}
+                                                onClick={() =>
+                                                    isApplicable &&
+                                                    handleSelectDiscount(
+                                                        discount
+                                                    )
+                                                }
                                                 disabled={!isApplicable}
                                             >
-                                                {isApplicable ? "Áp dụng" : "Không đủ điều kiện"}
+                                                {isApplicable
+                                                    ? "Áp dụng"
+                                                    : "Không đủ điều kiện"}
                                             </button>
                                         </div>
                                     </div>
@@ -513,7 +718,16 @@ const CheckoutBuyNow = () => {
                 <div className="space-y-2">
                     <div className="flex justify-between">
                         <span>Tạm tính:</span>
-                        <span>{cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0).toLocaleString()}đ</span>
+                        <span>
+                            {cartItems
+                                .reduce(
+                                    (sum, item) =>
+                                        sum + item.price * item.quantity,
+                                    0
+                                )
+                                .toLocaleString()}
+                            đ
+                        </span>
                     </div>
                     {selectedDiscount && (
                         <div className="flex justify-between text-green-600">
@@ -523,7 +737,9 @@ const CheckoutBuyNow = () => {
                     )}
                     <div className="flex justify-between font-semibold text-xl">
                         <span>Tổng cộng:</span>
-                        <span className="text-red-500">{totalAmount.toLocaleString()}đ</span>
+                        <span className="text-red-500">
+                            {totalAmount.toLocaleString()}đ
+                        </span>
                     </div>
                 </div>
             </div>
