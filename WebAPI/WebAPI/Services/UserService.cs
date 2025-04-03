@@ -47,7 +47,7 @@ namespace WebAPI.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateUserRoleAsync(int userId, decimal orderTotalPrice)
+        public async Task<bool> UpdateUserRoleAsync(int userId)
         {
             var user = await _context.Users.FindAsync(userId);
             if (user == null)
@@ -55,8 +55,7 @@ namespace WebAPI.Services
                 throw new KeyNotFoundException("User not found");
             }
 
-            // Update totalBuy
-            user.TotalBuy += orderTotalPrice;
+            var previousRole = user.Role;
 
             // Determine role based on totalBuy
             if (user.TotalBuy > 35000000)
@@ -79,6 +78,9 @@ namespace WebAPI.Services
             // Save changes to the database
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
+
+            // Return whether the role has changed
+            return previousRole != user.Role;
         }
     }
 }
