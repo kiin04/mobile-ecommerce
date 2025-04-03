@@ -4,7 +4,6 @@ using WebAPI.DTO;
 using WebAPI.Factory;
 using WebAPI.Models;
 using WebAPI.Services;
-using Newtonsoft.Json;
 
 namespace WebAPI.Controllers
 {
@@ -83,7 +82,7 @@ namespace WebAPI.Controllers
                     Role = userDTO.Role,
                     TotalBuy = userDTO.TotalBuy,
                     Account = userDTO.Account,
-                    //DateofBirth = userDTO.DateofBirth,
+                    DateofBirth = userDTO.DateofBirth,
                     CreatedAt = userDTO.CreatedAt,
                 };
                 if (userDTO.CreatedAt == null)
@@ -93,8 +92,11 @@ namespace WebAPI.Controllers
                 if (image != null)
                     await _UserRepository.UpdateAsync(user, image);
                 else
+                {
                     await _UserRepository.UpdateAsync(user);
-                return NoContent();
+                }
+
+                return Ok(user);
             }
             catch (InvalidOperationException ex)
             {
@@ -116,7 +118,7 @@ namespace WebAPI.Controllers
                     Role = userDTO.Role,
                     TotalBuy = userDTO.TotalBuy,
                     Account = 0,
-                    // DateofBirth = userDTO.DateofBirth,
+                    DateofBirth = userDTO.DateofBirth,
                 };
                 if (image == null)
                 {

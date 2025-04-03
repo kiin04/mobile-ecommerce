@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-
-namespace WebAPI.Models;
+﻿namespace WebAPI.Models;
 
     public partial class User : BaseEntity, IHasImage
 {
@@ -18,7 +16,6 @@ namespace WebAPI.Models;
 
     public int? Account { get; set; }
 
-    [JsonIgnore]
     public DateTime? DateofBirth { get; set; }
 
     //public string DateofBirthFormatted => DateofBirth?.ToString("dd-MM-yyyy");

@@ -486,7 +486,7 @@ const ProductDetails = ({ calculateCartItemCount }) => {
 
     return (
         <div className="mt-14">
-            <div className="container mx-auto px-4 py-8 flex flex-col mb-24 bg-gray-50">
+            <div className="container mx-auto px-4 py-8 flex flex-col mb-16">
                 <div className="flex flex-wrap -mx-4 justify-center xl:ml-40 lg:ml-10">
                     {/* <!-- Product Images --> */}
                     <div className="w-full 2xl:w-[40%] xl:w-[50%] lg:w-[50%] md:w-[50%] sm:w-[50%] px-4 mb-8 -translate-x-4">
@@ -722,10 +722,10 @@ const ProductDetails = ({ calculateCartItemCount }) => {
                         </table>
                     </div>
                 </div>
-
-                {/* Reviews Section */}
-                <ReviewsSection productId={productId} />
             </div>
+
+            {/* Reviews Section */}
+            <ReviewsSection productId={productId} />
 
             <script>
                 {`

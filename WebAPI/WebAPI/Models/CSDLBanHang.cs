@@ -66,6 +66,9 @@ public partial class CSDLBanHang : DbContext
             entity.Property(e => e.Username)
                 .HasColumnName("username")
                 .HasMaxLength(20);
+            entity.Property(e => e.IsGoogleAcc)
+                .HasColumnName("isGoogleAcc")
+                .HasDefaultValue(false);
         });
 
         modelBuilder.Entity<Cart>(entity =>
