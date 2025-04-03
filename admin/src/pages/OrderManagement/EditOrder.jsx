@@ -211,10 +211,12 @@ const EditOrder = () => {
                 body: JSON.stringify(order),
             });
             console.log("response update order", response);
+
             if (response.ok) {
                 if(order.status == 'Đã giao hàng'){
                     await updateUser();
                 }
+
                 notification.success({
                     message: 'Thành công',
                     description: "Đơn hàng đã được cập nhật thành công",

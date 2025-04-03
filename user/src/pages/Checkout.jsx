@@ -418,32 +418,6 @@ const Checkout = () => {
                     }
                 }
 
-                // Call UpdateRole API if userId exists
-                if (userId) {
-                    try {
-                        const updateRoleResponse = await fetch(
-                            `${API_URL}/api/Users/UpdateRole/${userId}`,
-                            {
-                                method: "PUT",
-                            }
-                        );
-
-                        if (!updateRoleResponse.ok) {
-                            const roleError = await updateRoleResponse.json();
-                            console.error(
-                                "Error updating user role:",
-                                roleError
-                            );
-                            throw new Error(
-                                roleError.message ||
-                                    "Lỗi khi cập nhật vai trò người dùng"
-                            );
-                        }
-                    } catch (error) {
-                        console.error("Error calling UpdateRole API:", error);
-                    }
-                }
-
                 // Xóa giỏ hàng sau khi đặt hàng thành công
                 if (userId) {
                     const ids = cartItems.map((item) => item.id);
