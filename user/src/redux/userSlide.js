@@ -13,6 +13,7 @@ const userSlice = createSlice({
         address: "",
         dateofBirth:"",
         totalBuy: 0,
+        isGoogleAcc: false,
         isLoggedIn: false,
     },
     reducers: {
@@ -31,6 +32,7 @@ const userSlice = createSlice({
                 phone:"",
                 dateofBirth:"",
                 totalBuy: 0,
+                isGoogleAcc: false,
                 isLoggedIn: false,
             };
         },

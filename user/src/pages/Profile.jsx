@@ -1,13 +1,21 @@
-import { useState, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { UserOutlined } from "@ant-design/icons";
+import { Avatar, DatePicker } from "antd";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import AccountSidebar from "../components/AccountSidebar.jsx";
 import { API_URL } from "../config.js";
-import { useDispatch, useSelector } from "react-redux";
-import { logoutUser, setUser } from "../redux/userSlide";
-import { Avatar } from "antd";
-import { UserOutlined } from "@ant-design/icons";
+import { setUser } from "../redux/userSlide";
+import dayjs from "dayjs";
+
 const Profile = () => {
     const [userData, setUserData] = useState(null);
+    const [validationErrors, setValidationErrors] = useState({
+        name: "",
+        email: "",
+        phone: "",
+        dateofBirth: "",
+        password: "",
+    });
     const [error, setError] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
     const [userAvatar, setUserAvatar] = useState(); // State for user avatar upload
@@ -20,7 +28,6 @@ const Profile = () => {
     });
     const [passwordError, setPasswordError] = useState("");
     const [passwordSuccess, setPasswordSuccess] = useState("");
-    const navigate = useNavigate();
     const [successMessage, setSuccessMessage] = useState("");
     const [updateError, setUpdateError] = useState("");
 
@@ -42,7 +49,7 @@ const Profile = () => {
         ) {
             age--;
         }
-        return age >= 18;
+        return age >= 18 && age <= 200;
     };
 
     const validatephone = (phone) => {
@@ -56,19 +63,9 @@ const Profile = () => {
 
     const validatePassword = (password) => {
         // Sửa regex để chấp nhận ký tự đặc biệt
-        const passwordRegex =
-            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/;
         return passwordRegex.test(password);
     };
-
-    // Thêm state cho validation errors
-    const [validationErrors, setValidationErrors] = useState({
-        name: "",
-        email: "",
-        phone: "",
-        dateofBirth: "",
-        password: "",
-    });
 
     const dispatch = useDispatch();
     const user = useSelector((state) => state.user);
@@ -77,12 +74,52 @@ const Profile = () => {
         setUserData(user);
     }, [user, dispatch]);
 
-    const handleEditToggle = () => {
+    const handleEditToggle = async () => {
+        if (isEditing) {
+            try {
+                const userId = localStorage.getItem("userId");
+                const response = await fetch(`${API_URL}/api/Users/${userId}`, {
+                    method: "GET",
+                    headers: { "Content-Type": "application/json" },
+                });
+
+                if (response.ok) {
+                    const updatedUser = await response.json();
+                    dispatch(setUser(updatedUser)); // Update Redux store
+                    setUserData(updatedUser); // Update local state
+                } else {
+                    setError("Không thể tải thông tin người dùng");
+                }
+            } catch (err) {
+                setError("Lỗi kết nối server");
+                console.error(err);
+            }
+        }
+
+        // Reset errors
+        setValidationErrors({
+            name: "",
+            email: "",
+            phone: "",
+            dateofBirth: "",
+            password: "",
+        });
+        setPasswordError("");
+        setUpdateError("");
+        setSuccessMessage("");
+        setPasswordSuccess("");
+
         setIsEditing(!isEditing);
+
+        // When editing is toggled off
         if (!isEditing) {
-            setUserAvatar(null); // Reset userAvatar when editing is toggled off
-            setAvatarPreview(null); // Reset avatar preview when editing is toggled off
-            setAvatarError(""); // Reset avatar error when editing is toggled off
+            setUserAvatar(null);
+            setAvatarPreview(null);
+            setAvatarError("");
+            setPasswordData({
+                ...passwordData,
+                currentPassword: "", // Clear the current password field
+            });
         }
     };
 
@@ -104,35 +141,83 @@ const Profile = () => {
             password: "",
         });
 
+        if (user.isGoogleAcc && passwordData.newPassword) {
+            setUpdateError("Tài khoản Google không thể thay đổi mật khẩu");
+            return;
+        }
+
         // Validate all fields
         let hasErrors = false;
         const newErrors = {};
 
-        if (!validateName(userData.name)) {
-            newErrors.name = "Tên phải có ít nhất 2 ký tự";
+        if (!userData.name.trim()) {
+            newErrors.name = "Tên không được để trống";
             hasErrors = true;
         }
-
-        if (!validateEmail(userData.email)) {
-            newErrors.email = "Email không hợp lệ";
+        if (!userData.email.trim()) {
+            newErrors.email = "Email không được để trống";
             hasErrors = true;
         }
-
-        if (!validatephone(userData.phone)) {
-            newErrors.phone = "Số điện thoại không hợp lệ";
+        if (!userData.phone.trim()) {
+            newErrors.phone = "Số điện thoại không được để trống";
             hasErrors = true;
         }
-
-        // if (!validateAge(userData. dateofBirth)) {
-        //     newErrors. dateofBirth = "Bạn phải đủ 18 tuổi";
+        // if (!userData.dateofBirth) {
+        //     newErrors.dateofBirth = "Ngày sinh không được để trống";
         //     hasErrors = true;
         // }
 
+        try {
+            if (!validateName(userData.name)) {
+                throw new Error("Tên phải có ít nhất 2 ký tự");
+            }
+        } catch (error) {
+            newErrors.name = error.message;
+            hasErrors = true;
+        }
+
+        try {
+            if (!validateEmail(userData.email)) {
+                throw new Error("Email không hợp lệ");
+            }
+        } catch (error) {
+            newErrors.email = error.message;
+            hasErrors = true;
+        }
+
+        try {
+            if (!validatephone(userData.phone)) {
+                throw new Error("Số điện thoại không hợp lệ");
+            }
+        } catch (error) {
+            newErrors.phone = error.message;
+            hasErrors = true;
+        }
+
+        try {
+            if (!validateAge(userData.dateofBirth)) {
+                throw new Error("Tuổi không hợp lệ (phải từ 18 đến 200 tuổi)");
+            }
+        } catch (error) {
+            newErrors.dateofBirth = error.message;
+            hasErrors = true;
+        }
+
         // Validate password if changing
         if (passwordData.newPassword) {
-            if (!validatePassword(passwordData.newPassword)) {
+            if (passwordData.newPassword === passwordData.currentPassword) {
                 newErrors.password =
-                    "Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường và số";
+                    "Mật khẩu mới không được trùng với mật khẩu hiện tại";
+                hasErrors = true;
+            }
+            try {
+                if (!validatePassword(passwordData.newPassword)) {
+                    throw new Error(
+                        "Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường và số"
+                    );
+                }
+            } catch (error) {
+                newErrors.password = error.message;
                 hasErrors = true;
             }
             if (passwordData.newPassword !== passwordData.confirmNewPassword) {
@@ -151,10 +236,8 @@ const Profile = () => {
 
         const formData = new FormData(); // Create FormData to handle file uploads
         formData.append("name", userData.name);
-        //formData.append("email", userData.email);
         formData.append("phone", userData.phone);
-        //formData.append(" dateofBirth", userData. dateofBirth);
-        //formData.append("dateofBirthFormatted", userData. dateofBirth.toString('dd-MM-yyyy'));
+        formData.append("dateofBirth", userData.dateofBirth || null);
         formData.append("address", userData.address);
         formData.append("account", user.account);
         formData.append("totalBuy", user.totalBuy);
@@ -166,15 +249,6 @@ const Profile = () => {
         }
         console.log([...formData]); // Log FormData entries
 
-        // if (passwordData.newPassword) {
-        //     if (passwordData.newPassword !== passwordData.confirmNewPassword) {
-        //         setPasswordError("Mật khẩu mới không khớp");
-        //         return;
-        //     }
-        //     formData.append("currentPassword", passwordData.currentPassword);
-        //     formData.append("newPassword", passwordData.newPassword);
-        // }
-
         try {
             const response = await fetch(`${API_URL}/api/Users/${userId}`, {
                 method: "PUT",
@@ -182,12 +256,12 @@ const Profile = () => {
             });
 
             console.log("data update user:", response);
+
             if (response.ok) {
-                dispatch(
-                    setUser({
-                        ...userData,
-                    })
-                );
+                const updatedUser = await response.json(); // Get updated user from response
+                dispatch(setUser(updatedUser)); // Update Redux store
+                setUserData(updatedUser);
+
                 setIsEditing(false);
                 setUserAvatar(null); // Reset userAvatar after successful update
                 setAvatarPreview(null); // Reset avatar preview after successful update
@@ -229,6 +303,54 @@ const Profile = () => {
             setAvatarError(""); // Clear any previous error
         }
     };
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                const userId = localStorage.getItem("userId");
+                const response = await fetch(`${API_URL}/api/Users/${userId}`, {
+                    method: "GET",
+                    headers: { "Content-Type": "application/json" },
+                });
+
+                if (!response.ok) {
+                    setError("Không thể tải thông tin người dùng");
+                    return;
+                }
+                const updatedUser = await response.json();
+
+                // Fetch Account data to get isGoogleAcc
+                const accountResponse = await fetch(
+                    `${API_URL}/api/Accounts/CheckUser/${userId}`,
+                    {
+                        method: "GET",
+                        headers: { "Content-Type": "application/json" },
+                    }
+                );
+                if (!accountResponse.ok) {
+                    setError("Không thể tải thông tin tài khoản");
+                    return;
+                }
+                const accountData = await accountResponse.json();
+                const account = Array.isArray(accountData)
+                    ? accountData[0]
+                    : accountData; // Handle if API returns an array
+
+                // Combine user and account data
+                const combinedData = {
+                    ...updatedUser,
+                    isGoogleAcc: account.isGoogleAcc || false, // Ensure isGoogleAcc is included
+                };
+
+                dispatch(setUser(combinedData));
+                setUserData(combinedData);
+            } catch (err) {
+                setError("Lỗi kết nối server");
+                console.error(err);
+            }
+        };
+        fetchUserData();
+    }, [dispatch]);
 
     return (
         <div className="flex flex-col md:flex-row min-h-[690px] bg-gray-100 p-5 relative">
@@ -291,7 +413,14 @@ const Profile = () => {
                                                 />
                                                 {avatarPreview ? (
                                                     <Avatar
-                                                        src={avatarPreview || (user?.image?.startsWith("data:image") ? user.image : `${API_URL}/${user.image}`)}
+                                                        src={
+                                                            avatarPreview ||
+                                                            (user?.image?.startsWith(
+                                                                "data:image"
+                                                            )
+                                                                ? user.image
+                                                                : `${API_URL}/${user.image}`)
+                                                        }
                                                         size={64}
                                                         className="rounded-full object-cover"
                                                     />
@@ -323,7 +452,6 @@ const Profile = () => {
                                 <div className="flex justify-between items-start">
                                     <label className="font-medium">Tên:</label>
                                     <div className="w-1/2 text-right">
-                                        {" "}
                                         {/* Thêm text-right */}
                                         {isEditing ? (
                                             <>
@@ -435,81 +563,56 @@ const Profile = () => {
                                     </div>
                                 </div>
 
-                                {/* <div className="flex justify-between items-start">
+                                {/* Date of Birth Section */}
+                                <div className="flex justify-between items-start">
                                     <label className="font-medium">
                                         Ngày sinh:
                                     </label>
                                     <div className="w-1/2 text-right">
                                         {isEditing ? (
                                             <>
-                                                <input
-                                                    type="date"
-                                                    className={`border rounded-lg p-2 w-full text-left ${
-                                                        validationErrors. dateofBirth
+                                                <DatePicker
+                                                    value={
+                                                        userData.dateofBirth
+                                                            ? dayjs(
+                                                                  userData.dateofBirth
+                                                              )
+                                                            : null
+                                                    }
+                                                    onChange={(date) =>
+                                                        setUserData({
+                                                            ...userData,
+                                                            dateofBirth: date
+                                                                ? date.toISOString()
+                                                                : null,
+                                                        })
+                                                    }
+                                                    format="YYYY-MM-DD"
+                                                    className={`w-full ${
+                                                        validationErrors.dateofBirth
                                                             ? "border-red-500"
                                                             : ""
                                                     }`}
-                                                    name=" dateofBirth"
-                                                    value={userData. dateofBirth}
-                                                    onChange={(e) =>
-                                                        setUserData({
-                                                            ...userData,
-                                                             dateofBirth:
-                                                                e.target.value,
-                                                        })
-                                                    }
-                                                    required
                                                 />
-                                                {validationErrors. dateofBirth && (
-                                                    <p className="text-red-500 text-sm absolute right-0 mt-1">
+                                                {validationErrors.dateofBirth && (
+                                                    <p className="text-red-500 text-sm mt-1">
                                                         {
-                                                            validationErrors. dateofBirth
+                                                            validationErrors.dateofBirth
                                                         }
                                                     </p>
                                                 )}
                                             </>
                                         ) : (
-                                            <p>{userData. dateofBirth}</p>
+                                            <p>
+                                                {userData.dateofBirth
+                                                    ? dayjs(
+                                                          userData.dateofBirth
+                                                      ).format("DD-MM-YYYY")
+                                                    : "Chưa cập nhật"}
+                                            </p>
                                         )}
                                     </div>
-                                </div>  */}
-
-                                {/* <div className="flex justify-between items-start">
-                                    <label className="font-medium">
-                                        Giới tính:
-                                    </label>
-                                    <div className="w-1/2 text-right">
-                                        {isEditing ? (
-                                            <select
-                                                className={`border rounded-lg p-2 w-full text-left ${
-                                                    validationErrors.gender
-                                                        ? "border-red-500"
-                                                        : ""
-                                                }`}
-                                                name="gender"
-                                                value={userData.gender}
-                                                onChange={(e) =>
-                                                    setUserData({
-                                                        ...userData,
-                                                        gender: e.target.value,
-                                                    })
-                                                }
-                                                required
-                                            >
-                                                <option value="">
-                                                    Chọn giới tính
-                                                </option>
-                                                <option value="Nam">Nam</option>
-                                                <option value="Nữ">Nữ</option>
-                                                <option value="Khác">
-                                                    Khác
-                                                </option>
-                                            </select>
-                                        ) : (
-                                            <p>{userData.gender}</p>
-                                        )}
-                                    </div>
-                                 </div> */}
+                                </div>
 
                                 <div className="flex justify-between items-start">
                                     <label className="font-medium">
@@ -593,12 +696,13 @@ const Profile = () => {
                 </div>
 
                 {/* Tách phần đổi mật khẩu thành component riêng */}
-                {isEditing && (
+                {isEditing && !user.isGoogleAcc ? (
                     <div className="bg-white p-6 rounded-lg shadow-lg mb-5">
                         <div className="space-y-4">
                             <h2 className="text-xl font-semibold mb-4">
                                 Đổi mật khẩu
                             </h2>
+
                             <div className="flex justify-between items-start">
                                 <label className="font-medium">
                                     Mật khẩu hiện tại:
@@ -609,6 +713,7 @@ const Profile = () => {
                                     className="border rounded-lg p-2 w-1/2"
                                     value={passwordData.currentPassword}
                                     onChange={handlePasswordChange}
+                                    autoComplete="new-password"
                                 />
                             </div>
                             <div className="flex justify-between items-start">
@@ -664,7 +769,13 @@ const Profile = () => {
                             </div>
                         </div>
                     </div>
-                )}
+                ) : isEditing && user.isGoogleAcc ? (
+                    <div className="bg-white p-6 rounded-lg shadow-lg mb-5">
+                        <p className="text-yellow-500 text-sm">
+                            Tài khoản Google không thể thay đổi mật khẩu.
+                        </p>
+                    </div>
+                ) : null}
             </div>
         </div>
     );

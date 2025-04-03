@@ -1,7 +1,7 @@
 import { faStar as farStar } from "@fortawesome/free-regular-svg-icons";
 import { faStar, faStarHalfAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Avatar, Rate } from "antd";
+import { Avatar} from "antd";
 import axios from "axios";
 import classNames from "classnames";
 import PropTypes from "prop-types";
@@ -134,14 +134,14 @@ export const ReviewsSection = ({ productId }) => {
             : 0;
 
     return (
-        <section className="py-14 md:py-24 bg-white dark:bg-[#0b1727] text-zinc-900 dark:text-white relative overflow-hidden z-10">
-            <div className="container px-4 mx-auto">
+        <section className="py-8 sm:py-12 md:py-14 lg:py-24 bg-white dark:bg-[#0b1727] text-zinc-900 dark:text-white relative overflow-hidden z-10">
+            <div className="container px-4 sm:px-6 lg:px-16 mx-auto">
                 <div className="flex justify-center max-w-4xl mx-auto">
-                    <div className="shadow-md dark:bg-slate-800 rounded p-4 lg:p-8 bg-gray-50">
+                    <div className="shadow-md dark:bg-slate-800 rounded p-6 sm:p-8 lg:p-12 bg-gray-50 w-full">
                         <div>
-                            <div className="p-3 md:p-6">
+                            <div className="p-4 sm:p-6 md:p-8">
                                 <div className="flex flex-wrap items-center">
-                                    <span className="text-[40px]">
+                                    <span className="text-[24px] sm:text-[32px] md:text-[40px]">
                                         {averageRating}
                                     </span>
                                     <Rating
@@ -150,20 +150,20 @@ export const ReviewsSection = ({ productId }) => {
                                         className="text-yellow-500 ml-2"
                                     />
                                 </div>
-                                <p className="text-sm opacity-75 mb-6">
-                                    Average rating based on {comments.length}{" "}
+                                <p className="text-sm sm:text-base opacity-75 mb-4 sm:mb-6">
+                                    Đánh giá trung bình từ {comments.length}{" "}
                                     reviews
                                 </p>
                             </div>
-                            <hr className="dark:border-slate-700 my-4" />
-                            <div className="p-3 pt-0 md:p-6 md:pt-0">
+                            <hr className="dark:border-slate-700 my-3 sm:my-4" />
+                            <div className="p-4 pt-0 sm:p-6 sm:pt-0 md:p-8 md:pt-0">
                                 <div className="flex justify-between items-center">
-                                    <h2 className="text-2xl font-medium">
-                                        Customer Review
+                                    <h2 className="text-xl sm:text-2xl lg:text-3xl font-medium">
+                                        Đánh giá sản phẩm
                                     </h2>
                                 </div>
                                 {loading ? (
-                                    <p>Loading reviews...</p>
+                                    <p className="text-sm sm:text-base">Loading reviews...</p>
                                 ) : comments.length > 0 ? (
                                     comments.map((comment) => (
                                         <ReviewItem
@@ -172,14 +172,14 @@ export const ReviewsSection = ({ productId }) => {
                                         />
                                     ))
                                 ) : (
-                                    <p>Chưa có bình luận về sản phẩm</p>
+                                    <p className="text-sm sm:text-base">Chưa có bình luận về sản phẩm</p>
                                 )}
                             </div>
-                            <div className="py-6 lg:py-12 text-center">
+                            {/* <div className="py-6 lg:py-12 text-center">
                                 <button className="bg-blue-600 text-white text-sm hover:bg-opacity-90 rounded py-2.5 px-6 md:px-10">
                                     Load More
                                 </button>
-                            </div>
+                            </div> */}
                         </div>
                     </div>
                 </div>

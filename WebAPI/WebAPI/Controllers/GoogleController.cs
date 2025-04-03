@@ -72,7 +72,8 @@ namespace WebAPI.Controllers
                         Password = "",
                         CreatedAt = DateTime.Now,
                         UpdatedAt = DateTime.Now,
-                        UserId = user.Id // Will be set after saving user
+                        UserId = user.Id, // Will be set after saving user
+                        IsGoogleAcc = true
                     };
 
                     _context.Users.Add(user);
@@ -99,7 +100,8 @@ namespace WebAPI.Controllers
                     fullName = user.Name,
                     email = account.Email,
                     role = role?.Name ?? "Unknown Role",
-                    createdAt = account.CreatedAt
+                    createdAt = account.CreatedAt,
+                    isGoogleAcc = account.IsGoogleAcc
                 };
 
                 return Ok(new { success = true, message = "Đăng nhập bằng Google thành công", data = responseData });

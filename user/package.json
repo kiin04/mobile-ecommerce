@@ -23,7 +23,7 @@
     "axios": "^1.8.4",
     "clsx": "^2.1.1",
     "daisyui": "^5.0.9",
-    "firebase": "^11.0.1",
+    "dayjs": "^1.11.13",
     "ldrs": "^1.1.6",
     "ngrok": "^5.0.0-beta.2",
     "package.json": "^2.0.1",
