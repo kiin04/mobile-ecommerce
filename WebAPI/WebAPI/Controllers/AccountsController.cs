@@ -67,7 +67,36 @@ namespace WebAPI.Controllers
         {
             try
             {
-                Account.Id = id;
+                // Ensure the ID matches
+                if (id != Account.Id)
+                {
+                    return BadRequest(new { message = "Account ID mismatch." });
+                }
+
+                // Fetch the existing account from the database
+                var existingAccount = await _accountRepository.GetByIdAsync(id);
+                if (existingAccount == null)
+                {
+                    return NotFound(new { message = "Account not found." });
+                }
+
+                // If the password is being updated, hash it
+                if (!string.IsNullOrEmpty(Account.Password) && Account.Password != existingAccount.Password)
+                {
+                    Account.Password = BCrypt.Net.BCrypt.HashPassword(Account.Password);
+                }
+                else
+                {
+                    // Retain the existing password if it's not being updated
+                    Account.Password = existingAccount.Password;
+                }
+
+                // Update username only if it is provided and different
+                if (!string.IsNullOrEmpty(Account.Username) && Account.Username != existingAccount.Username)
+                {
+                    existingAccount.Username = Account.Username;
+                }
+
                 await _accountRepository.UpdateAsync(Account);
                 return NoContent();
             }

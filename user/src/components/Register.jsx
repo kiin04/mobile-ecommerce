@@ -8,10 +8,9 @@ import { message, Modal } from "antd";
 const Register = ({ onRegisterSuccess }) => {
     const [name, setName] = useState("");
     const [accountName, setAccountName] = useState("");
-    const [gender, setGender] = useState("");
     const [address, setAddress] = useState("");
     const [phone, setphone] = useState("");
-    const [dayOfBirth, setDayOfBirth] = useState("");
+    const [dateofBirth, setDayOfBirth] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
@@ -20,10 +19,9 @@ const Register = ({ onRegisterSuccess }) => {
 
     const [nameError, setNameError] = useState("");
     const [accountNameError, setAccountNameError] = useState("");
-    const [genderError, setGenderError] = useState("");
     const [addressError, setAddressError] = useState("");
     const [phoneError, setphoneError] = useState("");
-    const [dayOfBirthError, setDayOfBirthError] = useState("");
+    const [dateofBirthError, setDayOfBirthError] = useState("");
     const [emailError, setEmailError] = useState("");
     const [passwordError, setPasswordError] = useState("");
     const [confirmPasswordError, setConfirmPasswordError] = useState("");
@@ -34,10 +32,8 @@ const Register = ({ onRegisterSuccess }) => {
         e.preventDefault();
         setNameError("");
         setAccountNameError("");
-        //setGenderError("");
         setAddressError("");
         setphoneError("");
-        // setDayOfBirthError("");
         setEmailError("");
         setPasswordError("");
         setConfirmPasswordError("");
@@ -45,10 +41,9 @@ const Register = ({ onRegisterSuccess }) => {
         const userData = {
             name,
             accountName,
-            gender,
             address,
             phone,
-            dayOfBirth,
+            dateofBirth,
             email,
             password
         };
@@ -64,16 +59,8 @@ const Register = ({ onRegisterSuccess }) => {
             setAccountNameError("Tên tài khoản không được để trống.");
             isValid = false;
         }
-        // if (!gender) {
-        //     setGenderError("Vui lòng chọn giới tính.");
-        //     isValid = false;
-        // }
-        // if (!dayOfBirth) {
-        //     setDayOfBirthError("Ngày sinh không được để trống.");
-        //     isValid = false;
-        // }
         else {
-            const selectedDate = new Date(dayOfBirth);
+            const selectedDate = new Date(dateofBirth);
             const today = new Date();
             today.setHours(0, 0, 0, 0);
             if (selectedDate > today) {
@@ -113,10 +100,9 @@ const Register = ({ onRegisterSuccess }) => {
                 const formData = new FormData();
                 formData.append("name", name);
                 formData.append("accountName", accountName);
-                //formData.append("gender", gender);
                 formData.append("address", address);
                 formData.append("phone", phone);
-                //formData.append("dayOfBirth", dayOfBirth);
+                formData.append("dateofBirth", dateofBirth);
                 formData.append("email", email);
                 formData.append("password", password);
 
@@ -195,30 +181,15 @@ const Register = ({ onRegisterSuccess }) => {
                         )}
                     </div>
                     <div>
-                        <label className="block text-left">Giới tính</label>
-                        <select
-                            value={gender}
-                            onChange={(e) => setGender(e.target.value)}
-                            className="border rounded-md p-2 w-full"
-                        >
-                            <option value="">Chọn giới tính</option>
-                            <option value="Nam">Nam</option>
-                            <option value="Nữ">Nữ</option>
-                        </select>
-                        {genderError && (
-                            <p className="text-red-500">{genderError}</p>
-                        )}
-                    </div>
-                    <div>
                         <label className="block text-left">Ngày sinh</label>
                         <input
                             type="date"
-                            value={dayOfBirth}
+                            value={dateofBirth}
                             onChange={(e) => setDayOfBirth(e.target.value)}
                             className="border rounded-md p-2 w-full"
                         />
-                        {dayOfBirthError && (
-                            <p className="text-red-500">{dayOfBirthError}</p>
+                        {dateofBirthError && (
+                            <p className="text-red-500">{dateofBirthError}</p>
                         )}
                     </div>
                     <div>
