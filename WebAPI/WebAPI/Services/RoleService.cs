@@ -20,9 +20,9 @@ namespace WebAPI.Services
             if (user == null) return;
 
             var userIds = await _context.Users
-               .Where(cs => cs.Role == id)
-               .Select(cs => cs.Id)
-               .ToListAsync();
+                .Where(cs => cs.Role == id)
+                .Select(cs => cs.Id)
+                .ToListAsync();
 
             if (userIds.Any())
             {

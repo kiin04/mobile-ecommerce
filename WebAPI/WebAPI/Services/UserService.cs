@@ -38,12 +38,46 @@ namespace WebAPI.Services
 
             if (orderIds.Any())
             {
-                await Task.WhenAll(orderIds.Select(orderId => _orderService.DeleteDependencieAsync(orderId)));
+                await Task.WhenAll(orderIds.Select(_orderService.DeleteDependencieAsync));
             }
 
 
             _context.Users.Remove(user);
 
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateUserRoleAsync(int userId, decimal orderTotalPrice)
+        {
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null)
+            {
+                throw new KeyNotFoundException("User not found");
+            }
+
+            // Update totalBuy
+            user.TotalBuy += orderTotalPrice;
+
+            // Determine role based on totalBuy
+            if (user.TotalBuy > 35000000)
+            {
+                user.Role = 6;
+            }
+            else if (user.TotalBuy > 15000000)
+            {
+                user.Role = 5;
+            }
+            else if (user.TotalBuy > 50000000)
+            {
+                user.Role = 7;
+            }
+            else
+            {
+                user.Role = 4;
+            }
+
+            // Save changes to the database
+            _context.Users.Update(user);
             await _context.SaveChangesAsync();
         }
     }

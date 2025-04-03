@@ -4,13 +4,12 @@ import { API_URL } from "../config.js";
 import { useNavigate } from "react-router-dom";
 import { message, Modal } from "antd";
 
-
 const Register = ({ onRegisterSuccess }) => {
     const [name, setName] = useState("");
-    const [accountName, setAccountName] = useState("");
+    const [username, setUsername] = useState("");
     const [address, setAddress] = useState("");
-    const [phone, setphone] = useState("");
-    const [dateofBirth, setDayOfBirth] = useState("");
+    const [phone, setPhone] = useState("");
+    const [dateofBirth, setDateofBirth] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
@@ -18,10 +17,10 @@ const Register = ({ onRegisterSuccess }) => {
     const [isModalVisible, setIsModalVisible] = useState(false); // Modal state
 
     const [nameError, setNameError] = useState("");
-    const [accountNameError, setAccountNameError] = useState("");
+    const [usernameError, setUsernameError] = useState("");
     const [addressError, setAddressError] = useState("");
-    const [phoneError, setphoneError] = useState("");
-    const [dateofBirthError, setDayOfBirthError] = useState("");
+    const [phoneError, setPhoneError] = useState("");
+    const [dateofBirthError, setDateofBirthError] = useState("");
     const [emailError, setEmailError] = useState("");
     const [passwordError, setPasswordError] = useState("");
     const [confirmPasswordError, setConfirmPasswordError] = useState("");
@@ -31,21 +30,22 @@ const Register = ({ onRegisterSuccess }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setNameError("");
-        setAccountNameError("");
+        setUsernameError("");
         setAddressError("");
-        setphoneError("");
+        setDateofBirthError("");
+        setPhoneError("");
         setEmailError("");
         setPasswordError("");
         setConfirmPasswordError("");
 
         const userData = {
             name,
-            accountName,
+            username,
             address,
             phone,
             dateofBirth,
             email,
-            password
+            password,
         };
 
         let isValid = true;
@@ -55,16 +55,16 @@ const Register = ({ onRegisterSuccess }) => {
             setNameError("Họ tên không được để trống.");
             isValid = false;
         }
-        if (!accountName.trim()) {
-            setAccountNameError("Tên tài khoản không được để trống.");
+        if (!username.trim()) {
+            setUsernameError("Tên tài khoản không được để trống.");
             isValid = false;
         }
-        else {
+        if (dateofBirth) {
             const selectedDate = new Date(dateofBirth);
             const today = new Date();
             today.setHours(0, 0, 0, 0);
             if (selectedDate > today) {
-                setDayOfBirthError(
+                setDateofBirthError(
                     "Ngày sinh không thể là ngày trong tương lai."
                 );
                 isValid = false;
@@ -76,7 +76,7 @@ const Register = ({ onRegisterSuccess }) => {
         }
         const phonePattern = /^[0-9]{10,11}$/;
         if (!phonePattern.test(phone)) {
-            setphoneError("Số điện thoại không hợp lệ (10-11 số).");
+            setPhoneError("Số điện thoại không hợp lệ (10-11 số).");
             isValid = false;
         }
         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -84,8 +84,9 @@ const Register = ({ onRegisterSuccess }) => {
             setEmailError("Email không hợp lệ.");
             isValid = false;
         }
-        if (password.length < 6) {
-            setPasswordError("Mật khẩu phải có ít nhất 6 ký tự.");
+        const passwordPattern = /^(?=.*\d).{6,}$/;
+        if (!passwordPattern.test(password)) {
+            setPasswordError("Mật khẩu phải có ít nhất 6 ký tự và bao gồm cả số.");
             isValid = false;
         }
         if (password !== confirmPassword) {
@@ -95,25 +96,34 @@ const Register = ({ onRegisterSuccess }) => {
 
         if (isValid) {
             try {
-
-                // Prepare user data to send to your server
                 const formData = new FormData();
-                formData.append("name", name);
-                formData.append("accountName", accountName);
-                formData.append("address", address);
-                formData.append("phone", phone);
-                formData.append("dateofBirth", dateofBirth);
-                formData.append("email", email);
-                formData.append("password", password);
-
+                formData.append("Name", name);
+                formData.append("Phone", phone);
+                formData.append("Address", address);
+                formData.append("DateofBirth", dateofBirth);
+                formData.append("Role", "4");
                 if (userAvatar) {
-                    formData.append("userAvatar", userAvatar);
+                    formData.append("image", userAvatar);
                 }
 
-                await axios.post(`${API_URL}/api/Users`, formData, {
+                const userResponse = await axios.post(`${API_URL}/api/Users`, formData, {
+                    headers: {
+                        "Content-Type": "multipart/form-data"
+                    }
+                });
+
+                const accountData = {
+                    UserId: userResponse.data.id,
+                    Email: email,
+                    Password: password,
+                    Username: username,
+                    IsGoogleAcc: false
+                };
+
+                await axios.post(`${API_URL}/api/Accounts`, accountData, {
                     headers: {
                         "Content-Type": "application/json"
-                    },
+                    }
                 });
 
                 message.open({
@@ -171,13 +181,13 @@ const Register = ({ onRegisterSuccess }) => {
                         <label className="block text-left">Tên tài khoản</label>
                         <input
                             type="text"
-                            value={accountName}
-                            onChange={(e) => setAccountName(e.target.value)}
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
                             placeholder="Nhập tên tài khoản"
                             className="border rounded-md p-2 w-full"
                         />
-                        {accountNameError && (
-                            <p className="text-red-500">{accountNameError}</p>
+                        {usernameError && (
+                            <p className="text-red-500">{usernameError}</p>
                         )}
                     </div>
                     <div>
@@ -185,7 +195,7 @@ const Register = ({ onRegisterSuccess }) => {
                         <input
                             type="date"
                             value={dateofBirth}
-                            onChange={(e) => setDayOfBirth(e.target.value)}
+                            onChange={(e) => setDateofBirth(e.target.value)}
                             className="border rounded-md p-2 w-full"
                         />
                         {dateofBirthError && (
@@ -210,7 +220,7 @@ const Register = ({ onRegisterSuccess }) => {
                         <input
                             type="text"
                             value={phone}
-                            onChange={(e) => setphone(e.target.value)}
+                            onChange={(e) => setPhone(e.target.value)}
                             placeholder="Nhập số điện thoại"
                             className="border rounded-md p-2 w-full"
                         />
