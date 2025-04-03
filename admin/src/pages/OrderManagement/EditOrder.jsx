@@ -194,7 +194,7 @@ const EditOrder = () => {
             }));
         }
     };
-    
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -211,10 +211,12 @@ const EditOrder = () => {
                 body: JSON.stringify(order),
             });
             console.log("response update order", response);
+
             if (response.ok) {
                 if(order.status == 'Đã giao hàng'){
                     await updateUser();
                 }
+
                 notification.success({
                     message: 'Thành công',
                     description: "Đơn hàng đã được cập nhật thành công",
@@ -261,7 +263,7 @@ const EditOrder = () => {
     };
 
     const updateUser = async () => {
-           const user =  await fetchUsers()
+            const user =  await fetchUsers()
             if(user){
                 console.log('user', user);
                 const formData = new FormData();
@@ -273,13 +275,13 @@ const EditOrder = () => {
                 formData.append("phone", user.phone);
                 formData.append("address", user.address);
                 formData.append("account", user.account);
-                if (totalPrice <= 1500000)
-                     { formData.append("role", 4);}
-                else  if (totalPrice > 1500000)
+                if (totalPrice <= 15000000)
+                    { formData.append("role", 4);}
+                else  if (totalPrice > 15000000)
                     { formData.append("role", 5);}
-                else  if (totalPrice > 3500000)
+                else  if (totalPrice > 35000000)
                     { formData.append("role", 6);}
-                else  if (totalPrice > 700000)
+                else  if (totalPrice > 50000000)
                     { formData.append("role", 7);}
 
                 console.log("📝 FormData nội dung:");
@@ -318,8 +320,6 @@ const EditOrder = () => {
                     });
                 }
             }
-    
-           
     };
 
 

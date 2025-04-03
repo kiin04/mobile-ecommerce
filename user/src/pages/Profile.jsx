@@ -162,10 +162,6 @@ const Profile = () => {
             newErrors.phone = "Số điện thoại không được để trống";
             hasErrors = true;
         }
-        // if (!userData.dateofBirth) {
-        //     newErrors.dateofBirth = "Ngày sinh không được để trống";
-        //     hasErrors = true;
-        // }
 
         try {
             if (!validateName(userData.name)) {
@@ -255,35 +251,64 @@ const Profile = () => {
                 body: formData,
             });
 
-            console.log("data update user:", response);
-
-            if (response.ok) {
-                const updatedUser = await response.json(); // Get updated user from response
-                dispatch(setUser(updatedUser)); // Update Redux store
-                setUserData(updatedUser);
-
-                setIsEditing(false);
-                setUserAvatar(null); // Reset userAvatar after successful update
-                setAvatarPreview(null); // Reset avatar preview after successful update
-                if (passwordData.newPassword) {
-                    setPasswordSuccess("Mật khẩu đã được cập nhật thành công");
-                }
-                setPasswordData({
-                    currentPassword: "",
-                    newPassword: "",
-                    confirmNewPassword: "",
-                });
-                setPasswordError("");
-                // Hiển thị thông báo thành công
-                setSuccessMessage("Cập nhật thông tin thành công!");
-
-                // Tự động ẩn thông báo sau 3 giây
-                setTimeout(() => {
-                    setSuccessMessage("");
-                }, 3000);
-            } else {
-                setUpdateError("Lỗi cập nhật thông tin người dùng");
+            if (!response.ok) {
+                throw new Error("Failed to update user data");
             }
+
+            const updatedUser = await response.json();
+            dispatch(setUser(updatedUser));
+            setUserData(updatedUser);
+
+            // Update Password if provided
+            if (passwordData.newPassword) {
+                const accountResponse = await fetch(
+                    `${API_URL}/api/Accounts/CheckUser/${userId}`,
+                    {
+                        method: "GET",
+                        headers: { "Content-Type": "application/json" },
+                    }
+                );
+                const accountData = await accountResponse.json();
+                const accountId = Array.isArray(accountData)
+                    ? accountData[0].id
+                    : accountData.id;
+
+                const accountFormData = {
+                    id: accountId,
+                    userId: userId,
+                    email: userData.email,
+                    password: passwordData.newPassword,
+                    username: userData.account,
+                    isGoogleAcc: userData.isGoogleAcc,
+                };
+
+                const passwordResponse = await fetch(
+                    `${API_URL}/api/Accounts/${accountId}`,
+                    {
+                        method: "PUT",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(accountFormData),
+                    }
+                );
+
+                if (!passwordResponse.ok) {
+                    throw new Error("Failed to update password");
+                }
+            }
+
+            setIsEditing(false);
+            setUserAvatar(null);
+            setAvatarPreview(null);
+            setPasswordData({
+                currentPassword: "",
+                newPassword: "",
+                confirmNewPassword: "",
+            });
+            setPasswordSuccess("Mật khẩu đã được cập nhật thành công");
+            setSuccessMessage("Cập nhật thông tin thành công!");
+            setTimeout(() => {
+                setSuccessMessage("");
+            }, 3000);
         } catch (error) {
             setUpdateError("Lỗi kết nối server");
             console.log(error);

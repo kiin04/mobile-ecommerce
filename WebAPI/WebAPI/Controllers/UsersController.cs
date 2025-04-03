@@ -167,5 +167,39 @@ namespace WebAPI.Controllers
                 return StatusCode(500, new { message = "An error occurred.", details = ex.Message });
             }
         }
+
+        // PUT: api/Users/UpdateRole/{id}
+        [HttpPut("UpdateRole/{id}")]
+        public async Task<IActionResult> UpdateUserRole(int id)
+        {
+            try
+            {
+                // Call the service to update the user's role
+                var roleChanged = await _UserService.UpdateUserRoleAsync(id);
+
+                // Return appropriate message
+                if (roleChanged)
+                {
+                    return Ok(new { message = "User role updated successfully" });
+                }
+                else
+                {
+                    return Ok(new { message = "User role remains the same" });
+                }
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred.", details = ex.Message });
+            }
+        }
+    }
+
+    public class UpdateUserRoleRequest
+    {
+        public int UserId { get; set; }
     }
 }

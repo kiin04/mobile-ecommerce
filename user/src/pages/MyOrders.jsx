@@ -128,7 +128,11 @@ const MyOrders = () => {
     };
 
     const formatDate = (dateString) => {
-        return new Date(dateString).toLocaleDateString("vi-VN", {
+        const utcDate = new Date(dateString); // Parse the UTC date
+        const localDate = new Date(
+            utcDate.toLocaleString("en-US", { timeZone: "Asia/Ho_Chi_Minh" })
+        ); // Convert to local time
+        return localDate.toLocaleString("vi-VN", {
             day: "2-digit",
             month: "2-digit",
             year: "numeric",

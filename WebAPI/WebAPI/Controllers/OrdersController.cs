@@ -54,7 +54,26 @@ namespace WebAPI.Controllers
                     return Ok(new List<Order>());
                 }
 
-                return Ok(orders);
+                // Convert UTC to local time (UTC+7)
+                var localTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+                var ordersWithLocalTime = orders.Select(order => new
+                {
+                    order.Id,
+                    order.UserId,
+                    order.TotalPrice,
+                    order.Status,
+                    order.Name,
+                    order.PaymentMethod,
+                    order.PaymentStatus,
+                    order.CancellationReason,
+                    order.Note,
+                    order.Phone,
+                    order.Address,
+                    CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(order.CreatedAt ?? DateTime.MinValue, localTimeZone),
+                    UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(order.UpdatedAt, localTimeZone)
+                });
+
+                return Ok(ordersWithLocalTime);
             }
             catch (KeyNotFoundException ex)
             {
@@ -133,6 +152,9 @@ namespace WebAPI.Controllers
                     .WithPhone(order.Phone)
                     .WithAddress(order.Address)
                     .Build();
+
+                orderBuild.CreatedAt = DateTime.UtcNow;
+
                 await _OrderRepository.AddAsync(orderBuild);
                 return CreatedAtAction(nameof(GetOrder), new { id = orderBuild.Id }, orderBuild);
             }
