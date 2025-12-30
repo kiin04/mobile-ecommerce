@@ -1,9 +1,9 @@
 # Stage 1: Build
 FROM oven/bun:latest AS build
 WORKDIR /app
-COPY package.json bun.lockb ./
+COPY admin/package.json admin/bun.lockb* ./ 
 RUN bun install
-COPY . .
+COPY admin/ . 
 RUN bun run build
 
 # Stage 2: Production
