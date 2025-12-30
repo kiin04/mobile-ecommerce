@@ -1,0 +1,50 @@
+stages:
+  - build
+  - deploy
+  - checklog
+
+variables:
+  DOCKER_HUB_USER: $DOCKER_HUB_USER
+
+# --- STAGE 1: BUILD ---
+build_images:
+  stage: build
+  image: docker:24.0.5
+  services:
+    - docker:24.0.5-dind
+  script:
+    - echo "$DOCKER_HUB_PASSWORD" | docker login -u "$DOCKER_HUB_USER" --password-stdin
+    # Build Backend
+    - docker build -t $DOCKER_HUB_USER/ecommerce-backend:latest ./WebAPI
+    - docker push $DOCKER_HUB_USER/ecommerce-backend:latest
+    # Build Admin
+    - docker build -t $DOCKER_HUB_USER/ecommerce-admin:latest ./admin
+    - docker push $DOCKER_HUB_USER/ecommerce-admin:latest
+    # Build User
+    - docker build -t $DOCKER_HUB_USER/ecommerce-frontend:latest ./user
+    - docker push $DOCKER_HUB_USER/ecommerce-frontend:latest
+  tags:
+    - build
+
+# --- STAGE 2: DEPLOY ---
+deploy_app:
+  stage: deploy
+  script:
+    - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASSWORD
+    - cd /opt/mobile-ecommerce
+    - docker compose pull
+    - docker compose up -d
+    - sleep 30
+    - docker exec mssql-server /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'YourStrongPassword123!' -i /usr/config/init.sql
+  tags:
+    - deploy-runner
+
+# --- STAGE 3: CHECKLOG ---
+check_status:
+  stage: checklog
+  script:
+    - docker ps
+    - echo "--- LOGS BACKEND ---"
+    - docker logs --tail 20 wbdt-server
+  tags:
+    - deploy-server
