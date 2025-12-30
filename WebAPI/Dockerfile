@@ -1,14 +1,15 @@
 # Stage 1: Build
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
-WORKDIR /app
-COPY WebAPI.csproj . 
-RUN dotnet restore
+WORKDIR /src
+COPY ["WebAPI/WebAPI/WebAPI.csproj", "WebAPI/WebAPI/"]
+RUN dotnet restore "WebAPI/WebAPI/WebAPI.csproj"
 COPY . . 
-RUN dotnet publish -c Release -o /publish
+WORKDIR "/src/WebAPI/WebAPI"
+RUN dotnet publish "WebAPI.csproj" -c Release -o /app/publish
 
 # Stage 2: Run
 FROM mcr.microsoft.com/dotnet/aspnet:7.0
 WORKDIR /app
-COPY --from=build /publish .
+COPY --from=build /app/publish .
 EXPOSE 80
 ENTRYPOINT ["dotnet", "WebAPI.dll"]
