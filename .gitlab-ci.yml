@@ -15,7 +15,8 @@ build_images:
   script:
     - echo "$DOCKER_HUB_PASSWORD" | docker login -u "$DOCKER_HUB_USER" --password-stdin
     # Build Backend
-    - docker build -t $DOCKER_HUB_USER/ecommerce-backend:latest ./WebAPI
+    - echo "Build..."
+    - docker build -t $DOCKER_HUB_USER/ecommerce-backend:latest -f ./WebAPI/WebAPI/Dockerfile .
     - docker push $DOCKER_HUB_USER/ecommerce-backend:latest
     # Build Admin
     - docker build -t $DOCKER_HUB_USER/ecommerce-admin:latest ./admin
