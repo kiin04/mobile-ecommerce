@@ -16,15 +16,15 @@ build_images:
     - echo "$DOCKER_HUB_PASSWORD" | docker login -u "$DOCKER_HUB_USER" --password-stdin
     # Build Backend
     - echo "Building Backend..."
-    - docker build --network host -t $DOCKER_HUB_USER/ecommerce-backend:latest -f ./WebAPI/Dockerfile .
+    - docker build --network host -t $DOCKER_HUB_USER/ecommerce-admin:latest -f ./admin/Dockerfile .
     - docker push $DOCKER_HUB_USER/ecommerce-backend:latest
     # Build Admin
     - echo "Building Admin..."
-    - docker build --network host -t $DOCKER_HUB_USER/ecommerce-admin:latest -f ./admin/Dockerfile .
+    - docker build --no-cache --network host -t $DOCKER_HUB_USER/ecommerce-admin:latest -f ./admin/Dockerfile .
     - docker push $DOCKER_HUB_USER/ecommerce-admin:latest
     # Build User
     - echo "Building Frontend User..."
-    - docker build --network host -t $DOCKER_HUB_USER/ecommerce-frontend:latest -f ./user/Dockerfile .
+    - docker build --no-cache --network host -t $DOCKER_HUB_USER/ecommerce-frontend:latest -f ./user/Dockerfile .
     - docker push $DOCKER_HUB_USER/ecommerce-frontend:latest
   tags:
     - build
