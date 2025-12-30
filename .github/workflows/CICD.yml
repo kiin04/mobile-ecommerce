@@ -4,7 +4,7 @@ stages:
   - checklog
 
 variables:
-  DOCKER_HUB_USER: "kiin04"
+  DOCKER_HUB_USER: $DOCKER_HUB_USER
 
 # --- STAGE 1: BUILD ---
 build_images:
@@ -15,11 +15,14 @@ build_images:
   script:
     - echo "$DOCKER_HUB_PASSWORD" | docker login -u "$DOCKER_HUB_USER" --password-stdin
     # Build Backend
-    - cd WebAPI && docker build -t $DOCKER_HUB_USER/wbdt-server:latest . && docker push $DOCKER_HUB_USER/wbdt-server:latest && cd ..
+    - docker build -t $DOCKER_HUB_USER/ecommerce-backend:latest ./WebAPI
+    - docker push $DOCKER_HUB_USER/ecommerce-backend:latest
     # Build Admin
-    - cd admin && docker build -t $DOCKER_HUB_USER/wbdt-admin:latest . && docker push $DOCKER_HUB_USER/wbdt-admin:latest && cd ..
+    - docker build -t $DOCKER_HUB_USER/ecommerce-admin:latest ./admin
+    - docker push $DOCKER_HUB_USER/ecommerce-admin:latest
     # Build User
-    - cd user && docker build -t $DOCKER_HUB_USER/wbdt-user:latest . && docker push $DOCKER_HUB_USER/wbdt-user:latest
+    - docker build -t $DOCKER_HUB_USER/ecommerce-frontend:latest ./user
+    - docker push $DOCKER_HUB_USER/ecommerce-frontend:latest
   tags:
     - build
 
@@ -28,13 +31,11 @@ deploy_app:
   stage: deploy
   script:
     - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASSWORD
-    - docker pull $DOCKER_HUB_USER/wbdt-server:latest
-    - docker pull $DOCKER_HUB_USER/wbdt-admin:latest
-    - docker pull $DOCKER_HUB_USER/wbdt-user:latest
-    - docker rm -f wbdt-server wbdt-admin wbdt-user || true
-    - docker run --name wbdt-server -dp 5000:80 $DOCKER_HUB_USER/wbdt-server:latest
-    - docker run --name wbdt-admin -dp 5174:80 $DOCKER_HUB_USER/wbdt-admin:latest
-    - docker run --name wbdt-user -dp 5173:80 $DOCKER_HUB_USER/wbdt-user:latest
+    - cd /opt/mobile-ecommerce
+    - docker compose pull
+    - docker compose up -d
+    - sleep 30
+    - docker exec mssql-server /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'YourStrongPassword123!' -i /usr/config/init.sql
   tags:
     - deploy-runner
 
@@ -43,6 +44,7 @@ check_status:
   stage: checklog
   script:
     - docker ps
+    - echo "--- LOGS BACKEND ---"
     - docker logs --tail 20 wbdt-server
   tags:
-    - deploy-runner
+    - deploy-server
