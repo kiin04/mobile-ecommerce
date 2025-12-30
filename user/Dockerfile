@@ -2,7 +2,7 @@
 FROM oven/bun:latest AS build
 WORKDIR /app
 COPY user/package.json user/bun.lockb* ./ 
-RUN bun clean && bun install --timeout 0 --no-save
+RUN rm -rf /root/.bun/install/cache && bun install --timeout 0
 RUN bun install
 COPY user/ . 
 RUN bun run build
