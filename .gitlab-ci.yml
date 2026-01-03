@@ -7,8 +7,6 @@ build_images:
   tags:
     - build
   image: docker:latest
-  services:
-    - docker:dind
   script:
     - echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USER" --password-stdin
     # Build & Push Backend
