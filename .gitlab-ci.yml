@@ -47,6 +47,8 @@ build_frontend_user:
 
 deploy_to_server:
   stage: deploy
+  tags:
+    - deploy-server
   image: alpine:latest
   needs: 
     - job: build_backend
