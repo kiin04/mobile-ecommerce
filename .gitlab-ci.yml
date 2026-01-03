@@ -10,7 +10,7 @@ build_images:
   script:
     - echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USER" --password-stdin
     # Build & Push Backend
-    - docker build -t $DOCKERHUB_USER/shop-be:latest -f ./WebAPI/WebAPI/Dockerfile .
+    - docker build -no-cache --network host -t $DOCKERHUB_USER/shop-be:latest -f ./WebAPI/WebAPI/Dockerfile .
     - docker push $DOCKERHUB_USER/shop-be:latest
     # Build & Push Frontend
     - docker build -t $DOCKERHUB_USER/shop-admin:latest -f ./admin/Dockerfile .
