@@ -1,26 +1,32 @@
 stages:
   - build
   - deploy
-
-build_images:
+before_script:
+  - echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USER" --password-stdin
+build_backend:
   stage: build
   tags:
     - build
   image: docker:latest
   script:
-    - echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USER" --password-stdin
     # Build & Push Backend
-    - docker build --no-cache --network host -t $DOCKERHUB_USER/shop-be:latest -f ./WebAPI/WebAPI/Dockerfile .
+    - docker build --network host -t $DOCKERHUB_USER/shop-be:latest -f ./WebAPI/WebAPI/Dockerfile .
     - docker push $DOCKERHUB_USER/shop-be:latest
+build_frontend:
+  stage: build
+  tags:
+    - build
+  script:
     # Build & Push Frontend
-    - docker build --no-cache --network host -t $DOCKERHUB_USER/shop-admin:latest -f ./admin/Dockerfile .
+    - docker build --network host -t $DOCKERHUB_USER/shop-admin:latest -f ./admin/Dockerfile .
     - docker push $DOCKERHUB_USER/shop-admin:latest
-    - docker build --no-cache --network host -t $DOCKERHUB_USER/shop-user:latest -f ./user/Dockerfile .
+    - docker build --network host -t $DOCKERHUB_USER/shop-user:latest -f ./user/Dockerfile .
     - docker push $DOCKERHUB_USER/shop-user:latest
 
 deploy_to_server:
   stage: deploy
   image: alpine:latest
+  needs: ["build_backend", "build_frontend"]
   before_script:
     - apk add --no-cache openssh-client
     - eval $(ssh-agent -s)
