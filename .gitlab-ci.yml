@@ -4,6 +4,8 @@ stages:
 
 build_images:
   stage: build
+  tags:
+    - build
   image: docker:latest
   services:
     - docker:dind
