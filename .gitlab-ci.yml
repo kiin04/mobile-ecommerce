@@ -64,6 +64,6 @@ deploy_to_server:
   script:
     - ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "
         cd /home/project && 
-        docker-compose pull && 
-        docker-compose up -d &&
-        docker image prune -f" 
+        docker compose pull && 
+        docker compose up -d &&
+        docker image prune -f"
