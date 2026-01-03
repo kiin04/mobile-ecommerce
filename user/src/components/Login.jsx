@@ -128,7 +128,7 @@ const Login = ({ onSwitchToRegister }) => {
                     remember: true,
                 }}
                 style={{
-                    maxWidth: 450,
+                    maxWidth: 460,
                 }}
                 size="large"
                 onFinish={handleSubmit}
