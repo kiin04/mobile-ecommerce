@@ -10,11 +10,13 @@ build_images:
   script:
     - echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USER" --password-stdin
     # Build & Push Backend
-    - docker build -t $DOCKERHUB_USER/shop-be:latest ./backend
+    - docker build -t $DOCKERHUB_USER/shop-be:latest ./WebAPI/WebAPI
     - docker push $DOCKERHUB_USER/shop-be:latest
     # Build & Push Frontend
-    - docker build -t $DOCKERHUB_USER/shop-fe:latest ./frontend
-    - docker push $DOCKERHUB_USER/shop-fe:latest
+    - docker build -t $DOCKERHUB_USER/shop-admin:latest ./admin
+    - docker push $DOCKERHUB_USER/shop-admin:latest
+    - docker build -t $DOCKERHUB_USER/shop-user:latest ./user
+    - docker push $DOCKERHUB_USER/shop-user:latest
 
 deploy_to_server:
   stage: deploy
