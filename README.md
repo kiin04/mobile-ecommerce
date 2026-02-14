@@ -1,4 +1,4 @@
-<img width="1308" height="906" alt="image" src="https://github.com/user-attachments/assets/b13f0994-8211-4201-8e75-e1db1323d80a" /># 🛒 Mobile Ecommerce 
+# 🛒 Mobile Ecommerce 
 
 
 
@@ -87,6 +87,7 @@ Resource Management: Real-time monitoring of RAM and CPU usage to prevent bottle
   <br><i>Docker Images stored in Docker Hub</i>
 </p>
 </details>
+
 
 
 
