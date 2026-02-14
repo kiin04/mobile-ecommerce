@@ -5,7 +5,7 @@ using WebAPI.Models;
 using WebAPI.Services;
 using Newtonsoft.Json.Serialization;
 using WebAPI.Decorator;
-using Prometheus;
+using Prometheus;  
 
 var builder = WebApplication.CreateBuilder(args);
 
