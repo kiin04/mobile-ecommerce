@@ -59,7 +59,7 @@ Resource Management: Real-time monitoring of RAM and CPU usage to prevent bottle
 <summary><b>🚀 CI/CD Pipeline & DevOps</b> (Click to expand)</summary>
 <br>
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/7423c47a-7034-4489-8ac9-6ffa96252f95" width="80%" alt="GitLab Pipeline" />
+  <img src="https://github.com/user-attachments/assets/fc511362-19ec-41fb-9169-596c1c049d34" width="80%" alt="GitLab Pipeline" />
   <br><i>Automated Pipeline with Build & Deploy Stages</i>
 </p>
 </details>
@@ -81,10 +81,11 @@ Resource Management: Real-time monitoring of RAM and CPU usage to prevent bottle
 <summary><b>📦 Container Registry (Docker Hub)</b> (Click to expand)</summary>
 <br>
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/fc511362-19ec-41fb-9169-596c1c049d34" width="80%" alt="Docker Hub" />
+  <img src="https://github.com/user-attachments/assets/7423c47a-7034-4489-8ac9-6ffa96252f95" width="80%" alt="Docker Hub" />
   <br><i>Docker Images stored in Docker Hub</i>
 </p>
 </details>
+
 
 
 
