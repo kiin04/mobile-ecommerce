@@ -42,7 +42,10 @@ Uptime Tracking: Instant alerts if any service (Backend/Frontend) goes down.
 
 Resource Management: Real-time monitoring of RAM and CPU usage to prevent bottlenecks.
 
-Alerting: Configured Alert Rules to notify the team via Telegram/Email when thresholds are breached.
+
+<img width="1442" height="877" alt="image" src="https://github.com/user-attachments/assets/40c7ecf0-3c4d-40e5-bb0b-3affcc8b47bf" />
+
+
 
 
 
