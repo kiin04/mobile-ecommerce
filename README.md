@@ -25,6 +25,15 @@ This project is a high-performance, scalable mobile ecommerce platform. The core
 	<code><img width="50" src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/nginx.png" alt="Nginx" title="Nginx"/></code>
 </div>
 
+### 🏗 CI/CD Architecture
+The pipeline is designed with a modular approach, using the include strategy to manage microservices (Backend, Admin, and User) independently.
+
+Stage - Build: Detects changes in specific directories (WebAPI/, admin/, user/) and builds optimized Docker images using Multi-stage builds.
+
+Stage - Push: Images are tagged and pushed to Docker Hub with latest and commit-sha tags.
+
+Stage - Deploy: The runner communicates via SSH to the production server, pulls the latest images, and restarts services using docker-compose.
+
 
 
 
