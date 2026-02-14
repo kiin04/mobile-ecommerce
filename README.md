@@ -1,4 +1,4 @@
-# 🛒 Mobile Ecommerce 
+<img width="1308" height="906" alt="image" src="https://github.com/user-attachments/assets/b13f0994-8211-4201-8e75-e1db1323d80a" /># 🛒 Mobile Ecommerce 
 
 
 
@@ -50,8 +50,8 @@ Resource Management: Real-time monitoring of RAM and CPU usage to prevent bottle
 <summary><b>📱 User Interface & Admin Dashboard</b> (Click to expand)</summary>
 <br>
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/40c7ecf0-3c4d-40e5-bb0b-3affcc8b47bf" width="80%" alt="Admin Dashboard" />
-  <br><i>Admin Dashboard Overview</i>
+  <img src="https://github.com/user-attachments/assets/8df9f9ae-4d99-41f6-9a54-d5b30222b7f7" width="80%" alt="User" />
+  <br><i>User Interface</i>
 </p>
 </details>
 
@@ -61,6 +61,8 @@ Resource Management: Real-time monitoring of RAM and CPU usage to prevent bottle
 <p align="center">
   <img src="https://github.com/user-attachments/assets/fc511362-19ec-41fb-9169-596c1c049d34" width="80%" alt="GitLab Pipeline" />
   <br><i>Automated Pipeline with Build & Deploy Stages</i>
+  <img src="https://github.com/user-attachments/assets/40c7ecf0-3c4d-40e5-bb0b-3affcc8b47bf" width="80%" alt="Stage" />
+  <br><i>Deploy Stages</i>
 </p>
 </details>
 
@@ -85,6 +87,7 @@ Resource Management: Real-time monitoring of RAM and CPU usage to prevent bottle
   <br><i>Docker Images stored in Docker Hub</i>
 </p>
 </details>
+
 
 
 
