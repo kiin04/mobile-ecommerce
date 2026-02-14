@@ -1,5 +1,7 @@
 # 🛒 Mobile Ecommerce 
 
+
+
 ### 📖 Project Overview
 This project is a high-performance, scalable mobile ecommerce platform. The core focus was not only building a feature-rich store but also engineering a sophisticated CI/CD infrastructure to ensure rapid, reliable, and observable software delivery.
 
@@ -44,14 +46,20 @@ Resource Management: Real-time monitoring of RAM and CPU usage to prevent bottle
 
 ### 🖼️ Some images from the project
 <img width="1442" height="877" alt="image" src="https://github.com/user-attachments/assets/40c7ecf0-3c4d-40e5-bb0b-3affcc8b47bf" />
+============================================================================================================================
 
 <img width="1436" height="528" alt="image" src="https://github.com/user-attachments/assets/7423c47a-7034-4489-8ac9-6ffa96252f95" />
+============================================================================================================================
 
 <img width="1195" height="877" alt="image" src="https://github.com/user-attachments/assets/fc511362-19ec-41fb-9169-596c1c049d34" />
+============================================================================================================================
 
-<img width="1896" height="818" alt="image" src="https://github.com/user-attachments/assets/81c3fdf5-76f8-4f32-9928-5b92124c3701" />
+<img width="1896" height="818" alt="image" src="https://github.com/user-attachments/assets/81c3fdf5-76f8-4f32-9928-5b92124c3701" />============================================================================================================================
+
 
 <img width="1377" height="857" alt="Screenshot 2026-02-14 175643" src="https://github.com/user-attachments/assets/0846c7ad-c878-4d95-99f4-153ed8a90be1" />
+============================================================================================================================
+
 
 
 
