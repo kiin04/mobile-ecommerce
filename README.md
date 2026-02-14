@@ -68,7 +68,7 @@ Resource Management: Real-time monitoring of RAM and CPU usage to prevent bottle
 <summary><b>📊 Monitoring (Grafana & Prometheus)</b> (Click to expand)</summary>
 <br>
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/fc511362-19ec-41fb-9169-596c1c049d34" width="80%" alt="Grafana Metrics" />
+  <img src="https://github.com/user-attachments/assets/81c3fdf5-76f8-4f32-9928-5b92124c3701" width="80%" alt="Grafana Metrics" />
   <br><i>Real-time System Monitoring</i>
 </p>
 <p align="center">
@@ -81,10 +81,11 @@ Resource Management: Real-time monitoring of RAM and CPU usage to prevent bottle
 <summary><b>📦 Container Registry (Docker Hub)</b> (Click to expand)</summary>
 <br>
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/81c3fdf5-76f8-4f32-9928-5b92124c3701" width="80%" alt="Docker Hub" />
+  <img src="https://github.com/user-attachments/assets/fc511362-19ec-41fb-9169-596c1c049d34" width="80%" alt="Docker Hub" />
   <br><i>Docker Images stored in Docker Hub</i>
 </p>
 </details>
+
 
 
 
