@@ -45,6 +45,19 @@ Resource Management: Real-time monitoring of RAM and CPU usage to prevent bottle
 
 <img width="1442" height="877" alt="image" src="https://github.com/user-attachments/assets/40c7ecf0-3c4d-40e5-bb0b-3affcc8b47bf" />
 
+<img width="1436" height="528" alt="image" src="https://github.com/user-attachments/assets/7423c47a-7034-4489-8ac9-6ffa96252f95" />
+
+<img width="1195" height="877" alt="image" src="https://github.com/user-attachments/assets/fc511362-19ec-41fb-9169-596c1c049d34" />
+
+<img width="1896" height="818" alt="image" src="https://github.com/user-attachments/assets/81c3fdf5-76f8-4f32-9928-5b92124c3701" />
+
+![Uploading image.png…]()
+
+
+
+
+
+
 
 
 
