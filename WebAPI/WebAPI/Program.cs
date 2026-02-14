@@ -5,6 +5,7 @@ using WebAPI.Models;
 using WebAPI.Services;
 using Newtonsoft.Json.Serialization;
 using WebAPI.Decorator;
+using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -71,6 +72,7 @@ builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 
 var app = builder.Build();
+app.UseHttpMetrics();
 
 // 2. Cấu hình HTTP Request Pipeline
 if (app.Environment.IsDevelopment())
@@ -89,6 +91,8 @@ app.UseCors(builder => builder
    .AllowAnyOrigin()
    .AllowAnyMethod()
    .AllowAnyHeader());
+
+app.MapMetrics("/status/metrics");
 
 app.UseAuthorization();
 
