@@ -6,7 +6,7 @@ COPY ["WebAPI/WebAPI/WebAPI.csproj", "WebAPI/WebAPI/"]
 RUN dotnet restore "WebAPI/WebAPI/WebAPI.csproj"
 COPY . .
 WORKDIR "/src/WebAPI/WebAPI"
-RUN dotnet publish "WebAPI.csproj" -c Release -o /app/publish
+RUN dotnet publish "WebAPI.csproj" -c Release -o /app/publish --no-restore
 
 # Stage 2:
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
