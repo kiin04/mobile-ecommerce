@@ -44,21 +44,47 @@ Uptime Tracking: Instant alerts if any service (Backend/Frontend) goes down.
 
 Resource Management: Real-time monitoring of RAM and CPU usage to prevent bottlenecks.
 
-### 🖼️ Some images from the project
-<img width="1442" height="877" alt="image" src="https://github.com/user-attachments/assets/40c7ecf0-3c4d-40e5-bb0b-3affcc8b47bf" />
-============================================================================================================================
+## 🖼️ Project Gallery
 
-<img width="1436" height="528" alt="image" src="https://github.com/user-attachments/assets/7423c47a-7034-4489-8ac9-6ffa96252f95" />
-============================================================================================================================
+<details>
+<summary><b>📱 User Interface & Admin Dashboard</b> (Click to expand)</summary>
+<br>
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/40c7ecf0-3c4d-40e5-bb0b-3affcc8b47bf" width="80%" alt="Admin Dashboard" />
+  <br><i>Admin Dashboard Overview</i>
+</p>
+</details>
 
-<img width="1195" height="877" alt="image" src="https://github.com/user-attachments/assets/fc511362-19ec-41fb-9169-596c1c049d34" />
-============================================================================================================================
+<details>
+<summary><b>🚀 CI/CD Pipeline & DevOps</b> (Click to expand)</summary>
+<br>
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/7423c47a-7034-4489-8ac9-6ffa96252f95" width="80%" alt="GitLab Pipeline" />
+  <br><i>Automated Pipeline with Build & Deploy Stages</i>
+</p>
+</details>
 
-<img width="1896" height="818" alt="image" src="https://github.com/user-attachments/assets/81c3fdf5-76f8-4f32-9928-5b92124c3701" />============================================================================================================================
+<details>
+<summary><b>📊 Monitoring (Grafana & Prometheus)</b> (Click to expand)</summary>
+<br>
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/fc511362-19ec-41fb-9169-596c1c049d34" width="80%" alt="Grafana Metrics" />
+  <br><i>Real-time System Monitoring</i>
+</p>
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/0846c7ad-c878-4d95-99f4-153ed8a90be1" width="80%" alt="Alerting Status" />
+  <br><i>Service Health & Alerting Configuration</i>
+</p>
+</details>
 
-
-<img width="1377" height="857" alt="Screenshot 2026-02-14 175643" src="https://github.com/user-attachments/assets/0846c7ad-c878-4d95-99f4-153ed8a90be1" />
-============================================================================================================================
+<details>
+<summary><b>📦 Container Registry (Docker Hub)</b> (Click to expand)</summary>
+<br>
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/81c3fdf5-76f8-4f32-9928-5b92124c3701" width="80%" alt="Docker Hub" />
+  <br><i>Docker Images stored in Docker Hub</i>
+</p>
+</details>
 
 
 
