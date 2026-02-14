@@ -1,0 +1,13 @@
+build_backend:
+  stage: build
+  tags:
+    - build
+  image: docker:latest
+  before_script:
+    - echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USER" --password-stdin
+  script:
+    - docker build --network host -t $DOCKERHUB_USER/shop-be:latest -f ./WebAPI/WebAPI/Dockerfile .
+    - docker push $DOCKERHUB_USER/shop-be:latest
+  rules:
+    - changes:
+        - WebAPI/**/*
