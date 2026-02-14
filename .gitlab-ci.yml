@@ -2,48 +2,10 @@ stages:
   - build
   - deploy
 
-.docker_login: &docker_login
-  before_script:
-    - echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USER" --password-stdin
-
-build_backend:
-  <<: *docker_login
-  stage: build
-  tags:
-    - build
-  image: docker:latest
-  script:
-    - docker build --network host -t $DOCKERHUB_USER/shop-be:latest -f ./WebAPI/WebAPI/Dockerfile .
-    - docker push $DOCKERHUB_USER/shop-be:latest
-  rules:
-    - changes:
-        - WebAPI/**/*
-
-build_frontend_admin:
-  <<: *docker_login
-  stage: build
-  tags:
-    - build
-  image: docker:latest
-  script:
-    - docker build --network host -t $DOCKERHUB_USER/shop-admin:latest -f ./admin/Dockerfile .
-    - docker push $DOCKERHUB_USER/shop-admin:latest
-  rules:
-    - changes:
-        - admin/**/*
-
-build_frontend_user:
-  <<: *docker_login
-  stage: build
-  tags:
-    - build
-  image: docker:latest
-  script:
-    - docker build --network host -t $DOCKERHUB_USER/shop-user:latest -f ./user/Dockerfile .
-    - docker push $DOCKERHUB_USER/shop-user:latest
-  rules:
-    - changes:
-        - user/**/*
+include:
+  - local: '/WebAPI/WebAPI/.be-ci.yml'
+  - local: '/admin/.admin-ci.yml'
+  - local: '/user/.user-ci.yml'
 
 deploy_to_server:
   stage: deploy
