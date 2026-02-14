@@ -1,0 +1,13 @@
+build_frontend_user:
+  stage: build
+  tags:
+    - build
+  image: docker:latest
+  before_script:
+    - echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USER" --password-stdin
+  script:
+    - docker build --network host -t $DOCKERHUB_USER/shop-user:latest -f ./user/Dockerfile .
+    - docker push $DOCKERHUB_USER/shop-user:latest
+  rules:
+    - changes:
+        - user/**/*
