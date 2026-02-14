@@ -2,8 +2,7 @@
 FROM oven/bun:latest AS build
 WORKDIR /app
 COPY admin/package.json admin/bun.lockb* ./ 
-RUN rm -rf /root/.bun/install/cache && bun install --timeout 0
-RUN bun install
+RUN bun install --frozen-lockfile --registry=https://registry.npmjs.org/
 COPY admin/ . 
 RUN bun run build
 
