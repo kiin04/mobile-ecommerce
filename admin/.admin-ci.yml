@@ -6,7 +6,6 @@ build_frontend_admin:
   before_script:
     - echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USER" --password-stdin
   script:
-    # Chạy build từ root, trỏ vào Dockerfile trong thư mục admin
     - docker build --network host -t $DOCKERHUB_USER/shop-admin:latest -f ./admin/Dockerfile .
     - docker push $DOCKERHUB_USER/shop-admin:latest
   rules:
