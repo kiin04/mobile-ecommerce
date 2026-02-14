@@ -1,4 +1,4 @@
-**🛒 Mobile Ecommerce **
+****🛒 Mobile Ecommerce ****
 
 **📖 Project Overview**
 This project is a high-performance, scalable mobile ecommerce platform. The core focus was not only building a feature-rich store but also engineering a sophisticated CI/CD infrastructure to ensure rapid, reliable, and observable software delivery.
